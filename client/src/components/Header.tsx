@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { navLinks } from '@/lib/data';
-import { Search, ShoppingBag, Heart, User, LogOut } from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, LogOut, X } from 'lucide-react';
 import { LeafIcon } from './icons/CustomIcons';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -12,10 +13,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export default function Header() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
@@ -33,6 +41,14 @@ export default function Header() {
   const handleLogout = () => {
     logoutMutation.mutate();
   };
+  
+  const handleSearch = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (searchQuery.trim()) {
+      setIsSearchOpen(false);
+      setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <header className={cn(
@@ -49,9 +65,31 @@ export default function Header() {
         >
           {/* Search */}
           <div className="flex items-center">
-            <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50">
-              <Search className="h-3 w-3 text-gray-500" />
-            </Button>
+            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50">
+                  <Search className="h-3 w-3 text-gray-500" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <form onSubmit={handleSearch} className="flex items-center space-x-2">
+                  <div className="grid flex-1 gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Caută produse sau servicii..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-8 text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  <Button type="submit" size="sm" className="h-8 px-3">
+                    <Search className="h-3.5 w-3.5 mr-1" />
+                    <span className="text-xs">Caută</span>
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
           </div>
 
           {/* Logo (enlarged when at top) */}
@@ -153,11 +191,37 @@ export default function Header() {
             </ul>
           </nav>
           
-          {/* Empty div for flex alignment */}
+          {/* Search button when scrolled */}
           <div className={cn(
-            "flex-shrink-0 transition-all duration-300",
-            scrolled ? "w-[50px]" : "w-0"
-          )}></div>
+            "flex-shrink-0 transition-all duration-300 flex items-center justify-end",
+            scrolled ? "w-[50px] opacity-100" : "w-0 opacity-0"
+          )}>
+            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+              <DialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full">
+                  <Search className="h-3 w-3 text-gray-500" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <form onSubmit={handleSearch} className="flex items-center space-x-2">
+                  <div className="grid flex-1 gap-2">
+                    <Input
+                      type="text"
+                      placeholder="Caută produse sau servicii..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="h-8 text-sm"
+                      autoFocus
+                    />
+                  </div>
+                  <Button type="submit" size="sm" className="h-8 px-3">
+                    <Search className="h-3.5 w-3.5 mr-1" />
+                    <span className="text-xs">Caută</span>
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
       </div>
     </header>

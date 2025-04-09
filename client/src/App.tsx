@@ -12,6 +12,7 @@ import EventPlanning from "@/pages/EventPlanning";
 import Rentals from "@/pages/Rentals";
 import Workshops from "@/pages/Workshops";
 import Contact from "@/pages/Contact";
+import SearchResultsPage from "@/pages/SearchResultsPage";
 import AuthPage from "@/pages/auth-page";
 import Checkout from "@/pages/checkout";
 import Cart from "@/pages/cart";
@@ -54,6 +55,7 @@ function Router() {
                 <Route path="/testimoniale" component={Testimonials} />
                 <Route path="/contact" component={Contact} />
                 <Route path="/cart" component={Cart} />
+                <Route path="/search" component={SearchResultsPage} />
                 <ProtectedRoute path="/profile" component={ProfilePage} />
                 <ProtectedRoute path="/orders" component={OrdersPage} />
                 <Route component={NotFound} />
