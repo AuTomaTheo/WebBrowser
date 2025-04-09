@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -35,6 +36,7 @@ export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("login");
   const [, navigate] = useLocation();
+  const { toast } = useToast();
   
   // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -59,12 +61,46 @@ export default function AuthPage() {
   
   // Handle login form submission
   const handleLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate(values);
+    loginMutation.mutate(values, {
+      onSuccess: () => {
+        toast({
+          title: "Conectare reușită",
+          description: "Bine ai revenit!",
+          variant: "default",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Conectare eșuată",
+          description: error.message || "Verifică username-ul și parola",
+          variant: "destructive",
+        });
+      }
+    });
   };
 
   // Handle register form submission  
   const handleRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
-    registerMutation.mutate(values);
+    registerMutation.mutate(values, {
+      onSuccess: () => {
+        setActiveTab("login");
+        loginForm.setValue("username", values.username);
+        loginForm.setValue("password", values.password);
+        // Display toast notification
+        toast({
+          title: "Cont creat cu succes",
+          description: "Te poți autentifica acum folosind username-ul și parola",
+          variant: "default",
+        });
+      },
+      onError: (error) => {
+        toast({
+          title: "Înregistrare eșuată",
+          description: error.message || "Nu am putut crea contul. Încearcă un alt username.",
+          variant: "destructive",
+        });
+      }
+    });
   };
   
   // Redirect if already logged in - using useEffect to handle navigation after render

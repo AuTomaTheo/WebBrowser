@@ -1,12 +1,21 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'wouter';
 import { navLinks } from '@/lib/data';
-import { Search, ShoppingBag, Heart } from 'lucide-react';
+import { Search, ShoppingBag, Heart, User, LogOut } from 'lucide-react';
 import { LeafIcon } from './icons/CustomIcons';
+import { useAuth } from '@/hooks/use-auth';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Header() {
   const [location] = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +25,10 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleLogout = () => {
+    logoutMutation.mutate();
+  };
 
   return (
     <header className={`sticky top-0 z-50 bg-white shadow-sm transition-all duration-300 ${
@@ -42,10 +55,37 @@ export default function Header() {
 
           {/* User Actions */}
           <div className="flex items-center">
-            <Link href="/auth" className="text-gray-500 mx-2">
-              <span>Autentificare</span>
-            </Link>
-            <Link href="/cart" className="text-gray-500 mx-2 flex items-center">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span className="font-medium">{user.username}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile" className="cursor-pointer">
+                      Profil
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/orders" className="cursor-pointer">
+                      Comenzile mele
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer text-red-500" onClick={handleLogout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Deconectare</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/auth" className="text-gray-500 mx-2 hover:text-primary transition-colors">
+                <span>Autentificare</span>
+              </Link>
+            )}
+            <Link href="/cart" className="text-gray-500 mx-2 flex items-center hover:text-primary transition-colors">
               <span>0.00 lei</span>
               <ShoppingBag className="ml-2 h-5 w-5" />
             </Link>

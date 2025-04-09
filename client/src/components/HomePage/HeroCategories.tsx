@@ -13,8 +13,8 @@ export default function HeroCategories() {
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex items-center justify-center">
-              <Link href={category.link}>
-                <a className="text-white text-2xl font-playfair tracking-wide">{category.title}</a>
+              <Link href={category.link} className="text-white text-2xl font-playfair tracking-wide">
+                {category.title}
               </Link>
             </div>
           </div>
