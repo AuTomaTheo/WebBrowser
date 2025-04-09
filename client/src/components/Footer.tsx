@@ -9,7 +9,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
           <div>
-            <h3 className="font-playfair text-xl mb-4">Milk & Honey</h3>
+            <h3 className="font-playfair text-xl mb-4">Atelierul cu flori</h3>
             <p className="text-gray-300 mb-4">
               Creăm povești florale pentru momente speciale. Fiecare aranjament este realizat cu pasiune și atenție la detalii.
             </p>
@@ -70,7 +70,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} Milk & Honey. Toate drepturile rezervate.</p>
+          <p>&copy; {new Date().getFullYear()} Atelierul cu flori. Toate drepturile rezervate.</p>
         </div>
       </div>
     </footer>
