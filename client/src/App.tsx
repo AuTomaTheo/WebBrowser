@@ -15,6 +15,8 @@ import Contact from "@/pages/Contact";
 import AuthPage from "@/pages/auth-page";
 import Checkout from "@/pages/checkout";
 import Cart from "@/pages/cart";
+import ProfilePage from "@/pages/ProfilePage";
+import OrdersPage from "@/pages/OrdersPage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 
@@ -52,6 +54,8 @@ function Router() {
                 <Route path="/testimoniale" component={Testimonials} />
                 <Route path="/contact" component={Contact} />
                 <Route path="/cart" component={Cart} />
+                <ProtectedRoute path="/profile" component={ProfilePage} />
+                <ProtectedRoute path="/orders" component={OrdersPage} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>

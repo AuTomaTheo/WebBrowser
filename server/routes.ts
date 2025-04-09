@@ -10,7 +10,7 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { setupAuth } from "./auth";
+import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import Stripe from "stripe";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -355,6 +355,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({ received: true });
   });
   
+  // User profile update
+  apiRouter.put("/user", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { firstName, lastName, email, phone } = req.body;
+      
+      // Check if email already exists for different user
+      if (email && email !== req.user!.email) {
+        const existingUser = await storage.getUserByEmail(email);
+        if (existingUser && existingUser.id !== req.user!.id) {
+          return res.status(400).json({ message: "Email already in use by another account" });
+        }
+      }
+      
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        firstName,
+        lastName,
+        email,
+        phone
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Change user password
+  apiRouter.put("/user/password", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      // Verify current password
+      const isValid = await comparePasswords(currentPassword, req.user!.password);
+      if (!isValid) {
+        return res.status(400).json({ message: "Current password is incorrect" });
+      }
+      
+      // Hash the new password
+      const hashedPassword = await hashPassword(newPassword);
+      
+      // Update the password
+      const updatedUser = await storage.updateUser(req.user!.id, {
+        password: hashedPassword
+      });
+      
+      res.json({ message: "Password updated successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
   // Order routes (requires authentication)
   apiRouter.get("/orders", isAuthenticated, async (req: Request, res: Response) => {
     try {

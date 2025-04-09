@@ -32,10 +32,8 @@ export default function Footer() {
             <ul className="space-y-2">
               {quickLinks.map(link => (
                 <li key={link.id}>
-                  <Link href={link.path}>
-                    <a className="text-gray-300 hover:text-secondary transition-colors">
-                      {link.title}
-                    </a>
+                  <Link href={link.path} className="text-gray-300 hover:text-secondary transition-colors">
+                    {link.title}
                   </Link>
                 </li>
               ))}
@@ -48,10 +46,8 @@ export default function Footer() {
             <ul className="space-y-2">
               {serviceLinks.map(link => (
                 <li key={link.id}>
-                  <Link href={link.path}>
-                    <a className="text-gray-300 hover:text-secondary transition-colors">
-                      {link.title}
-                    </a>
+                  <Link href={link.path} className="text-gray-300 hover:text-secondary transition-colors">
+                    {link.title}
                   </Link>
                 </li>
               ))}
@@ -64,10 +60,8 @@ export default function Footer() {
             <ul className="space-y-2">
               {accountLinks.map(link => (
                 <li key={link.id}>
-                  <Link href={link.path}>
-                    <a className="text-gray-300 hover:text-secondary transition-colors">
-                      {link.title}
-                    </a>
+                  <Link href={link.path} className="text-gray-300 hover:text-secondary transition-colors">
+                    {link.title}
                   </Link>
                 </li>
               ))}
