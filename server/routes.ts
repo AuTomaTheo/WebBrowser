@@ -1,58 +1,56 @@
-import type { Express } from "express";
+import express, { type Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { z } from "zod";
-import { insertSubscriptionSchema } from "@shared/schema";
+import { insertSubscriberSchema } from "@shared/schema";
+import { ZodError } from "zod";
+import { fromZodError } from "zod-validation-error";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
-  app.get("/api/testimonials", async (req, res) => {
+  const apiRouter = express.Router();
+  
+  // Get testimonials
+  apiRouter.get("/testimonials", async (req: Request, res: Response) => {
     try {
       const testimonials = await storage.getTestimonials();
       res.json(testimonials);
     } catch (error) {
+      console.error("Error fetching testimonials:", error);
       res.status(500).json({ message: "Failed to fetch testimonials" });
     }
   });
-
-  app.get("/api/testimonials/:id", async (req, res) => {
+  
+  // Subscribe to newsletter
+  apiRouter.post("/subscribe", async (req: Request, res: Response) => {
     try {
-      const id = parseInt(req.params.id);
-      if (isNaN(id)) {
-        return res.status(400).json({ message: "Invalid testimonial ID" });
-      }
-      
-      const testimonial = await storage.getTestimonial(id);
-      if (!testimonial) {
-        return res.status(404).json({ message: "Testimonial not found" });
-      }
-      
-      res.json(testimonial);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch testimonial" });
-    }
-  });
-
-  app.post("/api/subscribe", async (req, res) => {
-    try {
-      const validatedData = insertSubscriptionSchema.parse(req.body);
+      const subscriberData = insertSubscriberSchema.parse(req.body);
       
       // Check if email already exists
-      const existingSubscription = await storage.getSubscriptionByEmail(validatedData.email);
-      if (existingSubscription) {
-        return res.status(400).json({ message: "Email already subscribed" });
+      const existingSubscriber = await storage.getSubscriberByEmail(subscriberData.email);
+      
+      if (existingSubscriber) {
+        return res.status(409).json({ message: "Email already subscribed" });
       }
       
-      const subscription = await storage.createSubscription(validatedData);
-      res.status(201).json(subscription);
+      const subscriber = await storage.createSubscriber(subscriberData);
+      res.status(201).json({ 
+        message: "Subscription successful",
+        discountCode: "MILK&HONEY10" 
+      });
+      
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        res.status(400).json({ message: "Invalid subscription data", errors: error.errors });
-      } else {
-        res.status(500).json({ message: "Failed to create subscription" });
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
       }
+      
+      console.error("Error creating subscription:", error);
+      res.status(500).json({ message: "Failed to process subscription" });
     }
   });
+
+  // Register API routes with /api prefix
+  app.use("/api", apiRouter);
 
   const httpServer = createServer(app);
   return httpServer;

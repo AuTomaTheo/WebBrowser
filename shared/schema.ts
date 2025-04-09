@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -13,34 +13,30 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
-export const subscriptions = pgTable("subscriptions", {
+export const subscribers = pgTable("subscribers", {
   id: serial("id").primaryKey(),
   email: text("email").notNull().unique(),
-  createdAt: text("created_at").notNull(),
+  subscribedAt: timestamp("subscribed_at").defaultNow().notNull(),
+  active: boolean("active").default(true).notNull(),
 });
 
-export const insertSubscriptionSchema = createInsertSchema(subscriptions).pick({
+export const insertSubscriberSchema = createInsertSchema(subscribers).pick({
   email: true,
 });
 
 export const testimonials = pgTable("testimonials", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  content: text("content").array().notNull(),
+  content: text("content").notNull(),
   rating: integer("rating").notNull(),
+  displayOrder: integer("display_order").default(0),
 });
 
-export const insertTestimonialSchema = createInsertSchema(testimonials).pick({
-  name: true,
-  content: true,
-  rating: true,
-});
+export const insertTestimonialSchema = createInsertSchema(testimonials);
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
-
-export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
-export type Subscription = typeof subscriptions.$inferSelect;
-
-export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type Subscriber = typeof subscribers.$inferSelect;
+export type InsertSubscriber = z.infer<typeof insertSubscriberSchema>;
 export type Testimonial = typeof testimonials.$inferSelect;
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;

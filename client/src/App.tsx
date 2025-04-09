@@ -1,39 +1,42 @@
-import { Route, Switch } from "wouter";
-import HomePage from "./pages/HomePage";
-import TestimonialsPage from "./pages/TestimonialsPage";
-import AboutPage from "./pages/AboutPage";
-import ShopPage from "./pages/ShopPage";
-import EventPlanningPage from "./pages/EventPlanningPage";
-import RentalsPage from "./pages/RentalsPage";
-import WorkshopsPage from "./pages/WorkshopsPage";
-import ContactPage from "./pages/ContactPage";
-import NotFound from "./pages/not-found";
-import Header from "./components/layout/Header";
-import Footer from "./components/layout/Footer";
-import CookieConsent from "./components/ui/cookie-consent";
-import BackToTop from "./components/ui/back-to-top";
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import NotFound from "@/pages/not-found";
+import Layout from "@/components/Layout";
+import Home from "@/pages/Home";
+import Testimonials from "@/pages/Testimonials";
+import About from "@/pages/About";
+import Shop from "@/pages/Shop";
+import EventPlanning from "@/pages/EventPlanning";
+import Rentals from "@/pages/Rentals";
+import Workshops from "@/pages/Workshops";
+import Contact from "@/pages/Contact";
+
+function Router() {
+  return (
+    <Layout>
+      <Switch>
+        <Route path="/" component={Home} />
+        <Route path="/despre-noi" component={About} />
+        <Route path="/shop" component={Shop} />
+        <Route path="/event-planning" component={EventPlanning} />
+        <Route path="/rentals" component={Rentals} />
+        <Route path="/workshops" component={Workshops} />
+        <Route path="/testimoniale" component={Testimonials} />
+        <Route path="/contact" component={Contact} />
+        <Route component={NotFound} />
+      </Switch>
+    </Layout>
+  );
+}
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FFFDF5]">
-      <Header />
-      <main className="flex-grow">
-        <Switch>
-          <Route path="/" component={HomePage} />
-          <Route path="/despre-noi" component={AboutPage} />
-          <Route path="/shop" component={ShopPage} />
-          <Route path="/event-planning" component={EventPlanningPage} />
-          <Route path="/rentals" component={RentalsPage} />
-          <Route path="/workshops" component={WorkshopsPage} />
-          <Route path="/testimoniale" component={TestimonialsPage} />
-          <Route path="/contact" component={ContactPage} />
-          <Route component={NotFound} />
-        </Switch>
-      </main>
-      <Footer />
-      <CookieConsent />
-      <BackToTop />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <Router />
+      <Toaster />
+    </QueryClientProvider>
   );
 }
 

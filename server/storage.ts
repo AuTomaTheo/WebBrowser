@@ -1,14 +1,21 @@
-import { users, type User, type InsertUser, subscriptions, type Subscription, type InsertSubscription, testimonials, type Testimonial, type InsertTestimonial } from "@shared/schema";
+import { 
+  users, type User, type InsertUser,
+  subscribers, type Subscriber, type InsertSubscriber,
+  testimonials, type Testimonial, type InsertTestimonial
+} from "@shared/schema";
 
 export interface IStorage {
+  // User methods
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   
-  getSubscriptions(): Promise<Subscription[]>;
-  getSubscriptionByEmail(email: string): Promise<Subscription | undefined>;
-  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
+  // Subscriber methods
+  getSubscribers(): Promise<Subscriber[]>;
+  getSubscriberByEmail(email: string): Promise<Subscriber | undefined>;
+  createSubscriber(subscriber: InsertSubscriber): Promise<Subscriber>;
   
+  // Testimonial methods
   getTestimonials(): Promise<Testimonial[]>;
   getTestimonial(id: number): Promise<Testimonial | undefined>;
   createTestimonial(testimonial: InsertTestimonial): Promise<Testimonial>;
@@ -16,38 +23,44 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
-  private subscriptionsMap: Map<number, Subscription>;
-  private testimonialsMap: Map<number, Testimonial>;
+  private subscribers: Map<number, Subscriber>;
+  private testimonials: Map<number, Testimonial>;
   
-  currentUserId: number;
-  currentSubscriptionId: number;
-  currentTestimonialId: number;
+  private currentUserId: number;
+  private currentSubscriberId: number;
+  private currentTestimonialId: number;
 
   constructor() {
     this.users = new Map();
-    this.subscriptionsMap = new Map();
-    this.testimonialsMap = new Map();
+    this.subscribers = new Map();
+    this.testimonials = new Map();
     
     this.currentUserId = 1;
-    this.currentSubscriptionId = 1;
+    this.currentSubscriberId = 1;
     this.currentTestimonialId = 1;
     
-    // Add some initial testimonials
-    this.createTestimonial({
-      name: "Julia Roman",
-      content: [
-        "Andreea mi-a transformat visul in realitate.",
-        "Datorita ei am reusit sa creez decoruri minunate pentru evenimente."
-      ],
-      rating: 5
-    });
+    // Initialize with some testimonials
+    this.initializeTestimonials();
+  }
+  
+  private initializeTestimonials() {
+    const testimonialData = [
+      {
+        name: "Julia Roman",
+        content: "Andreea a transformat visul meu in realitate. Recomand serviciile pentru orice eveniment.",
+        rating: 5,
+        displayOrder: 1
+      },
+      {
+        name: "Daniela Bratu",
+        content: "Apreciez deschiderea cu care Andreea lucreaza. Foarte receptiva si profesionala.",
+        rating: 5,
+        displayOrder: 2
+      }
+    ];
     
-    this.createTestimonial({
-      name: "Daniela Bratu",
-      content: [
-        "Apreciez deschiderea cu care Andreea lucreaza - de fiecare data cand ne-am intalnit a fost foarte atenta la detalii."
-      ],
-      rating: 5
+    testimonialData.forEach(testimonial => {
+      this.createTestimonial(testimonial);
     });
   }
 
@@ -69,41 +82,48 @@ export class MemStorage implements IStorage {
     return user;
   }
   
-  // Subscription methods
-  async getSubscriptions(): Promise<Subscription[]> {
-    return Array.from(this.subscriptionsMap.values());
+  // Subscriber methods
+  async getSubscribers(): Promise<Subscriber[]> {
+    return Array.from(this.subscribers.values());
   }
   
-  async getSubscriptionByEmail(email: string): Promise<Subscription | undefined> {
-    return Array.from(this.subscriptionsMap.values()).find(
-      (subscription) => subscription.email === email,
+  async getSubscriberByEmail(email: string): Promise<Subscriber | undefined> {
+    return Array.from(this.subscribers.values()).find(
+      (subscriber) => subscriber.email === email,
     );
   }
   
-  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
-    const id = this.currentSubscriptionId++;
-    const subscription: Subscription = { 
-      ...insertSubscription, 
+  async createSubscriber(insertSubscriber: InsertSubscriber): Promise<Subscriber> {
+    const id = this.currentSubscriberId++;
+    const now = new Date();
+    const subscriber: Subscriber = { 
+      ...insertSubscriber, 
       id, 
-      createdAt: new Date().toISOString() 
+      subscribedAt: now, 
+      active: true 
     };
-    this.subscriptionsMap.set(id, subscription);
-    return subscription;
+    this.subscribers.set(id, subscriber);
+    return subscriber;
   }
   
   // Testimonial methods
   async getTestimonials(): Promise<Testimonial[]> {
-    return Array.from(this.testimonialsMap.values());
+    const testimonials = Array.from(this.testimonials.values());
+    return testimonials.sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }
   
   async getTestimonial(id: number): Promise<Testimonial | undefined> {
-    return this.testimonialsMap.get(id);
+    return this.testimonials.get(id);
   }
   
   async createTestimonial(insertTestimonial: InsertTestimonial): Promise<Testimonial> {
     const id = this.currentTestimonialId++;
-    const testimonial: Testimonial = { ...insertTestimonial, id };
-    this.testimonialsMap.set(id, testimonial);
+    const testimonial: Testimonial = { 
+      ...insertTestimonial, 
+      id,
+      displayOrder: insertTestimonial.displayOrder || 0
+    };
+    this.testimonials.set(id, testimonial);
     return testimonial;
   }
 }
