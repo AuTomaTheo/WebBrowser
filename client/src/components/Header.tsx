@@ -48,6 +48,8 @@ export default function Header() {
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (searchQuery.trim()) {
+      // Search with the search query, navigate to search results page
+      // The actual search logic is handled in SearchResultsPage.tsx
       setIsSearchExpanded(false);
       setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
