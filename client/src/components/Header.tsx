@@ -60,12 +60,10 @@ export default function Header() {
           <ul className="flex space-x-6 text-sm font-medium overflow-x-auto">
             {navLinks.map((link) => (
               <li key={link.id}>
-                <Link href={link.path}>
-                  <a className={`relative px-1 py-2 inline-block ${
-                    location === link.path ? 'after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-secondary' : 'hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-secondary hover:after:transition-all hover:after:duration-300'
-                  }`}>
-                    {link.title}
-                  </a>
+                <Link href={link.path} className={`relative px-1 py-2 inline-block ${
+                  location === link.path ? 'after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-secondary' : 'hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-secondary hover:after:transition-all hover:after:duration-300'
+                }`}>
+                  {link.title}
                 </Link>
               </li>
             ))}

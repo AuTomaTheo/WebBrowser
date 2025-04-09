@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
@@ -34,15 +34,8 @@ const registerSchema = z.object({
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("login");
-
   const [, navigate] = useLocation();
   
-  // Redirect if already logged in
-  if (user) {
-    navigate("/");
-    return null;
-  }
-
   // Login form
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -51,10 +44,6 @@ export default function AuthPage() {
       password: "",
     },
   });
-
-  const handleLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    loginMutation.mutate(values);
-  };
 
   // Register form
   const registerForm = useForm<z.infer<typeof registerSchema>>({
@@ -67,10 +56,28 @@ export default function AuthPage() {
       lastName: "",
     },
   });
+  
+  // Handle login form submission
+  const handleLoginSubmit = (values: z.infer<typeof loginSchema>) => {
+    loginMutation.mutate(values);
+  };
 
+  // Handle register form submission  
   const handleRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
     registerMutation.mutate(values);
   };
+  
+  // Redirect if already logged in - using useEffect to handle navigation after render
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+  
+  // If user is authenticated, don't render the auth forms
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="grid min-h-screen grid-cols-1 md:grid-cols-2">
