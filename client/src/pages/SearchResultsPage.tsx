@@ -32,18 +32,89 @@ export default function SearchResultsPage() {
     { id: 6, title: 'Consultanță evenimente', category: 'consultanta', description: 'Sfaturi de specialitate pentru decorarea evenimentelor importante.' }
   ];
 
-  // Filter products and services based on the search query
-  const filteredProducts = products?.filter(product => 
+  // Filter products and services based on the search query with relevance scoring
+  const getProductRelevance = (product: Product, searchTerm: string) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    let score = 0;
+    
+    // Exact name match gets highest priority
+    if (product.name.toLowerCase() === lowerSearchTerm) {
+      score += 100;
+    } 
+    // Name contains the search term
+    else if (product.name.toLowerCase().includes(lowerSearchTerm)) {
+      score += 50;
+    }
+    
+    // Category exact match
+    if (product.category.toLowerCase() === lowerSearchTerm) {
+      score += 30;
+    } 
+    // Category contains the search term
+    else if (product.category.toLowerCase().includes(lowerSearchTerm)) {
+      score += 20;
+    }
+    
+    // Description contains the search term
+    if (product.description.toLowerCase().includes(lowerSearchTerm)) {
+      score += 10;
+    }
+    
+    return score;
+  };
+  
+  const getServiceRelevance = (service: any, searchTerm: string) => {
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    let score = 0;
+    
+    // Exact title match gets highest priority
+    if (service.title.toLowerCase() === lowerSearchTerm) {
+      score += 100;
+    } 
+    // Title contains the search term
+    else if (service.title.toLowerCase().includes(lowerSearchTerm)) {
+      score += 50;
+    }
+    
+    // Category exact match
+    if (service.category.toLowerCase() === lowerSearchTerm) {
+      score += 30;
+    } 
+    // Category contains the search term
+    else if (service.category.toLowerCase().includes(lowerSearchTerm)) {
+      score += 20;
+    }
+    
+    // Description contains the search term
+    if (service.description.toLowerCase().includes(lowerSearchTerm)) {
+      score += 10;
+    }
+    
+    return score;
+  };
+
+  // Filter products with relevance scoring
+  const relevantProducts = products?.filter(product => 
     product.name.toLowerCase().includes(query.toLowerCase()) || 
     product.description.toLowerCase().includes(query.toLowerCase()) ||
     product.category.toLowerCase().includes(query.toLowerCase())
-  );
+  ).map(product => ({
+    ...product,
+    relevance: getProductRelevance(product, query)
+  })).sort((a, b) => b.relevance - a.relevance);
 
-  const filteredServices = services.filter(service => 
+  // Filter services with relevance scoring
+  const relevantServices = services.filter(service => 
     service.title.toLowerCase().includes(query.toLowerCase()) || 
     service.description.toLowerCase().includes(query.toLowerCase()) ||
     service.category.toLowerCase().includes(query.toLowerCase())
-  );
+  ).map(service => ({
+    ...service,
+    relevance: getServiceRelevance(service, query)
+  })).sort((a, b) => b.relevance - a.relevance);
+  
+  const filteredProducts = relevantProducts;
+  const filteredServices = relevantServices;
 
   const handleSearch = () => {
     setQuery(searchQuery);
@@ -96,27 +167,87 @@ export default function SearchResultsPage() {
             </div>
           ) : (
             <div className="space-y-12">
+              {/* Exact Matches Section */}
+              {(filteredServices.some(s => s.relevance >= 100) || filteredProducts?.some(p => p.relevance >= 100)) && (
+                <div>
+                  <h2 className="font-serif text-2xl text-primary mb-6">Potriviri exacte pentru "{query}"</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Exact service matches */}
+                    {filteredServices
+                      .filter(service => service.relevance >= 100)
+                      .map(service => (
+                        <div key={service.id} className="bg-white p-6 rounded-lg shadow-md border-2 border-secondary hover:shadow-lg transition-shadow">
+                          <div className="flex justify-between">
+                            <h3 className="font-serif text-xl text-primary mb-2">{service.title}</h3>
+                            <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">Serviciu</span>
+                          </div>
+                          <p className="text-gray-600 mb-4">{service.description}</p>
+                          <a 
+                            href={`/${service.category}`} 
+                            className="text-secondary hover:underline inline-flex items-center"
+                          >
+                            Vezi detalii
+                          </a>
+                        </div>
+                    ))}
+                    
+                    {/* Exact product matches */}
+                    {filteredProducts
+                      ?.filter(product => product.relevance >= 100)
+                      .map(product => (
+                        <div key={product.id} className="bg-white rounded-lg shadow-md border-2 border-secondary hover:shadow-lg transition-shadow overflow-hidden">
+                          <div className="h-48 overflow-hidden">
+                            <img 
+                              src={product.imageUrl} 
+                              alt={product.name} 
+                              className="w-full h-full object-cover transition-transform hover:scale-105"
+                            />
+                          </div>
+                          <div className="p-4">
+                            <div className="flex justify-between items-center mb-1">
+                              <h3 className="font-serif text-lg text-primary truncate">{product.name}</h3>
+                              <span className="bg-secondary/10 text-secondary text-xs px-2 py-1 rounded-full">Produs</span>
+                            </div>
+                            <p className="text-gray-500 text-sm mb-2">{product.category}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="font-medium">{Number(product.price).toFixed(2)} lei</span>
+                              <a 
+                                href={`/product/${product.id}`} 
+                                className="text-secondary hover:underline text-sm"
+                              >
+                                Vezi detalii
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {/* Services Section */}
               <div>
                 <h2 className="font-serif text-2xl text-primary mb-6">Servicii</h2>
                 
-                {filteredServices.length === 0 ? (
+                {filteredServices.filter(s => s.relevance < 100).length === 0 ? (
                   <div className="text-center bg-white p-8 rounded-lg shadow-sm">
-                    <p className="text-gray-500">Niciun serviciu nu corespunde căutării tale.</p>
+                    <p className="text-gray-500">Niciun alt serviciu nu corespunde căutării tale.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredServices.map(service => (
-                      <div key={service.id} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                        <h3 className="font-serif text-xl text-primary mb-2">{service.title}</h3>
-                        <p className="text-gray-600 mb-4">{service.description}</p>
-                        <a 
-                          href={`/${service.category}`} 
-                          className="text-secondary hover:underline inline-flex items-center"
-                        >
-                          Vezi detalii
-                        </a>
-                      </div>
+                    {filteredServices
+                      .filter(service => service.relevance < 100)
+                      .map(service => (
+                        <div key={service.id} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                          <h3 className="font-serif text-xl text-primary mb-2">{service.title}</h3>
+                          <p className="text-gray-600 mb-4">{service.description}</p>
+                          <a 
+                            href={`/${service.category}`} 
+                            className="text-secondary hover:underline inline-flex items-center"
+                          >
+                            Vezi detalii
+                          </a>
+                        </div>
                     ))}
                   </div>
                 )}
@@ -126,35 +257,37 @@ export default function SearchResultsPage() {
               <div>
                 <h2 className="font-serif text-2xl text-primary mb-6">Produse</h2>
                 
-                {filteredProducts?.length === 0 ? (
+                {!filteredProducts || filteredProducts.filter(p => p.relevance < 100).length === 0 ? (
                   <div className="text-center bg-white p-8 rounded-lg shadow-sm">
-                    <p className="text-gray-500">Niciun produs nu corespunde căutării tale.</p>
+                    <p className="text-gray-500">Niciun alt produs nu corespunde căutării tale.</p>
                   </div>
                 ) : (
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredProducts?.map(product => (
-                      <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                        <div className="h-48 overflow-hidden">
-                          <img 
-                            src={product.imageUrl} 
-                            alt={product.name} 
-                            className="w-full h-full object-cover transition-transform hover:scale-105"
-                          />
-                        </div>
-                        <div className="p-4">
-                          <h3 className="font-serif text-lg text-primary truncate">{product.name}</h3>
-                          <p className="text-gray-500 text-sm mb-2">{product.category}</p>
-                          <div className="flex justify-between items-center">
-                            <span className="font-medium">{Number(product.price).toFixed(2)} lei</span>
-                            <a 
-                              href={`/product/${product.id}`} 
-                              className="text-secondary hover:underline text-sm"
-                            >
-                              Vezi detalii
-                            </a>
+                    {filteredProducts
+                      ?.filter(product => product.relevance < 100)
+                      .map(product => (
+                        <div key={product.id} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                          <div className="h-48 overflow-hidden">
+                            <img 
+                              src={product.imageUrl} 
+                              alt={product.name} 
+                              className="w-full h-full object-cover transition-transform hover:scale-105"
+                            />
+                          </div>
+                          <div className="p-4">
+                            <h3 className="font-serif text-lg text-primary truncate">{product.name}</h3>
+                            <p className="text-gray-500 text-sm mb-2">{product.category}</p>
+                            <div className="flex justify-between items-center">
+                              <span className="font-medium">{Number(product.price).toFixed(2)} lei</span>
+                              <a 
+                                href={`/product/${product.id}`} 
+                                className="text-secondary hover:underline text-sm"
+                              >
+                                Vezi detalii
+                              </a>
+                            </div>
                           </div>
                         </div>
-                      </div>
                     ))}
                   </div>
                 )}
