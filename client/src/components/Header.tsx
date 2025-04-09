@@ -5,6 +5,7 @@ import { Search, ShoppingBag, Heart, User, LogOut } from 'lucide-react';
 import { LeafIcon } from './icons/CustomIcons';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,78 +35,93 @@ export default function Header() {
   };
 
   return (
-    <header className={`sticky top-0 z-50 bg-white shadow-sm transition-all duration-300 ${
-      scrolled ? 'py-1' : 'py-2'
+    <header className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-all duration-300 ${
+      scrolled ? 'py-1.5' : 'py-2.5'
     }`}>
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center">
           {/* Search */}
           <div className="flex items-center">
-            <button className="text-gray-500 focus:outline-none">
-              <Search className="h-5 w-5" />
-            </button>
+            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full border border-gray-200 hover:bg-gray-50">
+              <Search className="h-3.5 w-3.5 text-gray-500" />
+            </Button>
           </div>
 
           {/* Logo */}
           <div className="flex justify-center">
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-8 w-auto text-secondary" />
-              <span className="text-primary font-playfair text-2xl ml-2">
+              <LeafIcon className="h-7 w-auto text-secondary" />
+              <span className="text-primary font-playfair text-xl ml-1.5">
                 Milk <span className="text-secondary">&</span> Honey
               </span>
             </Link>
           </div>
 
           {/* User Actions */}
-          <div className="flex items-center">
+          <div className="flex items-center space-x-3">
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span className="font-medium">{user.username}</span>
+                  <Button variant="ghost" size="sm" className="h-8 px-2 text-xs font-medium rounded-md border border-gray-200 hover:bg-gray-50">
+                    <User className="h-3.5 w-3.5 mr-1.5" />
+                    {user.username}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem>
-                    <div className="w-full" onClick={() => window.location.href = "/profile"}>
+                    <Link href="/profile" className="w-full flex items-center text-sm">
+                      <User className="h-3.5 w-3.5 mr-2" />
                       Profil
-                    </div>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <div className="w-full" onClick={() => window.location.href = "/orders"}>
+                    <Link href="/orders" className="w-full flex items-center text-sm">
+                      <ShoppingBag className="h-3.5 w-3.5 mr-2" />
                       Comenzile mele
-                    </div>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer text-red-500" onClick={handleLogout}>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    <span>Deconectare</span>
+                    <LogOut className="h-3.5 w-3.5 mr-2" />
+                    <span className="text-sm">Deconectare</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Link href="/auth" className="text-gray-500 mx-2 hover:text-primary transition-colors">
-                <span>Autentificare</span>
+              <Link href="/auth">
+                <Button variant="ghost" size="sm" className="h-8 px-3 text-xs font-medium rounded-md border border-gray-200 hover:bg-gray-50">
+                  <User className="h-3.5 w-3.5 mr-1.5" />
+                  Cont
+                </Button>
               </Link>
             )}
-            <Link href="/cart" className="text-gray-500 mx-2 flex items-center hover:text-primary transition-colors">
-              <span>0.00 lei</span>
-              <ShoppingBag className="ml-2 h-5 w-5" />
+            <Link href="/cart">
+              <Button variant="ghost" size="sm" className="h-8 px-3 text-xs font-medium rounded-md border border-gray-200 hover:bg-gray-50 flex items-center">
+                <span>0.00 lei</span>
+                <ShoppingBag className="ml-1.5 h-3.5 w-3.5" />
+              </Button>
             </Link>
-            <Link href="/wishlist" className="text-gray-500 mx-2 bg-red-600 rounded-full p-1 text-white">
-              <Heart className="h-4 w-4" />
+            <Link href="/wishlist">
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-red-50 hover:bg-red-100 border border-red-200">
+                <Heart className="h-3.5 w-3.5 text-red-500" />
+              </Button>
             </Link>
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex justify-center mt-4 border-b border-gray-200 pb-2">
-          <ul className="flex space-x-6 text-sm font-medium overflow-x-auto">
+        <nav className="flex justify-center mt-3 border-b border-gray-100 pb-1">
+          <ul className="flex space-x-8 text-xs tracking-wide uppercase font-medium overflow-x-auto">
             {navLinks.map((link) => (
               <li key={link.id}>
-                <Link href={link.path} className={`relative px-1 py-2 inline-block ${
-                  location === link.path ? 'after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-secondary' : 'hover:after:absolute hover:after:bottom-[-4px] hover:after:left-0 hover:after:w-full hover:after:h-0.5 hover:after:bg-secondary hover:after:transition-all hover:after:duration-300'
-                }`}>
+                <Link 
+                  href={link.path} 
+                  className={cn(
+                    "relative px-1 py-2 inline-block transition-colors duration-200",
+                    location === link.path 
+                      ? "text-primary after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-secondary" 
+                      : "text-gray-600 hover:text-primary hover:after:absolute hover:after:bottom-[-2px] hover:after:left-0 hover:after:w-full hover:after:h-[2px] hover:after:bg-secondary hover:after:transition-all hover:after:duration-300"
+                  )}
+                >
                   {link.title}
                 </Link>
               </li>
