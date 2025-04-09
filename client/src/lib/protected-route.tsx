@@ -1,9 +1,10 @@
+import { useEffect, ComponentType } from "react";
 import { useAuth } from "../hooks/use-auth";
 import { Loader2 } from "lucide-react";
 import { Route, RouteProps, useLocation } from "wouter";
 
 interface ProtectedRouteProps extends Omit<RouteProps, "component"> {
-  component: React.ComponentType;
+  component: ComponentType;
 }
 
 export function ProtectedRoute({
@@ -12,6 +13,7 @@ export function ProtectedRoute({
   ...rest
 }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
+  const [, navigate] = useLocation();
 
   if (isLoading) {
     return (
@@ -22,11 +24,13 @@ export function ProtectedRoute({
       </Route>
     );
   }
-
-  const [, navigate] = useLocation();
   
   if (!user) {
-    navigate("/auth");
+    // Use a useEffect to handle navigation after render
+    useEffect(() => {
+      navigate("/auth");
+    }, [navigate]);
+    
     return null;
   }
 

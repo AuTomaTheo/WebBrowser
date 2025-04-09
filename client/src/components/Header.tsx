@@ -21,7 +21,10 @@ export default function Header() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
-
+    
+    // Initial check
+    handleScroll();
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -64,15 +67,15 @@ export default function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/profile" className="cursor-pointer">
+                  <DropdownMenuItem>
+                    <div className="w-full" onClick={() => window.location.href = "/profile"}>
                       Profil
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/orders" className="cursor-pointer">
+                  <DropdownMenuItem>
+                    <div className="w-full" onClick={() => window.location.href = "/orders"}>
                       Comenzile mele
-                    </Link>
+                    </div>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer text-red-500" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
