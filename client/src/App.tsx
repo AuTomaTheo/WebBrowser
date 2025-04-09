@@ -15,8 +15,8 @@ import Contact from "@/pages/Contact";
 import AuthPage from "@/pages/auth-page";
 import Checkout from "@/pages/checkout";
 import Cart from "@/pages/cart";
-import { AuthProvider } from "@/hooks/use-auth";
-import { ProtectedRoute } from "@/lib/protected-route";
+import { AuthProvider } from "./hooks/use-auth";
+import { ProtectedRoute } from "./lib/protected-route";
 
 // These pages will have their own layouts
 const PAGES_WITHOUT_LAYOUT = ["/auth", "/checkout"];
