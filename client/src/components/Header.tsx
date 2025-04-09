@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { navLinks } from '@/lib/data';
 import { Search, ShoppingBag, Heart, User, LogOut, X } from 'lucide-react';
@@ -13,17 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 export default function Header() {
   const [location, setLocation] = useLocation();
   const [scrolled, setScrolled] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, logoutMutation } = useAuth();
 
   useEffect(() => {
@@ -38,6 +34,13 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    // Focus search input when expanded
+    if (isSearchExpanded && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchExpanded]);
+
   const handleLogout = () => {
     logoutMutation.mutate();
   };
@@ -45,9 +48,14 @@ export default function Header() {
   const handleSearch = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (searchQuery.trim()) {
-      setIsSearchOpen(false);
+      setIsSearchExpanded(false);
       setLocation(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
     }
+  };
+  
+  const toggleSearch = () => {
+    setIsSearchExpanded(!isSearchExpanded);
+    setSearchQuery("");
   };
 
   return (
@@ -65,31 +73,42 @@ export default function Header() {
         >
           {/* Search */}
           <div className="flex items-center">
-            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50">
+            <form onSubmit={handleSearch} className="relative flex items-center">
+              <div className={cn(
+                "flex items-center transition-all duration-300 overflow-hidden",
+                isSearchExpanded ? "w-48 opacity-100" : "w-0 opacity-0"
+              )}>
+                <Input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Caută..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-6 text-xs pr-6 rounded-full"
+                />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-0 h-5 w-5 rounded-full"
+                  onClick={toggleSearch}
+                >
+                  <X className="h-2.5 w-2.5 text-gray-500" />
+                </Button>
+              </div>
+              
+              {!isSearchExpanded && (
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50"
+                  onClick={toggleSearch}
+                >
                   <Search className="h-3 w-3 text-gray-500" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSearch} className="flex items-center space-x-2">
-                  <div className="grid flex-1 gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Caută produse sau servicii..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-8 text-sm"
-                      autoFocus
-                    />
-                  </div>
-                  <Button type="submit" size="sm" className="h-8 px-3">
-                    <Search className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs">Caută</span>
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+              )}
+            </form>
           </div>
 
           {/* Logo (enlarged when at top) */}
@@ -196,31 +215,41 @@ export default function Header() {
             "flex-shrink-0 transition-all duration-300 flex items-center justify-end",
             scrolled ? "w-[50px] opacity-100" : "w-0 opacity-0"
           )}>
-            <Dialog open={isSearchOpen} onOpenChange={setIsSearchOpen}>
-              <DialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full">
+            <form onSubmit={handleSearch} className="relative flex items-center">
+              <div className={cn(
+                "flex items-center transition-all duration-300 overflow-hidden",
+                isSearchExpanded ? "w-40 opacity-100" : "w-0 opacity-0"
+              )}>
+                <Input
+                  type="text"
+                  placeholder="Caută..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-6 text-xs pr-6 rounded-full"
+                />
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="absolute right-0 h-5 w-5 rounded-full"
+                  onClick={toggleSearch}
+                >
+                  <X className="h-2.5 w-2.5 text-gray-500" />
+                </Button>
+              </div>
+              
+              {!isSearchExpanded && (
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 rounded-full"
+                  onClick={toggleSearch}
+                >
                   <Search className="h-3 w-3 text-gray-500" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <form onSubmit={handleSearch} className="flex items-center space-x-2">
-                  <div className="grid flex-1 gap-2">
-                    <Input
-                      type="text"
-                      placeholder="Caută produse sau servicii..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-8 text-sm"
-                      autoFocus
-                    />
-                  </div>
-                  <Button type="submit" size="sm" className="h-8 px-3">
-                    <Search className="h-3.5 w-3.5 mr-1" />
-                    <span className="text-xs">Caută</span>
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+              )}
+            </form>
           </div>
         </div>
       </div>
