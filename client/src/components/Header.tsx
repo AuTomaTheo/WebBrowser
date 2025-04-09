@@ -35,11 +35,18 @@ export default function Header() {
   };
 
   return (
-    <header className={`sticky top-0 z-50 bg-white border-b border-gray-100 transition-all duration-300 ${
-      scrolled ? 'py-1' : 'py-1.5'
-    }`}>
+    <header className={cn(
+      "sticky top-0 z-50 bg-white border-b transition-all duration-300", 
+      scrolled ? "border-transparent shadow-sm" : "border-gray-100"
+    )}>
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center">
+        {/* Top part that disappears on scroll */}
+        <div 
+          className={cn(
+            "flex justify-between items-center overflow-hidden transition-all duration-300",
+            scrolled ? "max-h-0 opacity-0 py-0" : "max-h-16 opacity-100 py-1.5"
+          )}
+        >
           {/* Search */}
           <div className="flex items-center">
             <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50">
@@ -47,11 +54,11 @@ export default function Header() {
             </Button>
           </div>
 
-          {/* Logo */}
+          {/* Logo (enlarged when at top) */}
           <div className="flex justify-center">
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-6 w-auto text-secondary" />
-              <span className="text-primary font-playfair text-lg ml-1">
+              <LeafIcon className="h-8 w-auto text-secondary transition-all duration-300" />
+              <span className="text-primary font-playfair text-xl ml-1.5 transition-all duration-300">
                 Milk <span className="text-secondary">&</span> Honey
               </span>
             </Link>
@@ -108,26 +115,69 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Navigation Menu */}
-        <nav className="flex justify-center mt-1 border-b border-gray-100 pb-1">
-          <ul className="flex space-x-4 text-[10px] tracking-wide uppercase font-medium overflow-x-auto no-scrollbar">
-            {navLinks.map((link) => (
-              <li key={link.id}>
-                <Link 
-                  href={link.path} 
-                  className={cn(
-                    "relative px-0.5 py-1.5 inline-block transition-colors duration-200",
-                    location === link.path 
-                      ? "text-primary after:absolute after:bottom-[-1px] after:left-0 after:w-full after:h-[1px] after:bg-secondary" 
-                      : "text-gray-600 hover:text-primary hover:after:absolute hover:after:bottom-[-1px] hover:after:left-0 hover:after:w-full hover:after:h-[1px] hover:after:bg-secondary hover:after:transition-all hover:after:duration-300"
-                  )}
-                >
-                  {link.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {/* Navigation Menu with compact logo when scrolled */}
+        <div className="flex items-center justify-between py-1">
+          {/* Compact logo that appears only when scrolled */}
+          <div 
+            className={cn(
+              "transition-all duration-300 flex-shrink-0",
+              scrolled ? "opacity-100 w-auto" : "opacity-0 w-0 overflow-hidden"
+            )}
+          >
+            <Link href="/" className="flex items-center">
+              <LeafIcon className="h-5 w-auto text-secondary" />
+              <span className="text-primary font-playfair text-sm ml-1">
+                M<span className="text-secondary">&</span>H
+              </span>
+            </Link>
+          </div>
+          
+          {/* Navigation links */}
+          <nav className="flex justify-center flex-grow">
+            <ul className="flex space-x-4 text-[10px] tracking-wide uppercase font-medium overflow-x-auto no-scrollbar">
+              {navLinks.map((link) => (
+                <li key={link.id}>
+                  <Link 
+                    href={link.path} 
+                    className={cn(
+                      "relative px-0.5 py-1.5 inline-block transition-colors duration-200",
+                      location === link.path 
+                        ? "text-primary after:absolute after:bottom-[-1px] after:left-0 after:w-full after:h-[1px] after:bg-secondary" 
+                        : "text-gray-600 hover:text-primary hover:after:absolute hover:after:bottom-[-1px] hover:after:left-0 hover:after:w-full hover:after:h-[1px] hover:after:bg-secondary hover:after:transition-all hover:after:duration-300"
+                    )}
+                  >
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          
+          {/* User actions when scrolled */}
+          <div className={cn(
+            "flex-shrink-0 flex items-center space-x-1.5 transition-all duration-300",
+            scrolled ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
+          )}>
+            {user ? (
+              <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] font-medium rounded-sm border border-gray-200 hover:bg-gray-50">
+                <User className="h-2.5 w-2.5 mr-1" />
+                <span>{user.username}</span>
+              </Button>
+            ) : (
+              <Link href="/auth">
+                <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] font-medium rounded-sm border border-gray-200 hover:bg-gray-50">
+                  <User className="h-2.5 w-2.5 mr-1" />
+                  Cont
+                </Button>
+              </Link>
+            )}
+            <Link href="/cart">
+              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 rounded-full border border-gray-200 hover:bg-gray-50 flex items-center justify-center">
+                <ShoppingBag className="h-2.5 w-2.5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </header>
   );
