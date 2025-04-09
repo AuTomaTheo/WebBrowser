@@ -44,7 +44,7 @@ export default function Header() {
         <div 
           className={cn(
             "flex justify-between items-center overflow-hidden transition-all duration-300",
-            scrolled ? "max-h-0 opacity-0 py-0" : "max-h-16 opacity-100 py-1.5"
+            scrolled ? "max-h-0 opacity-0 py-0" : "max-h-20 opacity-100 py-2.5"
           )}
         >
           {/* Search */}
@@ -57,8 +57,8 @@ export default function Header() {
           {/* Logo (enlarged when at top) */}
           <div className="flex justify-center">
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-8 w-auto text-secondary transition-all duration-300" />
-              <span className="text-primary font-playfair text-xl ml-1.5 transition-all duration-300">
+              <LeafIcon className="h-10 w-auto text-secondary transition-all duration-300" />
+              <span className="text-primary font-playfair text-2xl font-semibold ml-2 transition-all duration-300">
                 Milk <span className="text-secondary">&</span> Honey
               </span>
             </Link>
@@ -125,8 +125,8 @@ export default function Header() {
             )}
           >
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-5 w-auto text-secondary" />
-              <span className="text-primary font-playfair text-sm ml-1">
+              <LeafIcon className="h-6 w-auto text-secondary" />
+              <span className="text-primary font-playfair text-sm font-medium ml-1">
                 M<span className="text-secondary">&</span>H
               </span>
             </Link>
@@ -153,30 +153,11 @@ export default function Header() {
             </ul>
           </nav>
           
-          {/* User actions when scrolled */}
+          {/* Empty div for flex alignment */}
           <div className={cn(
-            "flex-shrink-0 flex items-center space-x-1.5 transition-all duration-300",
-            scrolled ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
-          )}>
-            {user ? (
-              <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] font-medium rounded-sm border border-gray-200 hover:bg-gray-50">
-                <User className="h-2.5 w-2.5 mr-1" />
-                <span>{user.username}</span>
-              </Button>
-            ) : (
-              <Link href="/auth">
-                <Button variant="ghost" size="sm" className="h-5 px-1.5 text-[10px] font-medium rounded-sm border border-gray-200 hover:bg-gray-50">
-                  <User className="h-2.5 w-2.5 mr-1" />
-                  Cont
-                </Button>
-              </Link>
-            )}
-            <Link href="/cart">
-              <Button variant="ghost" size="sm" className="h-5 w-5 p-0 rounded-full border border-gray-200 hover:bg-gray-50 flex items-center justify-center">
-                <ShoppingBag className="h-2.5 w-2.5" />
-              </Button>
-            </Link>
-          </div>
+            "flex-shrink-0 transition-all duration-300",
+            scrolled ? "w-[50px]" : "w-0"
+          )}></div>
         </div>
       </div>
     </header>
