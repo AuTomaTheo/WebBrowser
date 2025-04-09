@@ -92,8 +92,19 @@ export default function ProfilePage() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormValues) => {
-      const res = await apiRequest("PUT", "/api/user", data);
-      return await res.json();
+      try {
+        const res = await apiRequest("PUT", "/api/user", data);
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return await res.json();
+        } else {
+          const text = await res.text();
+          throw new Error(`Server responded with non-JSON content: ${text.substring(0, 100)}...`);
+        }
+      } catch (error) {
+        console.error("Profile update error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({
@@ -114,11 +125,22 @@ export default function ProfilePage() {
   // Change password mutation
   const changePasswordMutation = useMutation({
     mutationFn: async (data: PasswordFormValues) => {
-      const res = await apiRequest("PUT", "/api/user/password", {
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-      });
-      return await res.json();
+      try {
+        const res = await apiRequest("PUT", "/api/user/password", {
+          currentPassword: data.currentPassword,
+          newPassword: data.newPassword,
+        });
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          return await res.json();
+        } else {
+          const text = await res.text();
+          throw new Error(`Server responded with non-JSON content: ${text.substring(0, 100)}...`);
+        }
+      } catch (error) {
+        console.error("Password change error:", error);
+        throw error;
+      }
     },
     onSuccess: () => {
       toast({

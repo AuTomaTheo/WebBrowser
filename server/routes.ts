@@ -33,6 +33,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
   setupAuth(app);
   
+  // Middleware to ensure all JSON responses have the correct content type
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    const originalJson = res.json;
+    res.json = function(body) {
+      res.setHeader('Content-Type', 'application/json');
+      return originalJson.call(this, body);
+    };
+    next();
+  });
+  
   // API routes
   const apiRouter = express.Router();
   
@@ -375,10 +385,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         phone
       });
       
-      res.json(updatedUser);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Make sure we're explicitly setting the content type
+      res.setHeader('Content-Type', 'application/json');
+      return res.json(updatedUser);
     } catch (error) {
       console.error("Error updating user profile:", error);
-      res.status(500).json({ message: "Failed to update profile" });
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Failed to update profile" });
     }
   });
 
@@ -390,6 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Verify current password
       const isValid = await comparePasswords(currentPassword, req.user!.password);
       if (!isValid) {
+        res.setHeader('Content-Type', 'application/json');
         return res.status(400).json({ message: "Current password is incorrect" });
       }
       
@@ -401,10 +419,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword
       });
       
-      res.json({ message: "Password updated successfully" });
+      if (!updatedUser) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.setHeader('Content-Type', 'application/json');
+      return res.json({ message: "Password updated successfully" });
     } catch (error) {
       console.error("Error changing password:", error);
-      res.status(500).json({ message: "Failed to change password" });
+      res.setHeader('Content-Type', 'application/json');
+      return res.status(500).json({ message: "Failed to change password" });
     }
   });
 
