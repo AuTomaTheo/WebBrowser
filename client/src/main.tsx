@@ -18,7 +18,7 @@ fontLinks.forEach(href => {
 
 // Add page title and favicon
 const title = document.createElement('title');
-title.textContent = 'Milk & Honey - Florărie și Design Floral';
+title.textContent = 'Atelierul cu flori - Florărie și Design Floral';
 document.head.appendChild(title);
 
 createRoot(document.getElementById("root")!).render(<App />);

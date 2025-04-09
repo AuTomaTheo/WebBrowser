@@ -45,8 +45,8 @@ export default function ContactPage() {
   return (
     <>
       <Helmet>
-        <title>Contact - Milk & Honey</title>
-        <meta name="description" content="Contactează echipa Milk & Honey pentru orice întrebări despre serviciile noastre, pentru a programa o consultație sau pentru a solicita o ofertă personalizată." />
+        <title>Contact - Atelierul cu flori</title>
+        <meta name="description" content="Contactează echipa Atelierul cu flori pentru orice întrebări despre serviciile noastre, pentru a programa o consultație sau pentru a solicita o ofertă personalizată." />
       </Helmet>
       
       <section className="py-12 bg-[#F5F5F0]">
@@ -78,7 +78,7 @@ export default function ContactPage() {
                   <Mail className="h-5 w-5 text-primary mr-3 mt-1" />
                   <div>
                     <h3 className="font-medium mb-1">Email</h3>
-                    <p className="text-gray-600">contact@milkandhoney.ro</p>
+                    <p className="text-gray-600">contact@atelierulcuflori.ro</p>
                   </div>
                 </div>
                 

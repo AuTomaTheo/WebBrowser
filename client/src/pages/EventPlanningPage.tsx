@@ -4,7 +4,7 @@ export default function EventPlanningPage() {
   return (
     <>
       <Helmet>
-        <title>Event Planning - Milk & Honey</title>
+        <title>Event Planning - Atelierul cu flori</title>
         <meta name="description" content="Servicii complete de design floral și decoruri pentru nunți, aniversări, petreceri corporate și alte evenimente speciale." />
       </Helmet>
       
@@ -25,7 +25,7 @@ export default function EventPlanningPage() {
             </div>
             
             <p className="text-gray-700 mb-6 text-center max-w-4xl mx-auto">
-              La Milk & Honey, ne dedicăm transformării viziunii tale în realitate. Cu atenție la detalii și o abordare personalizată, echipa noastră va crea o experiență memorabilă pentru tine și invitații tăi.
+              La Atelierul cu flori, ne dedicăm transformării viziunii tale în realitate. Cu atenție la detalii și o abordare personalizată, echipa noastră va crea o experiență memorabilă pentru tine și invitații tăi.
             </p>
           </div>
           

@@ -10,8 +10,8 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>Milk & Honey - Florărie și Decoruri pentru Evenimente</title>
-        <meta name="description" content="Milk & Honey - Atelier floral specializat în aranjamente florale deosebite, buchete personalizate, design pentru nunți și alte evenimente speciale." />
+        <title>Atelierul cu flori - Florărie și Decoruri pentru Evenimente</title>
+        <meta name="description" content="Atelierul cu flori - Atelier floral specializat în aranjamente florale deosebite, buchete personalizate, design pentru nunți și alte evenimente speciale." />
       </Helmet>
       
       <MainCategories />

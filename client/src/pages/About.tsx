@@ -9,7 +9,7 @@ export default function About() {
           <h1 className="font-playfair text-3xl text-primary mb-6">DESPRE NOI</h1>
           <div className="w-20 h-1 bg-secondary mx-auto mb-8"></div>
           <p className="text-muted-foreground mb-4">
-            Milk & Honey este un atelier de design floral și decorațiuni pentru evenimente speciale.
+            Atelierul cu flori este un atelier de design floral și decorațiuni pentru evenimente speciale.
           </p>
         </div>
         
@@ -17,14 +17,14 @@ export default function About() {
           <div>
             <img 
               src="https://images.unsplash.com/photo-1529634597503-139d3726fed5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
-              alt="Milk & Honey Florărie" 
+              alt="Atelierul cu flori" 
               className="rounded-lg shadow-md"
             />
           </div>
           <div>
             <h2 className="font-dancing text-2xl text-primary mb-4">Povestea noastră</h2>
             <p className="text-muted-foreground mb-4">
-              Totul a început din pasiunea pentru flori și dorința de a crea aranjamente unice, care să surprindă și să emoționeze. Milk & Honey s-a născut din visul de a transforma orice eveniment într-o experiență autentică și memorabilă.
+              Totul a început din pasiunea pentru flori și dorința de a crea aranjamente unice, care să surprindă și să emoționeze. Atelierul cu flori s-a născut din visul de a transforma orice eveniment într-o experiență autentică și memorabilă.
             </p>
             <p className="text-muted-foreground mb-4">
               Lucrăm cu dedicare pentru a crea povești florale personalizate, adaptate personalității și dorinței fiecărui client.

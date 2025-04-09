@@ -4,8 +4,8 @@ export default function AboutPage() {
   return (
     <>
       <Helmet>
-        <title>Despre Noi - Milk & Honey</title>
-        <meta name="description" content="Milk & Honey este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri." />
+        <title>Despre Noi - Atelierul cu flori</title>
+        <meta name="description" content="Atelierul cu flori este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri." />
       </Helmet>
       
       <section className="py-12 bg-white">
@@ -15,13 +15,13 @@ export default function AboutPage() {
           <div className="mb-10">
             <img 
               src="https://images.unsplash.com/photo-1558182145-028ccdf48a8e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80" 
-              alt="Atelierul Milk & Honey" 
+              alt="Atelierul cu flori" 
               className="w-full h-80 object-cover rounded-lg mb-8"
             />
             
             <h2 className="font-serif text-2xl text-primary mb-4">Povestea Noastră</h2>
             <p className="text-gray-700 mb-4">
-              Milk & Honey este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri. Am pornit la drum din pasiune pentru frumos și dorința de a aduce un strop de magie în momentele importante din viața dumneavoastră.
+              Atelierul cu flori este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri. Am pornit la drum din pasiune pentru frumos și dorința de a aduce un strop de magie în momentele importante din viața dumneavoastră.
             </p>
             <p className="text-gray-700 mb-4">
               Cu o experiență de peste 7 ani în industria florală, echipa noastră se dedică fiecărui proiect cu atenție la cele mai mici detalii, oferind servicii personalizate care transformă viziunile în realitate.
