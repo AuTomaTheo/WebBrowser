@@ -59,7 +59,7 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <LeafIcon className="h-10 w-auto text-secondary transition-all duration-300" />
               <span className="text-primary font-playfair text-2xl font-semibold ml-2 transition-all duration-300">
-                Milk <span className="text-secondary">&</span> Honey
+                Atelierul cu flori
               </span>
             </Link>
           </div>
@@ -127,7 +127,7 @@ export default function Header() {
             <Link href="/" className="flex items-center">
               <LeafIcon className="h-6 w-auto text-secondary" />
               <span className="text-primary font-playfair text-sm font-medium ml-1">
-                M<span className="text-secondary">&</span>H
+                ACF
               </span>
             </Link>
           </div>
