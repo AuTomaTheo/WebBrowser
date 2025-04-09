@@ -243,7 +243,7 @@ export class MemStorage implements IStorage {
         name: "Buchet de trandafiri roz",
         description: "Un buchet elegant de trandafiri roz, perfect pentru a exprima afecțiune și admirație.",
         price: "180.00",
-        imageUrl: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1596438459194-f275f413d6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "buchete",
         stock: 15
       },
@@ -251,7 +251,7 @@ export class MemStorage implements IStorage {
         name: "Aranjament floral pentru masa",
         description: "Aranjament floral de sezon, perfect pentru decorarea mesei la ocazii speciale.",
         price: "250.00",
-        imageUrl: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1484729079694-0047419b7a36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "aranjamente",
         stock: 10
       },
@@ -259,7 +259,7 @@ export class MemStorage implements IStorage {
         name: "Coronita din flori de camp",
         description: "Coronita delicata din flori de camp, ideala pentru evenimente in aer liber si nunti rustice.",
         price: "120.00",
-        imageUrl: "https://images.unsplash.com/photo-1533616688419-b7a585564566?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1600048244188-11d1e29a0b03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "coronite",
         stock: 8
       },
@@ -267,7 +267,7 @@ export class MemStorage implements IStorage {
         name: "Buchet de mireasa",
         description: "Buchet de mireasa elegant cu trandafiri albi si accente de verdeata, perfect pentru ziua cea mare.",
         price: "350.00",
-        imageUrl: "https://images.unsplash.com/photo-1551893665-f843f600794e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1595966337798-2461347d4ad0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "nunta",
         stock: 5
       },
@@ -275,7 +275,7 @@ export class MemStorage implements IStorage {
         name: "Aranjament floral corporate",
         description: "Aranjament floral sofisticat pentru birouri si evenimente corporate.",
         price: "280.00",
-        imageUrl: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1614718526802-7cadf9d3ce9a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "corporate",
         stock: 12
       },
@@ -283,7 +283,7 @@ export class MemStorage implements IStorage {
         name: "Cutie cu flori mixte",
         description: "Cutie eleganta cu flori sezoniere mixte, un cadou perfect pentru orice ocazie.",
         price: "220.00",
-        imageUrl: "https://images.unsplash.com/photo-1521543832500-49e69fb2bea2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+        imageUrl: "https://images.unsplash.com/photo-1599733594230-5cc2d0b10655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
         category: "cutii",
         stock: 20
       }
@@ -731,7 +731,7 @@ async function initializeDatabase() {
           name: "Buchet de trandafiri roz",
           description: "Un buchet elegant de trandafiri roz, perfect pentru a exprima afecțiune și admirație.",
           price: "180.00",
-          imageUrl: "https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1596438459194-f275f413d6ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "buchete",
           stock: 15,
           createdAt: new Date()
@@ -740,7 +740,7 @@ async function initializeDatabase() {
           name: "Aranjament floral pentru masa",
           description: "Aranjament floral de sezon, perfect pentru decorarea mesei la ocazii speciale.",
           price: "250.00",
-          imageUrl: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1484729079694-0047419b7a36?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "aranjamente",
           stock: 10,
           createdAt: new Date()
@@ -749,7 +749,7 @@ async function initializeDatabase() {
           name: "Coronita din flori de camp",
           description: "Coronita delicata din flori de camp, ideala pentru evenimente in aer liber si nunti rustice.",
           price: "120.00",
-          imageUrl: "https://images.unsplash.com/photo-1533616688419-b7a585564566?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1600048244188-11d1e29a0b03?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "coronite",
           stock: 8,
           createdAt: new Date()
@@ -758,7 +758,7 @@ async function initializeDatabase() {
           name: "Buchet de mireasa",
           description: "Buchet de mireasa elegant cu trandafiri albi si accente de verdeata, perfect pentru ziua cea mare.",
           price: "350.00",
-          imageUrl: "https://images.unsplash.com/photo-1551893665-f843f600794e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1595966337798-2461347d4ad0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "nunta",
           stock: 5,
           createdAt: new Date()
@@ -767,7 +767,7 @@ async function initializeDatabase() {
           name: "Aranjament floral corporate",
           description: "Aranjament floral sofisticat pentru birouri si evenimente corporate.",
           price: "280.00",
-          imageUrl: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1614718526802-7cadf9d3ce9a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "corporate",
           stock: 12,
           createdAt: new Date()
@@ -776,7 +776,7 @@ async function initializeDatabase() {
           name: "Cutie cu flori mixte",
           description: "Cutie eleganta cu flori sezoniere mixte, un cadou perfect pentru orice ocazie.",
           price: "220.00",
-          imageUrl: "https://images.unsplash.com/photo-1521543832500-49e69fb2bea2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+          imageUrl: "https://images.unsplash.com/photo-1599733594230-5cc2d0b10655?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
           category: "cutii",
           stock: 20,
           createdAt: new Date()
