@@ -4,7 +4,7 @@ import { Search, ShoppingBag, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaYoutube } from "react-icons/fa";
-import { MilkAndHoneyLogo } from "@/assets/logo";
+import { AtelierulCuFloriLogo } from "@/assets/logo";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -76,7 +76,7 @@ export default function Header() {
 
           <div className="flex items-center">
             <Link href="/">
-              <MilkAndHoneyLogo className="h-14" />
+              <AtelierulCuFloriLogo className="h-14" />
             </Link>
           </div>
 
