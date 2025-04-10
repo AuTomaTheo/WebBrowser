@@ -7,9 +7,9 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
-            <h4 className="font-serif text-xl mb-4">Despre Milk & Honey</h4>
+            <h4 className="font-serif text-xl mb-4">Despre Atelierul cu flori</h4>
             <p className="text-gray-300 mb-4">
-              Milk & Honey este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri.
+              Atelierul cu flori este un atelier floral specializat în aranjamente deosebite, decoruri de eveniment și experiențe unice pentru clienții noștri.
             </p>
             <div className="flex space-x-4">
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition">
@@ -107,7 +107,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; {new Date().getFullYear()} Milk & Honey. Toate drepturile rezervate.</p>
+          <p>&copy; {new Date().getFullYear()} Atelierul cu flori. Toate drepturile rezervate.</p>
         </div>
       </div>
     </footer>

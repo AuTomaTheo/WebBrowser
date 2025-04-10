@@ -99,7 +99,7 @@ export default function Contact() {
                   <Mail className="h-6 w-6 text-secondary flex-shrink-0" />
                   <div>
                     <h3 className="font-playfair text-primary mb-1">Email</h3>
-                    <p className="text-muted-foreground">contact@milkandhoney.ro</p>
+                    <p className="text-muted-foreground">contact@atelierulcuflori.ro</p>
                   </div>
                 </CardContent>
               </Card>
