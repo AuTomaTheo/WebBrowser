@@ -18,6 +18,7 @@ import Checkout from "@/pages/checkout";
 import Cart from "@/pages/cart";
 import ProfilePage from "@/pages/ProfilePage";
 import OrdersPage from "@/pages/OrdersPage";
+import WishlistPage from "@/pages/WishlistPage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 
@@ -58,6 +59,7 @@ function Router() {
                 <Route path="/search" component={SearchResultsPage} />
                 <ProtectedRoute path="/profile" component={ProfilePage} />
                 <ProtectedRoute path="/orders" component={OrdersPage} />
+                <ProtectedRoute path="/wishlist" component={WishlistPage} />
                 <Route component={NotFound} />
               </Switch>
             </Layout>

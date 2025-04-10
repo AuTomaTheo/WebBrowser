@@ -142,6 +142,33 @@ export default function Shop() {
     }
   };
 
+  // Add to cart mutation
+  const addToCartMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await apiRequest('POST', '/api/cart/items', { 
+        productId,
+        quantity: 1
+      });
+      if (!response.ok) throw new Error('Failed to add to cart');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
+      toast({
+        title: "Produsul a fost adăugat în coș",
+        description: "Poți vizualiza coșul tău oricând.",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Eroare",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
   // Add to cart handler
   const handleAddToCart = (e: React.MouseEvent, productId: number) => {
     e.preventDefault();
@@ -156,10 +183,7 @@ export default function Shop() {
       return;
     }
 
-    toast({
-      title: "Produsul a fost adăugat în coș",
-      variant: "default",
-    });
+    addToCartMutation.mutate(productId);
   };
 
   return (
@@ -176,44 +200,53 @@ export default function Shop() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map(product => (
             <div key={product.id} className="relative group">
-              <Link href={`/shop/product/${product.id}`}>
-                <a className="block">
-                  <Card className="overflow-hidden">
-                    <div className="relative h-64 overflow-hidden">
-                      <img 
-                        src={product.image}
-                        alt={product.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+              <Card className="overflow-hidden">
+                <div 
+                  className="relative h-64 overflow-hidden cursor-pointer" 
+                  onClick={() => window.location.href = `/shop/product/${product.id}`}
+                >
+                  <img 
+                    src={product.image}
+                    alt={product.title}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWishlistToggle(e, product.id);
+                    }}
+                    className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
+                      wishlistMap[product.id] 
+                        ? 'bg-red-100 text-red-500' 
+                        : 'bg-white/80 text-gray-500 hover:bg-white'
+                    }`}
+                    aria-label={wishlistMap[product.id] ? "Remove from wishlist" : "Add to wishlist"}
+                  >
+                    <Heart className={`h-5 w-5 ${wishlistMap[product.id] ? 'fill-current' : ''}`} />
+                  </button>
+                </div>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 
+                      className="font-playfair text-primary text-lg cursor-pointer hover:underline"
+                      onClick={() => window.location.href = `/shop/product/${product.id}`}
+                    >
+                      {product.title}
+                    </h3>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p className="text-secondary font-semibold">{product.price} lei</p>
+                    <div className="flex gap-2">
                       <button
-                        onClick={(e) => handleWishlistToggle(e, product.id)}
-                        className={`absolute top-3 right-3 p-2 rounded-full transition-colors ${
-                          wishlistMap[product.id] 
-                            ? 'bg-red-100 text-red-500' 
-                            : 'bg-white/80 text-gray-500 hover:bg-white'
-                        }`}
-                        aria-label={wishlistMap[product.id] ? "Remove from wishlist" : "Add to wishlist"}
+                        onClick={(e) => handleAddToCart(e, product.id)}
+                        className="rounded-full p-2 hover:bg-gray-100 text-gray-700"
                       >
-                        <Heart className={`h-5 w-5 ${wishlistMap[product.id] ? 'fill-current' : ''}`} />
+                        <ShoppingCart className="h-5 w-5" />
                       </button>
                     </div>
-                    <CardContent className="p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-playfair text-primary text-lg">{product.title}</h3>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <p className="text-secondary font-semibold">{product.price} lei</p>
-                        <button
-                          onClick={(e) => handleAddToCart(e, product.id)}
-                          className="rounded-full p-2 hover:bg-gray-100 text-gray-700"
-                        >
-                          <ShoppingCart className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </a>
-              </Link>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           ))}
         </div>
