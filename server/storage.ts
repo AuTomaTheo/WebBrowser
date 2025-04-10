@@ -242,7 +242,9 @@ export class MemStorage implements IStorage {
       city: null,
       country: null,
       postalCode: null,
-      stripeCustomerId: null
+      stripeCustomerId: null,
+      emailVerified: insertUser.emailVerified || false,
+      isActive: insertUser.isActive || false
     };
     this.users.set(id, user);
     return user;
@@ -714,6 +716,124 @@ export class DatabaseStorage implements IStorage {
       .where(eq(cartItems.cartId, cartId))
       .returning({ id: cartItems.id });
     return result.length > 0;
+  }
+  
+  // Verification token methods
+  async createOrUpdateVerificationToken(tokenData: InsertVerificationToken): Promise<VerificationToken> {
+    // First check if token exists for this user
+    const [existingToken] = await db
+      .select()
+      .from(verificationTokens)
+      .where(eq(verificationTokens.userId, tokenData.userId));
+    
+    if (existingToken) {
+      // Update existing token
+      const [updatedToken] = await db
+        .update(verificationTokens)
+        .set({
+          token: tokenData.token,
+          expiresAt: tokenData.expiresAt,
+          used: tokenData.used
+        })
+        .where(eq(verificationTokens.userId, tokenData.userId))
+        .returning();
+      
+      return updatedToken;
+    } else {
+      // Create new token
+      const [newToken] = await db
+        .insert(verificationTokens)
+        .values({
+          ...tokenData,
+          createdAt: new Date()
+        })
+        .returning();
+      
+      return newToken;
+    }
+  }
+  
+  async getVerificationToken(userId: number, token: string): Promise<VerificationToken | undefined> {
+    const [verificationToken] = await db
+      .select()
+      .from(verificationTokens)
+      .where(eq(verificationTokens.userId, userId));
+    
+    if (verificationToken && verificationToken.token === token) {
+      return verificationToken;
+    }
+    
+    return undefined;
+  }
+  
+  async markVerificationTokenAsUsed(userId: number, token: string): Promise<boolean> {
+    const [updatedToken] = await db
+      .update(verificationTokens)
+      .set({ used: true })
+      .where(eq(verificationTokens.userId, userId))
+      .returning();
+    
+    return !!updatedToken && updatedToken.token === token;
+  }
+  
+  // Wishlist methods
+  async getWishlist(userId: number): Promise<Wishlist | undefined> {
+    const [wishlist] = await db
+      .select()
+      .from(wishlists)
+      .where(eq(wishlists.userId, userId));
+    
+    return wishlist;
+  }
+  
+  async createWishlist(insertWishlist: InsertWishlist): Promise<Wishlist> {
+    const [wishlist] = await db
+      .insert(wishlists)
+      .values({
+        ...insertWishlist,
+        createdAt: new Date()
+      })
+      .returning();
+    
+    return wishlist;
+  }
+  
+  // Wishlist item methods
+  async getWishlistItems(wishlistId: number): Promise<WishlistItem[]> {
+    return db
+      .select()
+      .from(wishlistItems)
+      .where(eq(wishlistItems.wishlistId, wishlistId));
+  }
+  
+  async addToWishlist(insertWishlistItem: InsertWishlistItem): Promise<WishlistItem> {
+    const [wishlistItem] = await db
+      .insert(wishlistItems)
+      .values({
+        ...insertWishlistItem,
+        addedAt: new Date()
+      })
+      .returning();
+    
+    return wishlistItem;
+  }
+  
+  async removeFromWishlist(wishlistItemId: number): Promise<boolean> {
+    const result = await db
+      .delete(wishlistItems)
+      .where(eq(wishlistItems.id, wishlistItemId))
+      .returning({ id: wishlistItems.id });
+    
+    return result.length > 0;
+  }
+  
+  async isProductInWishlist(wishlistId: number, productId: number): Promise<boolean> {
+    const items = await db
+      .select()
+      .from(wishlistItems)
+      .where(eq(wishlistItems.wishlistId, wishlistId));
+    
+    return items.some(item => item.productId === productId);
   }
 }
 

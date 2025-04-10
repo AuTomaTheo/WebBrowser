@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import crypto, { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User as SelectUser } from "@shared/schema";
@@ -84,15 +84,61 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "Email already exists" });
       }
 
+      // Create user with email verification fields
       const user = await storage.createUser({
         ...req.body,
         password: await hashPassword(req.body.password),
+        emailVerified: false,
+        isActive: false
       });
 
-      req.login(user, (err) => {
-        if (err) return next(err);
-        res.status(201).json(user);
-      });
+      // Generate verification token
+      const token = crypto.randomBytes(32).toString('hex');
+      const expiresAt = new Date();
+      expiresAt.setHours(expiresAt.getHours() + 24); // 24 hours from now
+      
+      try {
+        // Store verification token
+        await storage.createOrUpdateVerificationToken({
+          userId: user.id,
+          token,
+          expiresAt,
+          used: false
+        });
+        
+        // In a production environment, this would send a real email
+        // For this demo, we'll log it to the console
+        const baseUrl = process.env.BASE_URL || `http://localhost:5000`;
+        const verificationUrl = `${baseUrl}/verify-email?token=${token}&userId=${user.id}`;
+        
+        console.log(`
+          ============================================================
+          EMAIL VERIFICATION LINK FOR ${user.email}:
+          ${verificationUrl}
+          ============================================================
+        `);
+        
+        // Create session for the user even though they're not verified yet
+        req.login(user, (err) => {
+          if (err) return next(err);
+          res.status(201).json({
+            ...user,
+            verificationEmailSent: true,
+            message: "Please check your email to verify your account"
+          });
+        });
+      } catch (error) {
+        console.error("Error sending verification email:", error);
+        // Still allow login even if email verification setup fails
+        req.login(user, (err) => {
+          if (err) return next(err);
+          res.status(201).json({
+            ...user,
+            verificationEmailSent: false,
+            message: "Account created but unable to send verification email"
+          });
+        });
+      }
     } catch (error) {
       next(error);
     }
@@ -120,5 +166,69 @@ export function setupAuth(app: Express) {
   app.get("/api/user", (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     res.json(req.user);
+  });
+  
+  app.get("/api/verify-email", async (req, res) => {
+    try {
+      const { token, userId } = req.query;
+      
+      if (!token || !userId) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Missing token or user ID" 
+        });
+      }
+      
+      // Get token record
+      const tokenRecord = await storage.getVerificationToken(
+        parseInt(userId as string, 10), 
+        token as string
+      );
+      
+      if (!tokenRecord) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid verification token"
+        });
+      }
+      
+      if (tokenRecord.used) {
+        return res.status(400).json({
+          success: false,
+          message: "Token already used"
+        });
+      }
+      
+      const now = new Date();
+      if (now > tokenRecord.expiresAt) {
+        return res.status(400).json({
+          success: false,
+          message: "Token expired"
+        });
+      }
+      
+      // Mark token as used
+      await storage.markVerificationTokenAsUsed(
+        parseInt(userId as string, 10), 
+        token as string
+      );
+      
+      // Update user's verification status
+      await storage.updateUser(parseInt(userId as string, 10), { 
+        emailVerified: true,
+        isActive: true
+      });
+      
+      res.status(200).json({
+        success: true,
+        message: "Email verified successfully"
+      });
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      res.status(500).json({
+        success: false,
+        message: "An error occurred while verifying your email"
+      });
+    }
   });
 }
