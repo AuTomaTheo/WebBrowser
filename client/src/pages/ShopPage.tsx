@@ -1,6 +1,11 @@
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Heart, ShoppingCart } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery, useMutation } from "@tanstack/react-query";
 
 const categories = [
   { id: "all", name: "Toate Produsele" },
@@ -71,6 +76,114 @@ const products = [
 
 export default function ShopPage() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [wishlistMap, setWishlistMap] = useState<Record<number, boolean>>({});
+
+  // Fetch user's wishlist if logged in
+  const { data: wishlist, isLoading: isWishlistLoading } = useQuery({
+    queryKey: ['/api/wishlist'],
+    queryFn: async () => {
+      if (!user) return null;
+      const response = await apiRequest('GET', '/api/wishlist');
+      if (!response.ok) throw new Error('Failed to fetch wishlist');
+      return response.json();
+    },
+    enabled: !!user,
+  });
+
+  // Update wishlist map when data is received
+  useEffect(() => {
+    if (wishlist?.items) {
+      const newWishlistMap: Record<number, boolean> = {};
+      wishlist.items.forEach((item: any) => {
+        newWishlistMap[item.productId] = true;
+      });
+      setWishlistMap(newWishlistMap);
+    }
+  }, [wishlist]);
+
+  // Add to wishlist mutation
+  const addToWishlistMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await apiRequest('POST', '/api/wishlist/items', { productId });
+      if (!response.ok) throw new Error('Failed to add to wishlist');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/wishlist'] });
+      toast({
+        title: "Produsul a fost adăugat la favorite",
+        description: "Poți găsi lista de favorite în profilul tău.",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Eroare",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Remove from wishlist mutation
+  const removeFromWishlistMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const response = await apiRequest('DELETE', `/api/wishlist/items/${productId}`);
+      if (!response.ok) throw new Error('Failed to remove from wishlist');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/wishlist'] });
+      toast({
+        title: "Produsul a fost eliminat din favorite",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Eroare",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Handle wishlist toggle
+  const handleWishlistToggle = (productId: number) => {
+    if (!user) {
+      toast({
+        title: "Trebuie să fii autentificat",
+        description: "Pentru a adăuga produse la favorite, te rugăm să te autentifici.",
+        variant: "default",
+      });
+      return;
+    }
+
+    if (wishlistMap[productId]) {
+      removeFromWishlistMutation.mutate(productId);
+    } else {
+      addToWishlistMutation.mutate(productId);
+    }
+  };
+
+  // Add to cart handler
+  const handleAddToCart = (productId: number) => {
+    if (!user) {
+      toast({
+        title: "Trebuie să fii autentificat",
+        description: "Pentru a adăuga produse în coș, te rugăm să te autentifici.",
+        variant: "default",
+      });
+      return;
+    }
+
+    toast({
+      title: "Produsul a fost adăugat în coș",
+      variant: "default",
+    });
+  };
 
   const filteredProducts = activeCategory === "all" 
     ? products 
@@ -111,10 +224,30 @@ export default function ShopPage() {
                   className="w-full h-64 object-cover"
                 />
                 <div className="p-4">
-                  <h3 className="font-serif text-lg mb-2">{product.name}</h3>
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-serif text-lg">{product.name}</h3>
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleWishlistToggle(product.id);
+                      }}
+                      className={`p-1.5 rounded-full transition duration-200 ${
+                        wishlistMap[product.id] 
+                          ? 'text-red-500 bg-red-50 hover:bg-red-100' 
+                          : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                      }`}
+                      aria-label={wishlistMap[product.id] ? "Remove from wishlist" : "Add to wishlist"}
+                    >
+                      <Heart className={`h-5 w-5 ${wishlistMap[product.id] ? 'fill-current' : ''}`} />
+                    </button>
+                  </div>
                   <p className="text-accent font-medium mb-3">{product.price} lei</p>
-                  <button className="w-full bg-primary hover:bg-opacity-90 text-white py-2 rounded-md transition">
-                    Adaugă în coș
+                  <button 
+                    onClick={() => handleAddToCart(product.id)}
+                    className="w-full bg-primary hover:bg-opacity-90 text-white py-2 rounded-md transition flex items-center justify-center gap-2"
+                  >
+                    <ShoppingCart className="h-4 w-4" />
+                    <span>Adaugă în coș</span>
                   </button>
                 </div>
               </div>

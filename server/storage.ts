@@ -96,6 +96,9 @@ export class MemStorage implements IStorage {
   private orderItems: Map<number, OrderItem>;
   private carts: Map<number, Cart>;
   private cartItems: Map<number, CartItem>;
+  private verificationTokens: Map<number, VerificationToken>;
+  private wishlists: Map<number, Wishlist>;
+  private wishlistItems: Map<number, WishlistItem>;
   
   private currentUserId: number;
   private currentSubscriberId: number;
@@ -105,6 +108,9 @@ export class MemStorage implements IStorage {
   private currentOrderItemId: number;
   private currentCartId: number;
   private currentCartItemId: number;
+  private currentVerificationTokenId: number;
+  private currentWishlistId: number;
+  private currentWishlistItemId: number;
   
   constructor() {
     // Initialize in-memory session store
@@ -122,6 +128,9 @@ export class MemStorage implements IStorage {
     this.orderItems = new Map();
     this.carts = new Map();
     this.cartItems = new Map();
+    this.verificationTokens = new Map();
+    this.wishlists = new Map();
+    this.wishlistItems = new Map();
     
     this.currentUserId = 1;
     this.currentSubscriberId = 1;
@@ -131,6 +140,9 @@ export class MemStorage implements IStorage {
     this.currentOrderItemId = 1;
     this.currentCartId = 1;
     this.currentCartItemId = 1;
+    this.currentVerificationTokenId = 1;
+    this.currentWishlistId = 1;
+    this.currentWishlistItemId = 1;
     
     // Initialize with sample data
     this.initializeTestimonials();
@@ -482,6 +494,127 @@ export class MemStorage implements IStorage {
     }
     
     return success;
+  }
+  
+  // Verification token methods
+  async createOrUpdateVerificationToken(tokenData: InsertVerificationToken): Promise<VerificationToken> {
+    this.verificationTokens = this.verificationTokens || new Map();
+    this.currentVerificationTokenId = this.currentVerificationTokenId || 1;
+    
+    // Check if there's an existing token for this user
+    const existingToken = Array.from(this.verificationTokens.values()).find(
+      token => token.userId === tokenData.userId
+    );
+    
+    if (existingToken) {
+      // Update existing token
+      const updatedToken = {
+        ...existingToken,
+        token: tokenData.token,
+        createdAt: new Date(),
+        used: false
+      };
+      this.verificationTokens.set(existingToken.id, updatedToken);
+      return updatedToken;
+    } else {
+      // Create new token
+      const id = this.currentVerificationTokenId++;
+      const now = new Date();
+      const newToken: VerificationToken = {
+        id,
+        userId: tokenData.userId,
+        token: tokenData.token,
+        used: false,
+        createdAt: now
+      };
+      this.verificationTokens.set(id, newToken);
+      return newToken;
+    }
+  }
+  
+  async getVerificationToken(userId: number, token: string): Promise<VerificationToken | undefined> {
+    this.verificationTokens = this.verificationTokens || new Map();
+    
+    return Array.from(this.verificationTokens.values()).find(
+      verificationToken => verificationToken.userId === userId && verificationToken.token === token
+    );
+  }
+  
+  async markVerificationTokenAsUsed(userId: number, token: string): Promise<boolean> {
+    this.verificationTokens = this.verificationTokens || new Map();
+    
+    const verificationToken = Array.from(this.verificationTokens.values()).find(
+      t => t.userId === userId && t.token === token
+    );
+    
+    if (!verificationToken) return false;
+    
+    const updatedToken = { ...verificationToken, used: true };
+    this.verificationTokens.set(verificationToken.id, updatedToken);
+    return true;
+  }
+  
+  // Wishlist methods
+  async getWishlist(userId: number): Promise<Wishlist | undefined> {
+    this.wishlists = this.wishlists || new Map();
+    
+    return Array.from(this.wishlists.values()).find(
+      wishlist => wishlist.userId === userId
+    );
+  }
+  
+  async createWishlist(insertWishlist: InsertWishlist): Promise<Wishlist> {
+    this.wishlists = this.wishlists || new Map();
+    this.currentWishlistId = this.currentWishlistId || 1;
+    
+    const id = this.currentWishlistId++;
+    const now = new Date();
+    const wishlist: Wishlist = {
+      id,
+      userId: insertWishlist.userId,
+      createdAt: now
+    };
+    this.wishlists.set(id, wishlist);
+    return wishlist;
+  }
+  
+  // Wishlist item methods
+  async getWishlistItems(wishlistId: number): Promise<WishlistItem[]> {
+    this.wishlistItems = this.wishlistItems || new Map();
+    
+    return Array.from(this.wishlistItems.values()).filter(
+      item => item.wishlistId === wishlistId
+    );
+  }
+  
+  async addToWishlist(insertWishlistItem: InsertWishlistItem): Promise<WishlistItem> {
+    this.wishlistItems = this.wishlistItems || new Map();
+    this.currentWishlistItemId = this.currentWishlistItemId || 1;
+    
+    const id = this.currentWishlistItemId++;
+    const now = new Date();
+    const wishlistItem: WishlistItem = {
+      id,
+      wishlistId: insertWishlistItem.wishlistId,
+      productId: insertWishlistItem.productId,
+      addedAt: now
+    };
+    this.wishlistItems.set(id, wishlistItem);
+    return wishlistItem;
+  }
+  
+  async removeFromWishlist(wishlistItemId: number): Promise<boolean> {
+    this.wishlistItems = this.wishlistItems || new Map();
+    return this.wishlistItems.delete(wishlistItemId);
+  }
+  
+  async isProductInWishlist(wishlistId: number, productId: number): Promise<boolean> {
+    this.wishlistItems = this.wishlistItems || new Map();
+    
+    const wishlistItems = Array.from(this.wishlistItems.values());
+    return wishlistItems.some(
+      item => item.wishlistId === wishlistId && item.productId === productId
+    );
   }
 }
 

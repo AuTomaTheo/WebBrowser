@@ -495,6 +495,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Register API routes with /api prefix
+  // Wishlist endpoints
+  apiRouter.get("/wishlist", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      // Get or create user's wishlist
+      let wishlist = await storage.getWishlist(req.user!.id);
+      
+      if (!wishlist) {
+        wishlist = await storage.createWishlist({ userId: req.user!.id });
+      }
+      
+      // Get wishlist items with product details
+      const wishlistItems = await storage.getWishlistItems(wishlist.id);
+      
+      // Get detailed product information for each item
+      const items = await Promise.all(
+        wishlistItems.map(async (item) => {
+          const product = await storage.getProduct(item.productId);
+          return {
+            ...item,
+            product
+          };
+        })
+      );
+      
+      res.status(200).json({
+        wishlistId: wishlist.id,
+        items
+      });
+    } catch (error) {
+      console.error("Error fetching wishlist:", error);
+      res.status(500).json({ message: "An error occurred while fetching wishlist" });
+    }
+  });
+  
+  apiRouter.post("/wishlist/items", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { productId } = req.body;
+      
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+      
+      // Check if product exists
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Get or create wishlist
+      let wishlist = await storage.getWishlist(req.user!.id);
+      if (!wishlist) {
+        wishlist = await storage.createWishlist({ userId: req.user!.id });
+      }
+      
+      // Check if item is already in wishlist
+      const isInWishlist = await storage.isProductInWishlist(wishlist.id, productId);
+      if (isInWishlist) {
+        return res.status(400).json({ message: "Product already in wishlist" });
+      }
+      
+      // Add item to wishlist
+      const wishlistItem = await storage.addToWishlist({
+        wishlistId: wishlist.id,
+        productId
+      });
+      
+      res.status(201).json(wishlistItem);
+    } catch (error) {
+      console.error("Error adding to wishlist:", error);
+      res.status(500).json({ message: "An error occurred while adding to wishlist" });
+    }
+  });
+  
+  apiRouter.delete("/wishlist/items/:productId", isAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const productId = parseInt(req.params.productId, 10);
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      // Get wishlist
+      const wishlist = await storage.getWishlist(req.user!.id);
+      if (!wishlist) {
+        return res.status(404).json({ message: "Wishlist not found" });
+      }
+      
+      // Get wishlist items
+      const wishlistItems = await storage.getWishlistItems(wishlist.id);
+      
+      // Find the item with matching product ID
+      const wishlistItem = wishlistItems.find(item => item.productId === productId);
+      
+      if (!wishlistItem) {
+        return res.status(404).json({ message: "Item not found in wishlist" });
+      }
+      
+      // Remove item from wishlist
+      await storage.removeFromWishlist(wishlistItem.id);
+      
+      res.status(200).json({ message: "Item removed from wishlist" });
+    } catch (error) {
+      console.error("Error removing from wishlist:", error);
+      res.status(500).json({ message: "An error occurred while removing from wishlist" });
+    }
+  });
+  
   app.use("/api", apiRouter);
 
   const httpServer = createServer(app);
