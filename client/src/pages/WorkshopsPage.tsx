@@ -48,7 +48,7 @@ export default function WorkshopsPage() {
   return (
     <>
       <Helmet>
-        <title>Workshops - Milk & Honey</title>
+        <title>Workshops - Atelierul cu flori</title>
         <meta name="description" content="Descoperă atelierele noastre de design floral. Învață cum să creezi buchete și aranjamente florale sub îndrumarea experților noștri." />
       </Helmet>
       

@@ -108,8 +108,8 @@ export default function WishlistPage() {
   return (
     <>
       <Helmet>
-        <title>Lista de favorite - Milk & Honey</title>
-        <meta name="description" content="Lista ta de produse favorite de la Milk & Honey." />
+        <title>Lista de favorite - Atelierul cu flori</title>
+        <meta name="description" content="Lista ta de produse favorite de la Atelierul cu flori." />
       </Helmet>
       
       <div className="py-12 bg-[#F5F5F0]">

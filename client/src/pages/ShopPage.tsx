@@ -192,7 +192,7 @@ export default function ShopPage() {
   return (
     <>
       <Helmet>
-        <title>Shop - Milk & Honey</title>
+        <title>Shop - Atelierul cu flori</title>
         <meta name="description" content="Descoperă selecția noastră de buchete de flori, aranjamente florale și decorațiuni pentru orice ocazie." />
       </Helmet>
       
