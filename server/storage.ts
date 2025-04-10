@@ -6,7 +6,10 @@ import {
   orders, type Order, type InsertOrder,
   orderItems, type OrderItem, type InsertOrderItem,
   carts, type Cart, type InsertCart,
-  cartItems, type CartItem, type InsertCartItem
+  cartItems, type CartItem, type InsertCartItem,
+  verificationTokens, type VerificationToken, type InsertVerificationToken,
+  wishlists, type Wishlist, type InsertWishlist,
+  wishlistItems, type WishlistItem, type InsertWishlistItem
 } from "@shared/schema";
 import session from "express-session";
 import { db } from "./db";
@@ -66,6 +69,21 @@ export interface IStorage {
   updateCartItemQuantity(id: number, quantity: number): Promise<CartItem | undefined>;
   deleteCartItem(id: number): Promise<boolean>;
   clearCart(cartId: number): Promise<boolean>;
+  
+  // Verification token methods
+  createOrUpdateVerificationToken(token: InsertVerificationToken): Promise<VerificationToken>;
+  getVerificationToken(userId: number, token: string): Promise<VerificationToken | undefined>;
+  markVerificationTokenAsUsed(userId: number, token: string): Promise<boolean>;
+  
+  // Wishlist methods
+  getWishlist(userId: number): Promise<Wishlist | undefined>;
+  createWishlist(wishlist: InsertWishlist): Promise<Wishlist>;
+  
+  // Wishlist item methods
+  getWishlistItems(wishlistId: number): Promise<WishlistItem[]>;
+  addToWishlist(wishlistItem: InsertWishlistItem): Promise<WishlistItem>;
+  removeFromWishlist(wishlistItemId: number): Promise<boolean>;
+  isProductInWishlist(wishlistId: number, productId: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {

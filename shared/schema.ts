@@ -16,6 +16,8 @@ export const users = pgTable("users", {
   postalCode: text("postal_code"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   stripeCustomerId: text("stripe_customer_id"),
+  emailVerified: boolean("email_verified").default(false),
+  isActive: boolean("is_active").default(false),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -143,5 +145,52 @@ export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type Cart = typeof carts.$inferSelect;
 export type InsertCart = z.infer<typeof insertCartSchema>;
+// Verification tokens schema
+export const verificationTokens = pgTable("verification_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  token: text("token").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertVerificationTokenSchema = createInsertSchema(verificationTokens).pick({
+  userId: true,
+  token: true,
+  expiresAt: true,
+  used: true,
+});
+
+// Wishlist schema
+export const wishlists = pgTable("wishlists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWishlistSchema = createInsertSchema(wishlists).pick({
+  userId: true,
+});
+
+// Wishlist item schema
+export const wishlistItems = pgTable("wishlist_items", {
+  id: serial("id").primaryKey(),
+  wishlistId: integer("wishlist_id").notNull(),
+  productId: integer("product_id").notNull(),
+  addedAt: timestamp("added_at").defaultNow().notNull(),
+});
+
+export const insertWishlistItemSchema = createInsertSchema(wishlistItems).pick({
+  wishlistId: true,
+  productId: true,
+});
+
 export type CartItem = typeof cartItems.$inferSelect;
 export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type VerificationToken = typeof verificationTokens.$inferSelect;
+export type InsertVerificationToken = z.infer<typeof insertVerificationTokenSchema>;
+export type Wishlist = typeof wishlists.$inferSelect;
+export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
+export type WishlistItem = typeof wishlistItems.$inferSelect;
+export type InsertWishlistItem = z.infer<typeof insertWishlistItemSchema>;
