@@ -520,12 +520,15 @@ export class MemStorage implements IStorage {
       // Create new token
       const id = this.currentVerificationTokenId++;
       const now = new Date();
+      // Set expiration to 24 hours from now
+      const expiresAt = new Date(now.getTime() + 24 * 60 * 60 * 1000);
       const newToken: VerificationToken = {
         id,
         userId: tokenData.userId,
         token: tokenData.token,
         used: false,
-        createdAt: now
+        createdAt: now,
+        expiresAt: expiresAt
       };
       this.verificationTokens.set(id, newToken);
       return newToken;

@@ -4,28 +4,28 @@ export const categories = [
     id: 1,
     title: "Event Planning",
     romanianTitle: "Planificare Evenimente",
-    image: "https://images.unsplash.com/photo-1529634597503-139d3726fed5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     link: "/event-planning"
   },
   {
     id: 2,
     title: "Rentals",
     romanianTitle: "Închirieri",
-    image: "https://images.unsplash.com/photo-1523438283301-af69c61375b2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1561729098-cbab0f7a9f91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     link: "/rentals"
   },
   {
     id: 3,
     title: "Shop",
     romanianTitle: "Magazin",
-    image: "https://images.unsplash.com/photo-1607033729571-95481e509ba7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1529740584759-4808bf60ed91?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     link: "/shop"
   },
   {
     id: 4,
     title: "Workshops",
     romanianTitle: "Ateliere",
-    image: "https://images.unsplash.com/photo-1562621542-a4c9222a6b02?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    image: "https://images.unsplash.com/photo-1558603668-6570496b8f18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     link: "/workshops"
   }
 ];
@@ -62,26 +62,26 @@ export const serviceHighlights = [
 export const popularCategories = [
   {
     id: 1,
-    title: "CORONIȚE HANDMADE DE CRĂCIUN",
-    image: "https://images.unsplash.com/photo-1544146128-6d0bedad3611?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/coronite-craciun"
+    title: "BUCHETE DE FLORI",
+    image: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    link: "/shop/buchete"
   },
   {
     id: 2,
-    title: "BRAZI CU DESIGN PERSONALIZAT",
-    image: "https://images.unsplash.com/photo-1576841462054-a615d662b2e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/brazi-personalizati"
+    title: "ARANJAMENTE FLORALE",
+    image: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    link: "/shop/aranjamente"
   },
   {
     id: 3,
-    title: "DECORAȚIUNI DE CRĂCIUN",
-    image: "https://images.unsplash.com/photo-1607033729571-95481e509ba7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/decoratiuni-craciun"
+    title: "PLANTE DE INTERIOR",
+    image: "https://images.unsplash.com/photo-1463320898484-cdee8141c787?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    link: "/shop/plante"
   },
   {
     id: 4,
-    title: "WORKSHOPS",
-    image: "https://images.unsplash.com/photo-1534705867302-2a41a429eda5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    title: "WORKSHOPS FLORALE",
+    image: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
     link: "/workshops"
   }
 ];
