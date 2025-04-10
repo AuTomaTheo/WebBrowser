@@ -1,5 +1,11 @@
 // Import images
-import { buchetTrandafiriPath } from '../assets/images';
+import {
+  buchetTrandafiriPath,
+  aranjamentfloralPath,
+  shopPath,
+  rentalsPath,
+  workshopPath,
+} from "../assets/images";
 
 // Categories data
 export const categories = [
@@ -7,30 +13,28 @@ export const categories = [
     id: 1,
     title: "Event Planning",
     romanianTitle: "Planificare Evenimente",
-    image: buchetTrandafiriPath,
+    image: aranjamentfloralPath,
     link: "/event-planning",
   },
   {
     id: 2,
     title: "Rentals",
     romanianTitle: "Închirieri",
-    image:
-      "https://gomagcdn.ro/domains/daruiesteonline.ro/files/product/original/buchet-29-trandafiri-albi-si-rosii-182-1401.jpg",
+    image: rentalsPath,
     link: "/rentals",
   },
   {
     id: 3,
     title: "Shop",
     romanianTitle: "Magazin",
-    image: buchetTrandafiriPath,
+    image: shopPath,
     link: "/shop",
   },
   {
     id: 4,
     title: "Workshops",
     romanianTitle: "Ateliere",
-    image:
-      "https://images.unsplash.com/photo-1558603668-6570496b8f18?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
+    image: workshopPath,
     link: "/workshops",
   },
 ];
