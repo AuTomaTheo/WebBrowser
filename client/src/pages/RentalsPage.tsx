@@ -31,7 +31,7 @@ export default function RentalsPage() {
   return (
     <>
       <Helmet>
-        <title>Rentals - Milk & Honey</title>
+        <title>Rentals - Atelierul cu flori</title>
         <meta name="description" content="Închiriază vaze, sfeșnice, mobilier și elemente decorative pentru evenimentul tău. Opțiuni elegante și unice pentru a completa decorul floral." />
       </Helmet>
       

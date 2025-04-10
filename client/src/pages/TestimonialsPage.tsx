@@ -26,7 +26,7 @@ const testimonials: Testimonial[] = [
     id: 3,
     name: "Monica Dumitrescu",
     content: [
-      "Am colaborat cu Milk & Honey pentru nunta mea și totul a fost perfect. Andreea a înțeles exact ceea ce ne doream și a creat un decor floral minunat, care a transformat locația complet. Recomand cu încredere!"
+      "Am colaborat cu Atelierul cu flori pentru nunta mea și totul a fost perfect. Andreea a înțeles exact ceea ce ne doream și a creat un decor floral minunat, care a transformat locația complet. Recomand cu încredere!"
     ],
     rating: 5
   },
@@ -44,8 +44,8 @@ export default function TestimonialsPage() {
   return (
     <>
       <Helmet>
-        <title>Testimoniale - Milk & Honey</title>
-        <meta name="description" content="Descoperă experiențele clienților noștri cu serviciile Milk & Honey. Recenzii și mărturii despre aranjamentele florale și organizarea de evenimente." />
+        <title>Testimoniale - Atelierul cu flori</title>
+        <meta name="description" content="Descoperă experiențele clienților noștri cu serviciile Atelierul cu flori. Recenzii și mărturii despre aranjamentele florale și organizarea de evenimente." />
       </Helmet>
       
       <section className="py-12 bg-white">

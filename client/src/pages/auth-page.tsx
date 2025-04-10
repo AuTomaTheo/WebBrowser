@@ -121,9 +121,9 @@ export default function AuthPage() {
       <div className="flex flex-col items-center justify-center p-8">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-primary">Milk and Honey</h1>
+            <h1 className="text-3xl font-bold text-primary">Atelierul cu flori</h1>
             <p className="mt-2 text-foreground/70">
-              Sign in to access your account or create a new one
+              Autentifică-te pentru a accesa contul tău sau creează unul nou
             </p>
           </div>
 
@@ -299,7 +299,7 @@ export default function AuthPage() {
             Flori cu suflet
           </h2>
           <p className="text-foreground mb-6">
-            Bine ați venit la Milk and Honey, unde fiecare aranjament floral este creat cu dragoste și pasiune. Creăm buchete personalizate pentru ocazii speciale, nunți, și evenimente corporative.
+            Bine ați venit la Atelierul cu flori, unde fiecare aranjament floral este creat cu dragoste și pasiune. Creăm buchete personalizate pentru ocazii speciale, nunți, și evenimente corporative.
           </p>
           <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col items-center">
