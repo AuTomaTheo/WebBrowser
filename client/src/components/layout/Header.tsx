@@ -23,30 +23,37 @@ export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [prevScrollY, setPrevScrollY] = useState(0);
 
-  // Super simple scroll handler that only triggers on direction change
+  // Clean scroll handler that only updates state at specific thresholds
   useEffect(() => {
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Only update state when scroll direction changes or at the top
-      if (currentScrollY === 0) {
-        setScrolled(false);
-      } else if (currentScrollY > prevScrollY && !scrolled) {
-        // Scrolling down - hide nav
-        setScrolled(true);
-      } else if (currentScrollY < prevScrollY && scrolled && currentScrollY < 100) {
-        // Scrolling up near the top - show nav
-        setScrolled(false);
+      // Use threshold to determine scroll state
+      if (window.scrollY > 100) {
+        if (!scrolled) setScrolled(true);
+      } else {
+        if (scrolled) setScrolled(false);
       }
       
-      setPrevScrollY(currentScrollY);
+      lastScrollY = window.scrollY;
+      ticking = false;
+    };
+    
+    const onScroll = () => {
+      if (!ticking) {
+        // Use requestAnimationFrame to limit updates
+        window.requestAnimationFrame(() => {
+          handleScroll();
+        });
+        ticking = true;
+      }
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [prevScrollY, scrolled]);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrolled]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +63,12 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm">
-      {/* Top header section - always visible */}
-      <div className="bg-white">
+      {/* Top header section that hides on scroll */}
+      <div 
+        className={`bg-white transition-all duration-300 ease-in-out overflow-hidden ${
+          scrolled ? 'max-h-0 opacity-0' : 'max-h-24 opacity-100'
+        }`}
+      >
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
@@ -103,7 +114,7 @@ export default function Header() {
 
             <div className="flex items-center">
               <Link href="/">
-                <AtelierulCuFloriLogo className={scrolled ? 'h-10' : 'h-14'} />
+                <AtelierulCuFloriLogo className="h-14 transition-all duration-300" />
               </Link>
             </div>
 
@@ -125,29 +136,37 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Navigation section with display none when scrolled */}
-      {!scrolled && (
-        <div className="bg-white border-t border-gray-100">
-          <div className="container mx-auto px-4">
-            <ul className="hidden md:flex overflow-x-auto space-x-8 py-3 text-sm md:text-base justify-center">
-              {navItems.map((item) => (
-                <li key={item.path}>
-                  <Link
-                    href={item.path}
-                    className={`${
-                      location === item.path
-                        ? "font-medium border-b-2 border-primary"
-                        : "text-gray-600 hover:text-primary"
-                    } transition pb-1 block whitespace-nowrap`}
-                  >
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+      {/* Navigation section - always visible */}
+      <div className="bg-white border-t border-gray-100 shadow-sm">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          {/* Navigation menu always visible */}
+          <ul className="hidden md:flex overflow-x-auto space-x-8 py-3 text-sm md:text-base justify-center flex-grow">
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  href={item.path}
+                  className={`${
+                    location === item.path
+                      ? "font-medium border-b-2 border-primary"
+                      : "text-gray-600 hover:text-primary"
+                  } transition pb-1 block whitespace-nowrap`}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          
+          {/* Mini logo only visible when scrolled */}
+          {scrolled && (
+            <div className="flex-shrink-0 mr-4">
+              <Link href="/">
+                <AtelierulCuFloriLogo className="h-8 transition-all duration-300" />
+              </Link>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </header>
   );
 }
