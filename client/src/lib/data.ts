@@ -1,40 +1,38 @@
 // Import images
 import {
-  buchetTrandafiriPath,
-  aranjamentfloralPath,
-  shopPath,
-  rentalsPath,
-  workshopPath,
+  nuntiSibotezuriPath,
+  buchetePerzonalizatePath,
+  
 } from "../assets/images";
 
 // Categories data
 export const categories = [
   {
     id: 1,
-    title: "Event Planning",
-    romanianTitle: "Planificare Evenimente",
-    image: aranjamentfloralPath,
+    title: "Nunti si botezuri",
+    romanianTitle: "Nunti si boteze",
+    image: nuntiSibotezuriPath,
     link: "/event-planning",
   },
   {
     id: 2,
-    title: "Rentals",
-    romanianTitle: "Închirieri",
-    image: rentalsPath,
+    title: "Buchete personalizate",
+    romanianTitle: "Buchete personalizate",
+    image: buchetePerzonalizatePath,
     link: "/rentals",
   },
   {
     id: 3,
-    title: "Shop",
-    romanianTitle: "Magazin",
-    image: shopPath,
+    title: "Aranjamente florale",
+    romanianTitle: "Aranjamente florale",
+    image: buchetePerzonalizatePath,
     link: "/shop",
   },
   {
     id: 4,
     title: "Workshops",
-    romanianTitle: "Ateliere",
-    image: workshopPath,
+    romanianTitle: "Workshops",
+    image: buchetePerzonalizatePath,
     link: "/workshops",
   },
 ];

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Search, ShoppingBag, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,47 @@ const navItems = [
 export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
+  const [scrolled, setScrolled] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    let scrollTimeout: number | undefined;
+    
+    const handleScroll = () => {
+      // Clear the timeout if it exists
+      if (scrollTimeout) {
+        window.clearTimeout(scrollTimeout);
+      }
+      
+      // Set a timeout to run after scrolling stops
+      scrollTimeout = window.setTimeout(() => {
+        const currentScrollY = window.scrollY;
+        setScrolled(currentScrollY > 50);
+        setLastScrollY(currentScrollY);
+      }, 10); // Small delay to reduce frequency of updates
+    };
+
+    // Throttled scroll handler
+    let ticking = false;
+    const throttledHandleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    
+    return () => {
+      window.removeEventListener("scroll", throttledHandleScroll);
+      if (scrollTimeout) {
+        window.clearTimeout(scrollTimeout);
+      }
+    };
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +71,9 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white sticky top-0 z-50 shadow-sm">
-      <div className="container mx-auto px-4 py-3">
+    <header className={`bg-white sticky top-0 z-50 shadow-sm transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}>
+      {/* Top header section - always visible but height changes */}
+      <div className={`container mx-auto px-4 transition-all duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
         <div className="flex justify-between items-center">
           <div className="flex items-center">
             <div className="md:hidden">
@@ -76,7 +118,7 @@ export default function Header() {
 
           <div className="flex items-center">
             <Link href="/">
-              <AtelierulCuFloriLogo className="h-14" />
+              <AtelierulCuFloriLogo className={`transition-all duration-300 ${scrolled ? 'h-10' : 'h-14'}`} />
             </Link>
           </div>
 
@@ -97,7 +139,8 @@ export default function Header() {
         </div>
       </div>
 
-      <nav className="bg-white border-t border-gray-100">
+      {/* Navigation section - hides when scrolled */}
+      <nav className={`bg-white border-t border-gray-100 transition-all duration-300 overflow-hidden ${scrolled ? 'max-h-0 opacity-0' : 'max-h-[50px] opacity-100'}`}>
         <div className="container mx-auto px-4">
           <ul className="hidden md:flex overflow-x-auto space-x-8 py-3 text-sm md:text-base justify-center">
             {navItems.map((item) => (

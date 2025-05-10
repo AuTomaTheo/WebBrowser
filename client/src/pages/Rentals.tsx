@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { testPath, proseccoPath, } from "../assets/images";
+import { nuntiSibotezuriPath, buchetePerzonalizatePath } from "../assets/images";
 
 const rentals = [
   {
@@ -10,7 +10,7 @@ const rentals = [
     description:
       "Suporturi elegante pentru aranjamente florale, disponibile în diverse înălțimi și stiluri.",
     image:
-      testPath,
+      buchetePerzonalizatePath,
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ const rentals = [
     description:
       "Elemente decorative pentru mese, inclusiv fețe de masă, șervețele și accesorii.",
     image:
-      proseccoPath,
+      nuntiSibotezuriPath,
   },
 ];
 
