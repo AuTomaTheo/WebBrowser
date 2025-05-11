@@ -21,6 +21,7 @@ import OrdersPage from "@/pages/OrdersPage";
 import WishlistPage from "@/pages/WishlistPage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
+import ScrollToTop from "@/components/ScrollToTop";
 
 // These pages will have their own layouts
 const PAGES_WITHOUT_LAYOUT = ["/auth", "/checkout"];
@@ -74,6 +75,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <ScrollToTop />
         <Router />
         <Toaster />
       </AuthProvider>
