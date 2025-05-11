@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "wouter";
 import { Search, ShoppingBag, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,38 +22,38 @@ const navItems = [
 export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [scrolled, setScrolled] = useState(false);
-
-  // Clean scroll handler that only updates state at specific thresholds
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const prevScrollY = useRef(0);
+  const ticking = useRef(false);
+  
+  // Use scroll progress (0 to 1) instead of boolean state for smoother transitions
   useEffect(() => {
-    let lastScrollY = window.scrollY;
-    let ticking = false;
-    
     const handleScroll = () => {
-      // Use threshold to determine scroll state
-      if (window.scrollY > 100) {
-        if (!scrolled) setScrolled(true);
-      } else {
-        if (scrolled) setScrolled(false);
+      const currentScrollY = window.scrollY;
+      
+      // Calculate scroll progress (0 when at top, 1 when at/beyond threshold)
+      // Using a threshold of 80px for the transition
+      const threshold = 80;
+      const newProgress = Math.min(1, Math.max(0, currentScrollY / threshold));
+      
+      if (newProgress !== scrollProgress) {
+        setScrollProgress(newProgress);
       }
       
-      lastScrollY = window.scrollY;
-      ticking = false;
+      prevScrollY.current = currentScrollY;
+      ticking.current = false;
     };
     
     const onScroll = () => {
-      if (!ticking) {
-        // Use requestAnimationFrame to limit updates
-        window.requestAnimationFrame(() => {
-          handleScroll();
-        });
-        ticking = true;
+      if (!ticking.current) {
+        window.requestAnimationFrame(handleScroll);
+        ticking.current = true;
       }
     };
-
+    
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [scrolled]);
+  }, [scrollProgress]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,12 +62,24 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm">
-      {/* Top header section that hides on scroll */}
+    <header 
+      className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm"
+      style={{ 
+        // Dynamically adjust shadow based on scroll progress
+        boxShadow: scrollProgress > 0 ? `0 ${Math.min(4, scrollProgress * 8)}px ${Math.min(8, scrollProgress * 16)}px rgba(0,0,0,${0.05 + scrollProgress * 0.05})` : 'none' 
+      }}
+    >
+      {/* Top section with dynamic transform and opacity based on scroll progress */}
       <div 
-        className={`bg-white transition-all duration-300 ease-in-out overflow-hidden ${
-          scrolled ? 'max-h-0 opacity-0' : 'max-h-24 opacity-100'
-        }`}
+        className="bg-white overflow-hidden transition-transform duration-300 ease-out"
+        style={{ 
+          // Transform properties provide smoother animation than height/max-height
+          transform: `translateY(${-100 * scrollProgress}%)`,
+          maxHeight: `${80 - (scrollProgress * 80)}px`,
+          opacity: 1 - scrollProgress,
+          // This ensures the container stays in the document flow while animating
+          visibility: scrollProgress >= 0.99 ? 'hidden' : 'visible'
+        }}
       >
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
@@ -137,8 +149,23 @@ export default function Header() {
       </div>
 
       {/* Navigation section - always visible */}
-      <div className="bg-white border-t border-gray-100 shadow-sm">
+      <div className="bg-white border-t border-gray-100">
         <div className="container mx-auto px-4 flex justify-between items-center">
+          {/* Small logo that fades in based on scroll progress */}
+          <div 
+            className="flex-shrink-0 mr-4 transition-opacity duration-300 ease-in-out"
+            style={{ 
+              opacity: scrollProgress,
+              // Only take up space when starting to be visible
+              width: scrollProgress > 0.1 ? 'auto' : '0px',
+              overflow: 'hidden'
+            }}
+          >
+            <Link href="/">
+              <AtelierulCuFloriLogo className="h-8" />
+            </Link>
+          </div>
+          
           {/* Navigation menu always visible */}
           <ul className="hidden md:flex overflow-x-auto space-x-8 py-3 text-sm md:text-base justify-center flex-grow">
             {navItems.map((item) => (
@@ -156,15 +183,6 @@ export default function Header() {
               </li>
             ))}
           </ul>
-          
-          {/* Mini logo only visible when scrolled */}
-          {scrolled && (
-            <div className="flex-shrink-0 mr-4">
-              <Link href="/">
-                <AtelierulCuFloriLogo className="h-8 transition-all duration-300" />
-              </Link>
-            </div>
-          )}
         </div>
       </div>
     </header>
