@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { Search, ShoppingBag, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { FaYoutube } from "react-icons/fa";
 import { AtelierulCuFloriLogo } from "@/assets/logo";
 import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { ScrollToTopLink } from "@/components/ScrollToTopLink";
 
 const navItems = [
   { name: "HOME", path: "/" },
@@ -94,7 +95,7 @@ export default function Header() {
                   <SheetContent side="left">
                     <div className="flex flex-col space-y-4 mt-8">
                       {navItems.map((item) => (
-                        <Link
+                        <ScrollToTopLink
                           key={item.path}
                           href={item.path}
                           className={`text-base ${
@@ -104,7 +105,7 @@ export default function Header() {
                           } transition-colors`}
                         >
                           {item.name}
-                        </Link>
+                        </ScrollToTopLink>
                       ))}
                     </div>
                   </SheetContent>
@@ -125,21 +126,21 @@ export default function Header() {
             </div>
 
             <div className="flex items-center">
-              <Link href="/">
+              <ScrollToTopLink href="/">
                 <AtelierulCuFloriLogo className="h-14 transition-all duration-300" />
-              </Link>
+              </ScrollToTopLink>
             </div>
 
             <div className="flex items-center">
-              <Link href="/autentificare" className="mr-4 text-sm font-medium hover:text-secondary transition">
+              <ScrollToTopLink href="/autentificare" className="mr-4 text-sm font-medium hover:text-secondary transition">
                 Autentificare
-              </Link>
-              <Link href="/cos" className="mr-4 relative">
+              </ScrollToTopLink>
+              <ScrollToTopLink href="/cos" className="mr-4 relative">
                 <ShoppingBag className="h-5 w-5" />
                 <Badge className="absolute -top-2 -right-2 bg-accent text-white text-xs h-5 w-5 flex items-center justify-center p-0">
                   0
                 </Badge>
-              </Link>
+              </ScrollToTopLink>
               <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hidden md:block">
                 <FaYoutube className="h-5 w-5 text-red-600" />
               </a>
@@ -161,16 +162,16 @@ export default function Header() {
               overflow: 'hidden'
             }}
           >
-            <Link href="/">
+            <ScrollToTopLink href="/">
               <AtelierulCuFloriLogo className="h-8" />
-            </Link>
+            </ScrollToTopLink>
           </div>
           
           {/* Navigation menu always visible */}
           <ul className="hidden md:flex overflow-x-auto space-x-8 py-3 text-sm md:text-base justify-center flex-grow">
             {navItems.map((item) => (
               <li key={item.path}>
-                <Link
+                <ScrollToTopLink
                   href={item.path}
                   className={`${
                     location === item.path
@@ -179,7 +180,7 @@ export default function Header() {
                   } transition pb-1 block whitespace-nowrap`}
                 >
                   {item.name}
-                </Link>
+                </ScrollToTopLink>
               </li>
             ))}
           </ul>

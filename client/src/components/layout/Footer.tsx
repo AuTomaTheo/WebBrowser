@@ -1,5 +1,5 @@
-import { Link } from "wouter";
 import { FaFacebookF, FaInstagram, FaYoutube, FaPinterest } from "react-icons/fa";
+import { ScrollToTopLink } from "@/components/ScrollToTopLink";
 
 export default function Footer() {
   return (
@@ -31,24 +31,24 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Informații Utile</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/termeni-conditii" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/termeni-conditii" className="text-gray-300 hover:text-white transition">
                   Termeni și Condiții
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/politica-confidentialitate" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/politica-confidentialitate" className="text-gray-300 hover:text-white transition">
                   Politica de Confidențialitate
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/politica-livrare" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/politica-livrare" className="text-gray-300 hover:text-white transition">
                   Politica de Livrare
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/intrebari-frecvente" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/intrebari-frecvente" className="text-gray-300 hover:text-white transition">
                   Întrebări Frecvente
-                </Link>
+                </ScrollToTopLink>
               </li>
             </ul>
           </div>
@@ -57,24 +57,24 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Categorii</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/shop/buchete" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/shop/buchete" className="text-gray-300 hover:text-white transition">
                   Buchete de Flori
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/shop/aranjamente" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/shop/aranjamente" className="text-gray-300 hover:text-white transition">
                   Aranjamente Florale
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/event-planning" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
                   Decoruri de Eveniment
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/workshops" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/workshops" className="text-gray-300 hover:text-white transition">
                   Workshops
-                </Link>
+                </ScrollToTopLink>
               </li>
             </ul>
           </div>
@@ -83,24 +83,24 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Contul Meu</h4>
             <ul className="space-y-2">
               <li>
-                <Link href="/autentificare" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/autentificare" className="text-gray-300 hover:text-white transition">
                   Autentificare
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/inregistrare" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/inregistrare" className="text-gray-300 hover:text-white transition">
                   Înregistrare
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/istoric-comenzi" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/istoric-comenzi" className="text-gray-300 hover:text-white transition">
                   Istoric Comenzi
-                </Link>
+                </ScrollToTopLink>
               </li>
               <li>
-                <Link href="/favorite" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/favorite" className="text-gray-300 hover:text-white transition">
                   Favorite
-                </Link>
+                </ScrollToTopLink>
               </li>
             </ul>
           </div>
