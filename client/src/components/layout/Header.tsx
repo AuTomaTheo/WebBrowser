@@ -23,40 +23,23 @@ const navItems = [
 export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const prevScrollY = useRef(0);
-  const ticking = useRef(false);
+  const [isCompact, setIsCompact] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   
-  // Use scroll progress (0 to 1) instead of boolean state for smoother transitions
+  // Use IntersectionObserver to detect when header should compact
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Calculate scroll progress (0 when at top, 1 when at/beyond threshold)
-      // Using a threshold of 80px for the transition
-      const threshold = 80;
-      const newProgress = Math.min(1, Math.max(0, currentScrollY / threshold));
-      
-      setScrollProgress(prev => {
-        if (prev !== newProgress) {
-          return newProgress;
-        }
-        return prev;
-      });
-      
-      prevScrollY.current = currentScrollY;
-      ticking.current = false;
-    };
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
     
-    const onScroll = () => {
-      if (!ticking.current) {
-        window.requestAnimationFrame(handleScroll);
-        ticking.current = true;
-      }
-    };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsCompact(!entry.isIntersecting);
+      },
+      { threshold: 0, rootMargin: '0px' }
+    );
     
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    observer.observe(sentinel);
+    return () => observer.disconnect();
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -66,28 +49,25 @@ export default function Header() {
   };
 
   return (
-    <header 
-      className="sticky top-0 left-0 right-0 z-50 bg-white shadow-sm"
-      style={{ 
-        // Dynamically adjust shadow based on scroll progress
-        boxShadow: scrollProgress > 0 ? `0 ${Math.min(4, scrollProgress * 8)}px ${Math.min(8, scrollProgress * 16)}px rgba(0,0,0,${0.05 + scrollProgress * 0.05})` : 'none' 
-      }}
-    >
-      {/* Top section with fixed height wrapper to prevent layout reflow */}
-      <div 
-        className="bg-white overflow-hidden"
-        style={{ 
-          height: '80px',
-          willChange: 'transform'
-        }}
+    <>
+      {/* Sentinel element for IntersectionObserver */}
+      <div ref={sentinelRef} className="h-0" style={{ position: 'absolute', top: '80px' }} />
+      
+      <header 
+        className={`sticky top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
+          isCompact ? 'shadow-md' : 'shadow-sm'
+        }`}
       >
+        {/* Top section with fixed height wrapper to prevent layout reflow */}
         <div 
-          className="container mx-auto px-4 py-3 transition-all duration-300 ease-out"
-          style={{ 
-            transform: `translateY(${-100 * scrollProgress}%)`,
-            opacity: 1 - scrollProgress
-          }}
+          className="bg-white overflow-hidden"
+          style={{ height: '80px' }}
         >
+          <div 
+            className={`container mx-auto px-4 py-3 transition-all duration-300 ease-out ${
+              isCompact ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
+            }`}
+          >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <div className="md:hidden">
@@ -157,13 +137,12 @@ export default function Header() {
       {/* Navigation section - always visible */}
       <div className="bg-white border-t border-gray-100">
         <div className="container mx-auto px-4 flex justify-between items-center">
-          {/* Small logo that fades in based on scroll progress */}
+          {/* Small logo that fades in when compact */}
           <div 
-            className="flex-shrink-0 mr-4 transition-opacity duration-300 ease-in-out"
-            style={{ 
-              opacity: scrollProgress,
-              width: '50px'
-            }}
+            className={`flex-shrink-0 mr-4 transition-opacity duration-300 ease-in-out ${
+              isCompact ? 'opacity-100' : 'opacity-0'
+            }`}
+            style={{ width: '50px' }}
           >
             <ScrollToTopLink href="/">
               <AtelierulCuFloriLogo className="h-8" />
@@ -189,6 +168,7 @@ export default function Header() {
           </ul>
         </div>
       </div>
-    </header>
+      </header>
+    </>
   );
 }
