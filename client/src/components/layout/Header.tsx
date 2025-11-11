@@ -24,18 +24,22 @@ export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
   
   // Use IntersectionObserver to detect when header should compact
   useEffect(() => {
-    const sentinel = sentinelRef.current;
+    const sentinel = document.getElementById('header-sentinel');
     if (!sentinel) return;
     
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsCompact(!entry.isIntersecting);
+        const newCompact = !entry.isIntersecting;
+        setIsCompact(newCompact);
+        console.log('Header compact state:', newCompact);
       },
-      { threshold: 0, rootMargin: '0px' }
+      { 
+        threshold: 0,
+        rootMargin: '80px 0px 0px 0px'
+      }
     );
     
     observer.observe(sentinel);
@@ -49,10 +53,6 @@ export default function Header() {
   };
 
   return (
-    <>
-      {/* Sentinel element for IntersectionObserver */}
-      <div ref={sentinelRef} className="h-0" style={{ position: 'absolute', top: '80px' }} />
-      
       <header 
         className={`sticky top-0 left-0 right-0 z-50 bg-white transition-shadow duration-300 ${
           isCompact ? 'shadow-md' : 'shadow-sm'
@@ -64,7 +64,7 @@ export default function Header() {
           style={{ height: '80px' }}
         >
           <div 
-            className={`container mx-auto px-4 py-3 transition-all duration-300 ease-out ${
+            className={`container mx-auto px-4 py-3 transition-transform transition-opacity duration-300 ease-out ${
               isCompact ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100'
             }`}
           >
@@ -169,6 +169,5 @@ export default function Header() {
         </div>
       </div>
       </header>
-    </>
   );
 }
