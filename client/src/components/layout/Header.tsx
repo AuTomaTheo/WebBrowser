@@ -24,26 +24,40 @@ export default function Header() {
   const [location] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCompact, setIsCompact] = useState(false);
+  const tickingRef = useRef(false);
+  const isCompactRef = useRef(false);
   
-  // Use IntersectionObserver to detect when header should compact
+  // Use scroll event with hysteresis to prevent flickering
   useEffect(() => {
-    const sentinel = document.getElementById('header-sentinel');
-    if (!sentinel) return;
-    
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        const newCompact = !entry.isIntersecting;
-        setIsCompact(newCompact);
-        console.log('Header compact state:', newCompact);
-      },
-      { 
-        threshold: 0,
-        rootMargin: '80px 0px 0px 0px'
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      let newCompact = isCompactRef.current;
+      
+      // Hysteresis: different thresholds for scrolling down vs up
+      if (scrollY > 50) {
+        newCompact = true;
+      } else if (scrollY < 20) {
+        newCompact = false;
       }
-    );
+      
+      // Only update state if it actually changed
+      if (newCompact !== isCompactRef.current) {
+        isCompactRef.current = newCompact;
+        setIsCompact(newCompact);
+      }
+      
+      tickingRef.current = false;
+    };
     
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    const onScroll = () => {
+      if (!tickingRef.current) {
+        window.requestAnimationFrame(handleScroll);
+        tickingRef.current = true;
+      }
+    };
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const handleSearch = (e: React.FormEvent) => {

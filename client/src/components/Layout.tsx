@@ -21,16 +21,6 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Sentinel for header IntersectionObserver - invisible but in scroll flow */}
-      <div 
-        id="header-sentinel" 
-        style={{ 
-          position: 'relative',
-          height: '1px',
-          marginTop: '-1px',
-          pointerEvents: 'none'
-        }} 
-      />
       <Header />
       <main className="flex-grow">
         {children}
