@@ -24,7 +24,7 @@ export default function Snow() {
         left: Math.random() * 100,
         animationDuration: 10 + Math.random() * 20,
         size: 10 + Math.random() * 15,
-        delay: Math.random() * 10,
+        delay: Math.random() * 2,
         char: snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)],
         rotation: Math.random() * 360,
       });

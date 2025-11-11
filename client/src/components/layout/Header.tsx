@@ -37,9 +37,12 @@ export default function Header() {
       const threshold = 80;
       const newProgress = Math.min(1, Math.max(0, currentScrollY / threshold));
       
-      if (newProgress !== scrollProgress) {
-        setScrollProgress(newProgress);
-      }
+      setScrollProgress(prev => {
+        if (prev !== newProgress) {
+          return newProgress;
+        }
+        return prev;
+      });
       
       prevScrollY.current = currentScrollY;
       ticking.current = false;
@@ -54,7 +57,7 @@ export default function Header() {
     
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [scrollProgress]);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
