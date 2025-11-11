@@ -73,19 +73,21 @@ export default function Header() {
         boxShadow: scrollProgress > 0 ? `0 ${Math.min(4, scrollProgress * 8)}px ${Math.min(8, scrollProgress * 16)}px rgba(0,0,0,${0.05 + scrollProgress * 0.05})` : 'none' 
       }}
     >
-      {/* Top section with dynamic transform and opacity based on scroll progress */}
+      {/* Top section with fixed height wrapper to prevent layout reflow */}
       <div 
-        className="bg-white overflow-hidden transition-transform duration-300 ease-out"
+        className="bg-white overflow-hidden"
         style={{ 
-          // Transform properties provide smoother animation than height/max-height
-          transform: `translateY(${-100 * scrollProgress}%)`,
-          maxHeight: `${80 - (scrollProgress * 80)}px`,
-          opacity: 1 - scrollProgress,
-          // This ensures the container stays in the document flow while animating
-          visibility: scrollProgress >= 0.99 ? 'hidden' : 'visible'
+          height: '80px',
+          willChange: 'transform'
         }}
       >
-        <div className="container mx-auto px-4 py-3">
+        <div 
+          className="container mx-auto px-4 py-3 transition-all duration-300 ease-out"
+          style={{ 
+            transform: `translateY(${-100 * scrollProgress}%)`,
+            opacity: 1 - scrollProgress
+          }}
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center">
               <div className="md:hidden">
@@ -160,9 +162,7 @@ export default function Header() {
             className="flex-shrink-0 mr-4 transition-opacity duration-300 ease-in-out"
             style={{ 
               opacity: scrollProgress,
-              // Only take up space when starting to be visible
-              width: scrollProgress > 0.1 ? 'auto' : '0px',
-              overflow: 'hidden'
+              width: '50px'
             }}
           >
             <ScrollToTopLink href="/">
