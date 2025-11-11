@@ -21,10 +21,8 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Placeholder for fixed header to maintain layout flow */}
-      <div style={{ height: '138px' }} />
       <Header />
-      <main className="flex-grow">
+      <main className="flex-grow" style={{ marginTop: '138px' }}>
         {children}
       </main>
       <Footer />
