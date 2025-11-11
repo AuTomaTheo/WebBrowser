@@ -6,6 +6,8 @@ interface Snowflake {
   animationDuration: number;
   size: number;
   delay: number;
+  char: string;
+  rotation: number;
 }
 
 export default function Snow() {
@@ -14,14 +16,17 @@ export default function Snow() {
   useEffect(() => {
     const flakes: Snowflake[] = [];
     const numberOfFlakes = 50;
+    const snowflakeChars = ['❄', '❅', '❆'];
 
     for (let i = 0; i < numberOfFlakes; i++) {
       flakes.push({
         id: i,
         left: Math.random() * 100,
         animationDuration: 10 + Math.random() * 20,
-        size: 2 + Math.random() * 4,
+        size: 10 + Math.random() * 15,
         delay: Math.random() * 10,
+        char: snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)],
+        rotation: Math.random() * 360,
       });
     }
 
@@ -36,12 +41,14 @@ export default function Snow() {
           className="absolute snowflake"
           style={{
             left: `${flake.left}%`,
-            width: `${flake.size}px`,
-            height: `${flake.size}px`,
+            fontSize: `${flake.size}px`,
             animationDuration: `${flake.animationDuration}s`,
             animationDelay: `${flake.delay}s`,
+            transform: `rotate(${flake.rotation}deg)`,
           }}
-        />
+        >
+          {flake.char}
+        </div>
       ))}
       <style>{`
         @keyframes snowfall {
@@ -62,10 +69,10 @@ export default function Snow() {
         }
 
         .snowflake {
-          background: white;
-          border-radius: 50%;
+          color: white;
           animation: snowfall linear infinite;
-          box-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+          text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+          user-select: none;
         }
       `}</style>
     </div>
