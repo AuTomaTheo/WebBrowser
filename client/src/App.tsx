@@ -18,7 +18,6 @@ import WishlistPage from "@/pages/WishlistPage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import ScrollToTop from "@/components/ScrollToTop";
-import Snow from "@/components/Snow";
 
 // These pages will have their own layouts
 const PAGES_WITHOUT_LAYOUT = ["/auth"];
@@ -66,7 +65,6 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Snow />
         <ScrollToTop />
         <Router />
         <Toaster />
