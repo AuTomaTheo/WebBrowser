@@ -4,7 +4,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
-import { Heart, ShoppingCart, Trash } from 'lucide-react';
+import { Heart, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useLocation } from 'wouter';
@@ -28,41 +28,15 @@ export default function WishlistPage() {
 
   // Remove from wishlist mutation
   const removeFromWishlistMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      const response = await apiRequest('DELETE', `/api/wishlist/items/${productId}`);
+    mutationFn: async (itemId: number) => {
+      const response = await apiRequest('DELETE', `/api/wishlist/items/${itemId}`);
       if (!response.ok) throw new Error('Failed to remove from wishlist');
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/wishlist'] });
       toast({
-        title: "Produsul a fost eliminat din favorite",
-        variant: "default",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Eroare",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  });
-
-  // Add to cart mutation
-  const addToCartMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      const response = await apiRequest('POST', '/api/cart/items', { 
-        productId,
-        quantity: 1
-      });
-      if (!response.ok) throw new Error('Failed to add to cart');
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cart'] });
-      toast({
-        title: "Produsul a fost adăugat în coș",
+        title: "Articolul a fost eliminat din favorite",
         variant: "default",
       });
     },
@@ -76,13 +50,8 @@ export default function WishlistPage() {
   });
 
   // Handle remove from wishlist
-  const handleRemoveFromWishlist = (productId: number) => {
-    removeFromWishlistMutation.mutate(productId);
-  };
-
-  // Handle add to cart
-  const handleAddToCart = (productId: number) => {
-    addToCartMutation.mutate(productId);
+  const handleRemoveFromWishlist = (itemId: number) => {
+    removeFromWishlistMutation.mutate(itemId);
   };
 
   // Redirect to login if not authenticated
@@ -120,13 +89,7 @@ export default function WishlistPage() {
             <div className="bg-white p-8 rounded-lg shadow-sm text-center">
               <Heart className="mx-auto h-12 w-12 text-gray-300 mb-4" />
               <h2 className="text-xl font-serif mb-2">Lista ta de favorite este goală</h2>
-              <p className="text-gray-500 mb-6">Nu ai adăugat încă niciun produs la favorite.</p>
-              <Button 
-                onClick={() => setLocation('/shop')}
-                className="bg-primary hover:bg-primary/90"
-              >
-                Explorează produsele
-              </Button>
+              <p className="text-gray-500">Nu ai adăugat încă niciun articol la favorite.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -134,38 +97,33 @@ export default function WishlistPage() {
                 <Card key={item.id} className="overflow-hidden">
                   <div className="relative h-64 overflow-hidden">
                     <img 
-                      src={item.product?.imageUrl || 'https://via.placeholder.com/300'} 
-                      alt={item.product?.name || 'Product'} 
+                      src={item.itemImageUrl || 'https://via.placeholder.com/300'} 
+                      alt={item.itemName || 'Item'} 
                       className="w-full h-full object-cover"
                     />
                     <button
-                      onClick={() => handleRemoveFromWishlist(item.productId)}
+                      onClick={() => handleRemoveFromWishlist(item.id)}
                       className="absolute top-3 right-3 p-2 rounded-full bg-red-100 text-red-500 hover:bg-red-200 transition-colors"
                       aria-label="Remove from wishlist"
+                      data-testid={`button-remove-wishlist-${item.id}`}
                     >
                       <Heart className="h-5 w-5 fill-current" />
                     </button>
                   </div>
                   <CardContent className="p-4">
-                    <h3 className="font-serif text-lg mb-2">{item.product?.name}</h3>
-                    <div className="flex justify-between items-center">
-                      <p className="font-medium">{Number(item.product?.price).toFixed(2)} lei</p>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleAddToCart(item.productId)}
-                          className="rounded-full p-2 hover:bg-gray-100 text-gray-700"
-                          aria-label="Add to cart"
-                        >
-                          <ShoppingCart className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => handleRemoveFromWishlist(item.productId)}
-                          className="rounded-full p-2 hover:bg-gray-100 text-gray-700"
-                          aria-label="Remove from wishlist"
-                        >
-                          <Trash className="h-5 w-5" />
-                        </button>
-                      </div>
+                    <h3 className="font-serif text-lg mb-2" data-testid={`text-item-name-${item.id}`}>{item.itemName}</h3>
+                    {item.itemDescription && (
+                      <p className="text-sm text-gray-600 mb-2" data-testid={`text-item-description-${item.id}`}>{item.itemDescription}</p>
+                    )}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => handleRemoveFromWishlist(item.id)}
+                        className="rounded-full p-2 hover:bg-gray-100 text-gray-700"
+                        aria-label="Remove from wishlist"
+                        data-testid={`button-delete-wishlist-${item.id}`}
+                      >
+                        <Trash className="h-5 w-5" />
+                      </button>
                     </div>
                   </CardContent>
                 </Card>
