@@ -1,18 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link } from "wouter";
-import { Search, ShoppingBag, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaYoutube } from "react-icons/fa";
 import { AtelierulCuFloriLogo } from "@/assets/logo";
-import { Badge } from "@/components/ui/badge";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { ScrollToTopLink } from "@/components/ScrollToTopLink";
 
 const navItems = [
   { name: "HOME", path: "/" },
   { name: "DESPRE NOI", path: "/despre-noi" },
-  { name: "SHOP", path: "/shop" },
   { name: "EVENT PLANNING", path: "/event-planning" },
   { name: "RENTALS", path: "/rentals" },
   { name: "WORKSHOPS", path: "/workshops" },
@@ -133,12 +131,6 @@ export default function Header() {
             <div className="flex items-center">
               <ScrollToTopLink href="/autentificare" className="mr-4 text-sm font-medium hover:text-secondary transition">
                 Autentificare
-              </ScrollToTopLink>
-              <ScrollToTopLink href="/cos" className="mr-4 relative">
-                <ShoppingBag className="h-5 w-5" />
-                <Badge className="absolute -top-2 -right-2 bg-accent text-white text-xs h-5 w-5 flex items-center justify-center p-0">
-                  0
-                </Badge>
               </ScrollToTopLink>
               <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hidden md:block">
                 <FaYoutube className="h-5 w-5 text-red-600" />

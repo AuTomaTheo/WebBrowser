@@ -54,26 +54,26 @@ export default function Footer() {
           </div>
           
           <div>
-            <h4 className="font-serif text-xl mb-4">Categorii</h4>
+            <h4 className="font-serif text-xl mb-4">Servicii</h4>
             <ul className="space-y-2">
-              <li>
-                <ScrollToTopLink href="/shop/buchete" className="text-gray-300 hover:text-white transition">
-                  Buchete de Flori
-                </ScrollToTopLink>
-              </li>
-              <li>
-                <ScrollToTopLink href="/shop/aranjamente" className="text-gray-300 hover:text-white transition">
-                  Aranjamente Florale
-                </ScrollToTopLink>
-              </li>
               <li>
                 <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
                   Decoruri de Eveniment
                 </ScrollToTopLink>
               </li>
               <li>
+                <ScrollToTopLink href="/rentals" className="text-gray-300 hover:text-white transition">
+                  Închirieri
+                </ScrollToTopLink>
+              </li>
+              <li>
                 <ScrollToTopLink href="/workshops" className="text-gray-300 hover:text-white transition">
                   Workshops
+                </ScrollToTopLink>
+              </li>
+              <li>
+                <ScrollToTopLink href="/testimoniale" className="text-gray-300 hover:text-white transition">
+                  Testimoniale
                 </ScrollToTopLink>
               </li>
             </ul>
@@ -93,13 +93,13 @@ export default function Footer() {
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/istoric-comenzi" className="text-gray-300 hover:text-white transition">
-                  Istoric Comenzi
+                <ScrollToTopLink href="/wishlist" className="text-gray-300 hover:text-white transition">
+                  Favorite
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/favorite" className="text-gray-300 hover:text-white transition">
-                  Favorite
+                <ScrollToTopLink href="/contact" className="text-gray-300 hover:text-white transition">
+                  Contact
                 </ScrollToTopLink>
               </li>
             </ul>
