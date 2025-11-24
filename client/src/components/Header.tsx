@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { navLinks } from '@/lib/data';
-import { Search, ShoppingBag, Heart, User, LogOut, X } from 'lucide-react';
+import { Search, Heart, User, LogOut, X } from 'lucide-react';
 import { LeafIcon } from './icons/CustomIcons';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -24,18 +24,6 @@ export default function Header() {
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, logoutMutation } = useAuth();
-  
-  // Fetch cart data for the badge counter
-  const { data: cart } = useQuery({
-    queryKey: ['/api/cart'],
-    queryFn: async () => {
-      if (!user) return null;
-      const response = await apiRequest('GET', '/api/cart');
-      if (!response.ok) return null;
-      return response.json();
-    },
-    enabled: !!user,
-  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,28 +61,6 @@ export default function Header() {
   const toggleSearch = () => {
     setIsSearchExpanded(!isSearchExpanded);
     setSearchQuery("");
-  };
-  
-  // Define interface for cart items
-  interface CartItem {
-    quantity: number;
-    product: {
-      price: string;
-    };
-  }
-  
-  // Calculate the total number of items in cart
-  const getCartItemsCount = () => {
-    if (!cart || !cart.items || !cart.items.length) return 0;
-    return cart.items.reduce((total: number, item: CartItem) => total + item.quantity, 0);
-  };
-  
-  // Calculate the total price of items in cart
-  const getCartTotal = () => {
-    if (!cart || !cart.items || !cart.items.length) return 0;
-    return cart.items.reduce((total: number, item: CartItem) => {
-      return total + parseFloat(item.product.price) * item.quantity;
-    }, 0);
   };
 
   return (
@@ -178,9 +144,9 @@ export default function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link href="/orders" className="w-full flex items-center text-xs">
-                      <ShoppingBag className="h-3 w-3 mr-1.5" />
-                      Comenzile mele
+                    <Link href="/wishlist" className="w-full flex items-center text-xs">
+                      <Heart className="h-3 w-3 mr-1.5" />
+                      Favorite
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer text-red-500" onClick={handleLogout}>
@@ -197,19 +163,6 @@ export default function Header() {
                 </Button>
               </Link>
             )}
-            <Link href="/cart">
-              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] font-medium rounded-md border border-gray-200 hover:bg-gray-50 flex items-center">
-                <span>{getCartTotal().toFixed(2)} lei</span>
-                <div className="ml-1 relative">
-                  <ShoppingBag className="h-3 w-3" />
-                  {getCartItemsCount() > 0 && (
-                    <Badge className="absolute -top-2 -right-2 h-3.5 w-3.5 p-0 flex items-center justify-center text-[8px] bg-red-500 text-white">
-                      {getCartItemsCount()}
-                    </Badge>
-                  )}
-                </div>
-              </Button>
-            </Link>
             <Link href="/wishlist">
               <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full bg-red-50 hover:bg-red-100 border border-red-200">
                 <Heart className="h-3 w-3 text-red-500" />
