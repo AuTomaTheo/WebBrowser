@@ -76,3 +76,36 @@ export const insertVerificationTokenSchema = createInsertSchema(verificationToke
 
 export type VerificationToken = typeof verificationTokens.$inferSelect;
 export type InsertVerificationToken = z.infer<typeof insertVerificationTokenSchema>;
+
+// Wishlist schema - keeping wishlist functionality for favoriting items
+export const wishlists = pgTable("wishlists", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertWishlistSchema = createInsertSchema(wishlists).pick({
+  userId: true,
+});
+
+// Wishlist item schema
+export const wishlistItems = pgTable("wishlist_items", {
+  id: serial("id").primaryKey(),
+  wishlistId: integer("wishlist_id").notNull(),
+  itemName: text("item_name").notNull(),
+  itemDescription: text("item_description"),
+  itemImageUrl: text("item_image_url"),
+  addedAt: timestamp("added_at").defaultNow().notNull(),
+});
+
+export const insertWishlistItemSchema = createInsertSchema(wishlistItems).pick({
+  wishlistId: true,
+  itemName: true,
+  itemDescription: true,
+  itemImageUrl: true,
+});
+
+export type Wishlist = typeof wishlists.$inferSelect;
+export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
+export type WishlistItem = typeof wishlistItems.$inferSelect;
+export type InsertWishlistItem = z.infer<typeof insertWishlistItemSchema>;
