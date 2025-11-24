@@ -26,7 +26,7 @@ export const categories = [
     title: "Aranjamente florale",
     romanianTitle: "Aranjamente florale",
     image: buchetePerzonalizatePath,
-    link: "/shop",
+    link: "/contact",
   },
   {
     id: 4,
@@ -74,21 +74,21 @@ export const popularCategories = [
     title: "BUCHETE DE FLORI",
     image:
       "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/buchete",
+    link: "/contact",
   },
   {
     id: 2,
     title: "ARANJAMENTE FLORALE",
     image:
       "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/aranjamente",
+    link: "/contact",
   },
   {
     id: 3,
     title: "PLANTE DE INTERIOR",
     image:
       "https://images.unsplash.com/photo-1463320898484-cdee8141c787?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80",
-    link: "/shop/plante",
+    link: "/contact",
   },
   {
     id: 4,
@@ -103,7 +103,6 @@ export const popularCategories = [
 export const navLinks = [
   { id: 1, title: "HOME", path: "/" },
   { id: 2, title: "DESPRE NOI", path: "/despre-noi" },
-  { id: 3, title: "SHOP", path: "/shop" },
   { id: 4, title: "EVENT PLANNING", path: "/event-planning" },
   { id: 5, title: "RENTALS", path: "/rentals" },
   { id: 6, title: "WORKSHOPS", path: "/workshops" },
@@ -122,18 +121,17 @@ export const quickLinks = [
 
 // Footer services links
 export const serviceLinks = [
-  { id: 1, title: "Florărie online", path: "/shop" },
   { id: 2, title: "Event planning", path: "/event-planning" },
-  { id: 3, title: "Decorațiuni festive", path: "/shop/decoratiuni" },
-  { id: 4, title: "Aranjamente corporative", path: "/corporate" },
+  { id: 4, title: "Aranjamente corporative", path: "/contact" },
   { id: 5, title: "Workshops florale", path: "/workshops" },
+  { id: 6, title: "Închirieri", path: "/rentals" },
+  { id: 7, title: "Testimoniale", path: "/testimoniale" },
 ];
 
 // Footer account links
 export const accountLinks = [
   { id: 1, title: "Autentificare", path: "/auth" },
-  { id: 2, title: "Coșul meu", path: "/cart" },
-  { id: 3, title: "Wishlist", path: "/wishlist" },
-  { id: 4, title: "Istoric comenzi", path: "/orders" },
-  { id: 5, title: "Urmărește comanda", path: "/track-order" },
+  { id: 3, title: "Favorite", path: "/wishlist" },
+  { id: 6, title: "Profil", path: "/profile" },
+  { id: 7, title: "Contact", path: "/contact" },
 ];
