@@ -125,10 +125,11 @@ Preferred communication style: Simple, everyday language.
 - Base URL configuration for email links
 
 **WhatsApp Messaging:**
-- Twilio integration for WhatsApp Business API
-- Contact form notifications sent via WhatsApp
+- Meta WhatsApp Cloud API (direct integration, no third-party BSP)
+- Contact form notifications sent via WhatsApp to business number
 - User preference: WhatsApp notifications only (not email)
-- Note: Integration configured outside of Replit connector system (using manual credentials)
+- Free setup with conversation-based pricing model
+- Environment variables: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN, BUSINESS_WHATSAPP_NUMBER
 
 **Database Service:**
 - Neon serverless PostgreSQL hosting
