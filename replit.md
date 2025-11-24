@@ -124,6 +124,12 @@ Preferred communication style: Simple, everyday language.
 - Console logging fallback for development verification links
 - Base URL configuration for email links
 
+**WhatsApp Messaging:**
+- Twilio integration for WhatsApp Business API
+- Contact form notifications sent via WhatsApp
+- User preference: WhatsApp notifications only (not email)
+- Note: Integration configured outside of Replit connector system (using manual credentials)
+
 **Database Service:**
 - Neon serverless PostgreSQL hosting
 - WebSocket connections for serverless compatibility
