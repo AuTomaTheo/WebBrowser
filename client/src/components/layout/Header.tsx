@@ -27,7 +27,7 @@ export default function Header() {
   const tickingRef = useRef(false);
   const isCompactRef = useRef(false);
   
-  // Use scroll event with hysteresis to prevent flickering
+  // Use scroll event with hysteresis to prevent flickeringaz
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY;
