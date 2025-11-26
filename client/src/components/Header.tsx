@@ -126,7 +126,7 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* User Actions */}
+          {/* User Actions - commented out per user request
           <div className="flex items-center space-x-2">
             {user ? (
               <DropdownMenu>
@@ -169,6 +169,7 @@ export default function Header() {
               </Button>
             </Link>
           </div>
+          */}
         </div>
 
         {/* Navigation Menu with compact logo when scrolled */}
