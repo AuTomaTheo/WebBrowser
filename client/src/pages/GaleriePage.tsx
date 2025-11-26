@@ -16,23 +16,6 @@ interface DisplayImage {
   category: GalleryCategory;
 }
 
-const sampleImages: DisplayImage[] = [
-  { id: "s1", src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor floral nuntă elegantă", category: "Nunți" },
-  { id: "s2", src: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament floral pentru nuntă", category: "Nunți" },
-  { id: "s3", src: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor masă nuntă", category: "Nunți" },
-  { id: "s4", src: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Buchet mireasă", category: "Nunți" },
-  { id: "s5", src: "https://images.unsplash.com/photo-1544078751-58fee2d8a03b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament botez roz", category: "Botezuri" },
-  { id: "s6", src: "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor botez elegant", category: "Botezuri" },
-  { id: "s7", src: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Flori delicate botez", category: "Botezuri" },
-  { id: "s8", src: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Workshop aranjamente florale", category: "Workshops" },
-  { id: "s9", src: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Atelier floral", category: "Workshops" },
-  { id: "s10", src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Workshop buchete", category: "Workshops" },
-  { id: "s11", src: "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament Halloween", category: "Tematice" },
-  { id: "s12", src: "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decorațiuni Paște", category: "Tematice" },
-  { id: "s13", src: "https://images.unsplash.com/photo-1512909006721-3d6018887383?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament Crăciun", category: "Tematice" },
-  { id: "s14", src: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament corporate tematic", category: "Tematice" }
-];
-
 const categories = [
   { id: "nunti", label: "Nunți", dbId: "Nunți" },
   { id: "botezuri", label: "Botezuri", dbId: "Botezuri" },
@@ -124,7 +107,7 @@ export default function GaleriePage() {
             category: img.category as GalleryCategory 
           }));
       }
-      return sampleImages.filter(img => img.category === currentCategory.dbId);
+      return [];
     }
 
     return [];
@@ -236,8 +219,6 @@ export default function GaleriePage() {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryEvents.map((event) => {
                     const previewImage = getFirstImageForEvent(event.id);
-                    const fallbackImage = sampleImages.find(img => img.category === currentCategory?.dbId)?.src;
-                    const imageUrl = previewImage || fallbackImage || sampleImages[0].src;
                     
                     return (
                       <button
@@ -246,13 +227,19 @@ export default function GaleriePage() {
                         className="group relative aspect-square overflow-hidden rounded-lg bg-gray-100 text-left"
                         data-testid={`folder-${event.id}`}
                       >
-                        <img 
-                          src={imageUrl} 
-                          alt={event.name}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
+                        {previewImage ? (
+                          <img 
+                            src={previewImage} 
+                            alt={event.name}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                            <span className="text-gray-400 text-sm">Fără imagine</span>
+                          </div>
+                        )}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                         <div className="absolute bottom-0 left-0 right-0 p-4">
                           <h3 className="text-white font-medium text-sm">{event.name}</h3>
