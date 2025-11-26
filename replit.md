@@ -124,12 +124,10 @@ Preferred communication style: Simple, everyday language.
 - Console logging fallback for development verification links
 - Base URL configuration for email links
 
-**WhatsApp Messaging:**
-- Meta WhatsApp Cloud API (direct integration, no third-party BSP)
-- Contact form notifications sent via WhatsApp to business number
-- User preference: WhatsApp notifications only (not email)
-- Free setup with conversation-based pricing model
-- Environment variables: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN, BUSINESS_WHATSAPP_NUMBER
+**Contact Page:**
+- Simplified contact display (no form submission)
+- Direct contact methods: phone, email, Instagram links
+- User preference: Display contact info rather than message form
 
 **Database Service:**
 - Neon serverless PostgreSQL hosting

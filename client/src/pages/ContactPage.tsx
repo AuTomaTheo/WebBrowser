@@ -1,47 +1,8 @@
 import { Helmet } from "react-helmet";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Numele trebuie să conțină cel puțin 2 caractere" }),
-  email: z.string().email({ message: "Adresa de email invalidă" }),
-  phone: z.string().min(10, { message: "Numărul de telefon trebuie să conțină cel puțin 10 caractere" }),
-  subject: z.string().min(2, { message: "Subiectul trebuie să conțină cel puțin 2 caractere" }),
-  message: z.string().min(10, { message: "Mesajul trebuie să conțină cel puțin 10 caractere" }),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { SiInstagram } from "react-icons/si";
 
 export default function ContactPage() {
-  const { toast } = useToast();
-  
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      subject: "",
-      message: "",
-    },
-  });
-
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    toast({
-      title: "Mesaj trimis",
-      description: "Vom reveni cu un răspuns în cel mai scurt timp posibil.",
-    });
-    form.reset();
-  };
-
   return (
     <>
       <Helmet>
@@ -49,150 +10,101 @@ export default function ContactPage() {
         <meta name="description" content="Contactează echipa Atelierul cu flori pentru orice întrebări despre serviciile noastre, pentru a programa o consultație sau pentru a solicita o ofertă personalizată." />
       </Helmet>
       
-      <section className="py-12 bg-[#F5F5F0]">
+      <section className="py-16 bg-[#F5F5F0] min-h-[70vh]">
         <div className="container mx-auto px-4">
-          <h1 className="font-serif text-3xl text-center mb-12">Contact</h1>
+          <div className="text-center mb-12">
+            <h1 className="font-serif text-4xl text-primary mb-4">Contactează-ne</h1>
+            <p className="text-gray-600 max-w-xl mx-auto">
+              Suntem aici pentru tine. Alege modalitatea preferată de a ne contacta și vom răspunde cât mai curând posibil.
+            </p>
+          </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-            <div>
-              <h2 className="font-serif text-2xl text-primary mb-6">Informații de contact</h2>
-              
-              <div className="space-y-6 mb-8">
-                <div className="flex items-start">
-                  <MapPin className="h-5 w-5 text-primary mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-medium mb-1">Adresă</h3>
-                    <p className="text-gray-600">Str. Florilor nr. 123, Sector 1<br />București, România</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Phone className="h-5 w-5 text-primary mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-medium mb-1">Telefon</h3>
-                    <p className="text-gray-600">+40 123 456 789</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Mail className="h-5 w-5 text-primary mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-medium mb-1">Email</h3>
-                    <p className="text-gray-600">contact@atelierulcuflori.ro</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <Clock className="h-5 w-5 text-primary mr-3 mt-1" />
-                  <div>
-                    <h3 className="font-medium mb-1">Program</h3>
-                    <p className="text-gray-600">
-                      Luni - Vineri: 09:00 - 18:00<br />
-                      Sâmbătă: 10:00 - 16:00<br />
-                      Duminică: Închis
-                    </p>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto mb-16">
+            <a 
+              href="tel:+40123456789" 
+              className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 text-center"
+              data-testid="link-phone"
+            >
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                <Phone className="h-7 w-7 text-primary" />
               </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <h3 className="font-serif text-xl text-primary mb-4">Programare consultație</h3>
-                <p className="text-gray-600 mb-4">
-                  Pentru evenimente și proiecte personalizate, te invităm la o consultație în atelierul nostru. Contactează-ne pentru a programa o întâlnire.
-                </p>
-                <Button className="bg-primary hover:bg-opacity-90 text-white w-full">
-                  PROGRAMEAZĂ O CONSULTAȚIE
-                </Button>
-              </div>
-            </div>
+              <h3 className="font-serif text-xl text-primary mb-2">Telefon</h3>
+              <p className="text-gray-600 group-hover:text-primary transition-colors">+40 123 456 789</p>
+            </a>
             
-            <div>
-              <h2 className="font-serif text-2xl text-primary mb-6">Trimite-ne un mesaj</h2>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nume</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Numele tău" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Email-ul tău" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      
-                      <FormField
-                        control={form.control}
-                        name="phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Telefon</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Numărul tău de telefon" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
+            <a 
+              href="mailto:contact@atelierulcuflori.ro" 
+              className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 text-center"
+              data-testid="link-email"
+            >
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                <Mail className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="font-serif text-xl text-primary mb-2">Email</h3>
+              <p className="text-gray-600 group-hover:text-primary transition-colors">contact@atelierulcuflori.ro</p>
+            </a>
+            
+            <a 
+              href="https://instagram.com/atelierulcuflori" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group bg-white rounded-xl p-8 shadow-sm hover:shadow-lg transition-all duration-300 text-center"
+              data-testid="link-instagram"
+            >
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-primary/20 transition-colors">
+                <SiInstagram className="h-7 w-7 text-primary" />
+              </div>
+              <h3 className="font-serif text-xl text-primary mb-2">Instagram</h3>
+              <p className="text-gray-600 group-hover:text-primary transition-colors">@atelierulcuflori</p>
+            </a>
+          </div>
+          
+          <div className="max-w-3xl mx-auto">
+            <div className="bg-white rounded-xl p-8 md:p-10 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <div className="flex items-start mb-6">
+                    <MapPin className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-serif text-lg text-primary mb-1">Locație</h3>
+                      <p className="text-gray-600">
+                        Str. Florilor nr. 123, Sector 1<br />
+                        București, România
+                      </p>
                     </div>
-                    
-                    <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Subiect</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Subiectul mesajului" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="message"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Mesaj</FormLabel>
-                          <FormControl>
-                            <Textarea 
-                              placeholder="Scrie-ne mesajul tău..." 
-                              className="min-h-32" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <Button type="submit" className="bg-accent hover:bg-opacity-90 text-white w-full">
-                      TRIMITE MESAJ
-                    </Button>
-                  </form>
-                </Form>
+                  </div>
+                  
+                  <div className="flex items-start">
+                    <Clock className="h-5 w-5 text-primary mr-3 mt-1 flex-shrink-0" />
+                    <div>
+                      <h3 className="font-serif text-lg text-primary mb-1">Program</h3>
+                      <p className="text-gray-600">
+                        Luni - Vineri: 09:00 - 18:00<br />
+                        Sâmbătă: 10:00 - 16:00<br />
+                        Duminică: Închis
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex items-center justify-center md:justify-end">
+                  <div className="text-center md:text-right">
+                    <p className="text-gray-500 text-sm mb-2">Te așteptăm cu drag</p>
+                    <p className="font-serif text-2xl text-primary">Atelierul cu flori</p>
+                    <div className="mt-4 flex justify-center md:justify-end gap-4">
+                      <a 
+                        href="https://instagram.com/atelierulcuflori" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-gray-400 hover:text-primary transition-colors"
+                        aria-label="Instagram"
+                        data-testid="link-instagram-footer"
+                      >
+                        <SiInstagram className="h-5 w-5" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
