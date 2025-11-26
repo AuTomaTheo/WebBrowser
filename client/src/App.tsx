@@ -19,6 +19,8 @@ import TermsPage from "@/pages/TermsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
 import DeliveryPage from "@/pages/DeliveryPage";
 import FAQPage from "@/pages/FAQPage";
+import ServiciiPage from "@/pages/ServiciiPage";
+import GaleriePage from "@/pages/GaleriePage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -47,6 +49,8 @@ function Router() {
               <Switch>
                 <Route path="/" component={Home} />
                 <Route path="/despre-noi" component={About} />
+                <Route path="/servicii" component={ServiciiPage} />
+                <Route path="/galerie" component={GaleriePage} />
                 <Route path="/event-planning" component={EventPlanning} />
                 <Route path="/rentals" component={Rentals} />
                 <Route path="/workshops" component={Workshops} />

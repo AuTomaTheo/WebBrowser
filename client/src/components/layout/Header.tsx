@@ -11,9 +11,8 @@ import { ScrollToTopLink } from "@/components/ScrollToTopLink";
 const navItems = [
   { name: "HOME", path: "/" },
   { name: "DESPRE NOI", path: "/despre-noi" },
-  { name: "EVENT PLANNING", path: "/event-planning" },
-  { name: "RENTALS", path: "/rentals" },
-  { name: "WORKSHOPS", path: "/workshops" },
+  { name: "SERVICII", path: "/servicii" },
+  { name: "GALERIE", path: "/galerie" },
   { name: "TESTIMONIALE", path: "/testimoniale" },
   { name: "CONTACT", path: "/contact" },
 ];

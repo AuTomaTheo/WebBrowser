@@ -103,29 +103,28 @@ export const popularCategories = [
 export const navLinks = [
   { id: 1, title: "HOME", path: "/" },
   { id: 2, title: "DESPRE NOI", path: "/despre-noi" },
-  { id: 4, title: "EVENT PLANNING", path: "/event-planning" },
-  { id: 5, title: "RENTALS", path: "/rentals" },
-  { id: 6, title: "WORKSHOPS", path: "/workshops" },
-  { id: 7, title: "TESTIMONIALE", path: "/testimoniale" },
-  { id: 8, title: "CONTACT", path: "/contact" },
+  { id: 3, title: "SERVICII", path: "/servicii" },
+  { id: 4, title: "GALERIE", path: "/galerie" },
+  { id: 5, title: "TESTIMONIALE", path: "/testimoniale" },
+  { id: 6, title: "CONTACT", path: "/contact" },
 ];
 
 // Footer quick links
 export const quickLinks = [
   { id: 1, title: "Despre noi", path: "/despre-noi" },
-  { id: 2, title: "Servicii", path: "/services" },
+  { id: 2, title: "Servicii", path: "/servicii" },
   { id: 3, title: "Galerie", path: "/galerie" },
-  { id: 4, title: "Blog", path: "/blog" },
+  { id: 4, title: "Testimoniale", path: "/testimoniale" },
   { id: 5, title: "Contact", path: "/contact" },
 ];
 
 // Footer services links
 export const serviceLinks = [
-  { id: 2, title: "Event planning", path: "/event-planning" },
-  { id: 4, title: "Aranjamente corporative", path: "/contact" },
-  { id: 5, title: "Workshops florale", path: "/workshops" },
-  { id: 6, title: "Închirieri", path: "/rentals" },
-  { id: 7, title: "Testimoniale", path: "/testimoniale" },
+  { id: 1, title: "Decoruri de eveniment", path: "/servicii" },
+  { id: 2, title: "Aranjamente florale", path: "/servicii" },
+  { id: 3, title: "Închirieri", path: "/servicii" },
+  { id: 4, title: "Workshops", path: "/servicii" },
+  { id: 5, title: "Galerie", path: "/galerie" },
 ];
 
 // Footer account links
