@@ -692,6 +692,68 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Gallery events routes
+  app.get("/api/gallery/events", async (req: Request, res: Response) => {
+    try {
+      const category = req.query.category as string | undefined;
+      let events;
+      
+      if (category) {
+        events = await storage.getGalleryEventsByCategory(category);
+      } else {
+        events = await storage.getGalleryEvents();
+      }
+      
+      res.json(events);
+    } catch (error) {
+      console.error("Error fetching gallery events:", error);
+      res.status(500).json({ message: "Failed to fetch gallery events" });
+    }
+  });
+  
+  app.get("/api/gallery/events/:eventId/images", async (req: Request, res: Response) => {
+    try {
+      const eventId = parseInt(req.params.eventId);
+      const images = await storage.getGalleryImagesByEvent(eventId);
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching event images:", error);
+      res.status(500).json({ message: "Failed to fetch event images" });
+    }
+  });
+  
+  // Create gallery event (admin only)
+  app.post("/api/admin/gallery/events", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { name, category } = req.body;
+      if (!name || !category) {
+        return res.status(400).json({ message: "Name and category are required" });
+      }
+      const event = await storage.createGalleryEvent({ name, category });
+      res.status(201).json(event);
+    } catch (error) {
+      console.error("Error creating gallery event:", error);
+      res.status(500).json({ message: "Failed to create gallery event" });
+    }
+  });
+  
+  // Delete gallery event (admin only)
+  app.delete("/api/admin/gallery/events/:id", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteGalleryEvent(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Event not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting gallery event:", error);
+      res.status(500).json({ message: "Failed to delete gallery event" });
+    }
+  });
+  
   // Serve objects from storage
   app.get("/objects/:objectPath(*)", async (req: Request, res: Response) => {
     const objectStorageService = new ObjectStorageService();

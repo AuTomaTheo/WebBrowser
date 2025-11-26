@@ -5,7 +5,8 @@ import {
   verificationTokens, type VerificationToken, type InsertVerificationToken,
   wishlists, type Wishlist, type InsertWishlist,
   wishlistItems, type WishlistItem, type InsertWishlistItem,
-  galleryImages, type GalleryImage, type InsertGalleryImage
+  galleryImages, type GalleryImage, type InsertGalleryImage,
+  galleryEvents, type GalleryEvent, type InsertGalleryEvent
 } from "@shared/schema";
 import session from "express-session";
 import { db } from "./db";
@@ -51,8 +52,15 @@ export interface IStorage {
   // Gallery image methods
   getGalleryImages(): Promise<GalleryImage[]>;
   getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
+  getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
   deleteGalleryImage(id: number): Promise<boolean>;
+  
+  // Gallery event methods
+  getGalleryEvents(): Promise<GalleryEvent[]>;
+  getGalleryEventsByCategory(category: string): Promise<GalleryEvent[]>;
+  createGalleryEvent(event: InsertGalleryEvent): Promise<GalleryEvent>;
+  deleteGalleryEvent(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -64,6 +72,7 @@ export class MemStorage implements IStorage {
   private wishlists: Map<number, Wishlist>;
   private wishlistItems: Map<number, WishlistItem>;
   private galleryImagesMap: Map<number, GalleryImage>;
+  private galleryEventsMap: Map<number, GalleryEvent>;
   
   private currentUserId: number;
   private currentSubscriberId: number;
@@ -72,6 +81,7 @@ export class MemStorage implements IStorage {
   private currentWishlistId: number;
   private currentWishlistItemId: number;
   private currentGalleryImageId: number;
+  private currentGalleryEventId: number;
   
   constructor() {
     // Initialize in-memory session store
@@ -88,6 +98,7 @@ export class MemStorage implements IStorage {
     this.wishlists = new Map();
     this.wishlistItems = new Map();
     this.galleryImagesMap = new Map();
+    this.galleryEventsMap = new Map();
     
     this.currentUserId = 1;
     this.currentSubscriberId = 1;
@@ -96,6 +107,7 @@ export class MemStorage implements IStorage {
     this.currentWishlistId = 1;
     this.currentWishlistItemId = 1;
     this.currentGalleryImageId = 1;
+    this.currentGalleryEventId = 1;
     
     // Initialize with sample data
     this.initializeTestimonials();
@@ -346,6 +358,12 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
   }
   
+  async getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]> {
+    return Array.from(this.galleryImagesMap.values())
+      .filter(img => img.eventId === eventId)
+      .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+  }
+  
   async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
     const id = this.currentGalleryImageId++;
     const now = new Date();
@@ -354,6 +372,7 @@ export class MemStorage implements IStorage {
       filename: insertImage.filename,
       url: insertImage.url,
       category: insertImage.category,
+      eventId: insertImage.eventId || null,
       alt: insertImage.alt || null,
       uploadedAt: now
     };
@@ -363,6 +382,36 @@ export class MemStorage implements IStorage {
   
   async deleteGalleryImage(id: number): Promise<boolean> {
     return this.galleryImagesMap.delete(id);
+  }
+  
+  // Gallery event methods
+  async getGalleryEvents(): Promise<GalleryEvent[]> {
+    return Array.from(this.galleryEventsMap.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+  
+  async getGalleryEventsByCategory(category: string): Promise<GalleryEvent[]> {
+    return Array.from(this.galleryEventsMap.values())
+      .filter(event => event.category === category)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+  
+  async createGalleryEvent(insertEvent: InsertGalleryEvent): Promise<GalleryEvent> {
+    const id = this.currentGalleryEventId++;
+    const now = new Date();
+    const event: GalleryEvent = {
+      id,
+      name: insertEvent.name,
+      category: insertEvent.category,
+      createdAt: now
+    };
+    this.galleryEventsMap.set(id, event);
+    return event;
+  }
+  
+  async deleteGalleryEvent(id: number): Promise<boolean> {
+    return this.galleryEventsMap.delete(id);
   }
 }
 
@@ -570,6 +619,14 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(galleryImages.uploadedAt));
   }
   
+  async getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]> {
+    return db
+      .select()
+      .from(galleryImages)
+      .where(eq(galleryImages.eventId, eventId))
+      .orderBy(desc(galleryImages.uploadedAt));
+  }
+  
   async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
     const [image] = await db
       .insert(galleryImages)
@@ -586,6 +643,38 @@ export class DatabaseStorage implements IStorage {
       .delete(galleryImages)
       .where(eq(galleryImages.id, id))
       .returning({ id: galleryImages.id });
+    return result.length > 0;
+  }
+  
+  // Gallery event methods
+  async getGalleryEvents(): Promise<GalleryEvent[]> {
+    return db.select().from(galleryEvents).orderBy(desc(galleryEvents.createdAt));
+  }
+  
+  async getGalleryEventsByCategory(category: string): Promise<GalleryEvent[]> {
+    return db
+      .select()
+      .from(galleryEvents)
+      .where(eq(galleryEvents.category, category))
+      .orderBy(desc(galleryEvents.createdAt));
+  }
+  
+  async createGalleryEvent(insertEvent: InsertGalleryEvent): Promise<GalleryEvent> {
+    const [event] = await db
+      .insert(galleryEvents)
+      .values({
+        ...insertEvent,
+        createdAt: new Date()
+      })
+      .returning();
+    return event;
+  }
+  
+  async deleteGalleryEvent(id: number): Promise<boolean> {
+    const result = await db
+      .delete(galleryEvents)
+      .where(eq(galleryEvents.id, id))
+      .returning({ id: galleryEvents.id });
     return result.length > 0;
   }
 }

@@ -2,11 +2,11 @@ import { useState, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Upload, Trash2, Image, Loader2, X, Check } from "lucide-react";
-import type { GalleryImage } from "@shared/schema";
+import { queryClient } from "@/lib/queryClient";
+import { Upload, Trash2, Image, Loader2, X, Check, FolderPlus, Folder, ChevronRight, ChevronDown, Plus } from "lucide-react";
+import type { GalleryImage, GalleryEvent } from "@shared/schema";
 
 const categories = [
   { id: "Nunți", label: "Nunți" },
@@ -25,33 +25,90 @@ interface UploadingFile {
 export default function AdminGalleryUpload() {
   const [adminKey, setAdminKey] = useState("");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({
+    "Nunți": true,
+    "Botezuri": false,
+    "Workshops": false,
+    "Tematice": false
+  });
+  const [selectedEvent, setSelectedEvent] = useState<GalleryEvent | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("Nunți");
+  const [newEventName, setNewEventName] = useState("");
+  const [showNewEventInput, setShowNewEventInput] = useState<string | null>(null);
+  
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const { data: images, isLoading: imagesLoading } = useQuery<GalleryImage[]>({
-    queryKey: ['/api/gallery'],
+  const { data: events, isLoading: eventsLoading } = useQuery<GalleryEvent[]>({
+    queryKey: ['/api/gallery/events'],
     enabled: isAuthenticated
   });
 
-  const deleteMutation = useMutation({
+  const { data: eventImages, isLoading: imagesLoading } = useQuery<GalleryImage[]>({
+    queryKey: ['/api/gallery/events', selectedEvent?.id, 'images'],
+    queryFn: async () => {
+      if (!selectedEvent) return [];
+      const res = await fetch(`/api/gallery/events/${selectedEvent.id}/images`);
+      return res.json();
+    },
+    enabled: isAuthenticated && !!selectedEvent
+  });
+
+  const createEventMutation = useMutation({
+    mutationFn: async ({ name, category }: { name: string; category: string }) => {
+      const res = await fetch(`/api/admin/gallery/events?key=${adminKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, category })
+      });
+      if (!res.ok) throw new Error('Failed to create event');
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+      setNewEventName("");
+      setShowNewEventInput(null);
+      toast({ title: "Folder creat cu succes" });
+    },
+    onError: () => {
+      toast({ title: "Eroare la creare folder", variant: "destructive" });
+    }
+  });
+
+  const deleteEventMutation = useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`/api/admin/gallery/${id}?key=${adminKey}`, {
+      await fetch(`/api/admin/gallery/events/${id}?key=${adminKey}`, {
         method: 'DELETE'
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
-      toast({ title: "Imagine ștearsă cu succes" });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+      setSelectedEvent(null);
+      toast({ title: "Folder șters cu succes" });
     },
     onError: () => {
       toast({ title: "Eroare la ștergere", variant: "destructive" });
     }
   });
 
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [loginError, setLoginError] = useState("");
+  const deleteImageMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await fetch(`/api/admin/gallery/${id}?key=${adminKey}`, {
+        method: 'DELETE'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events', selectedEvent?.id, 'images'] });
+      toast({ title: "Imagine ștearsă cu succes" });
+    },
+    onError: () => {
+      toast({ title: "Eroare la ștergere", variant: "destructive" });
+    }
+  });
 
   const handleLogin = async () => {
     if (!adminKey.trim()) return;
@@ -75,7 +132,7 @@ export default function AdminGalleryUpload() {
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0 || !selectedEvent) return;
 
     const imageFiles = Array.from(files).filter(f => 
       f.type.startsWith('image/')
@@ -96,7 +153,7 @@ export default function AdminGalleryUpload() {
 
     for (let i = 0; i < imageFiles.length; i++) {
       const file = imageFiles[i];
-      await uploadSingleFile(file, uploadingFiles.length + i);
+      await uploadSingleFile(file);
     }
 
     if (fileInputRef.current) {
@@ -104,9 +161,11 @@ export default function AdminGalleryUpload() {
     }
   };
 
-  const uploadSingleFile = async (file: File, index: number) => {
+  const uploadSingleFile = async (file: File) => {
+    if (!selectedEvent) return;
+    
     try {
-      setUploadingFiles(prev => prev.map((f, idx) => 
+      setUploadingFiles(prev => prev.map((f) => 
         f.file === file ? { ...f, status: 'uploading' as const, progress: 10 } : f
       ));
 
@@ -148,7 +207,8 @@ export default function AdminGalleryUpload() {
         body: JSON.stringify({
           filename: file.name,
           url: objectPath,
-          category: selectedCategory,
+          category: selectedEvent.category,
+          eventId: selectedEvent.id,
           alt: file.name.replace(/\.[^/.]+$/, "")
         })
       });
@@ -161,7 +221,7 @@ export default function AdminGalleryUpload() {
         f.file === file ? { ...f, status: 'done' as const, progress: 100 } : f
       ));
 
-      queryClient.invalidateQueries({ queryKey: ['/api/gallery'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events', selectedEvent.id, 'images'] });
 
     } catch (error) {
       console.error('Upload error:', error);
@@ -173,6 +233,23 @@ export default function AdminGalleryUpload() {
 
   const clearCompletedUploads = () => {
     setUploadingFiles(prev => prev.filter(f => f.status !== 'done'));
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  const getEventsForCategory = (category: string) => {
+    return events?.filter(e => e.category === category) || [];
+  };
+
+  const handleCreateEvent = (category: string) => {
+    if (newEventName.trim()) {
+      createEventMutation.mutate({ name: newEventName.trim(), category });
+    }
   };
 
   if (!isAuthenticated) {
@@ -226,122 +303,229 @@ export default function AdminGalleryUpload() {
       <Helmet>
         <title>Admin - Galerie</title>
       </Helmet>
-      <div className="min-h-screen bg-gray-100 p-4 md:p-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <h1 className="text-2xl font-bold mb-6">Administrare Galerie</h1>
-            
-            <div className="flex flex-col md:flex-row gap-4 items-start md:items-end mb-6">
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-2">Categorie</label>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-full md:w-[200px]" data-testid="select-category">
-                    <SelectValue placeholder="Alege categoria" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                  data-testid="input-file-upload"
-                />
-                <Button 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="gap-2"
-                  data-testid="button-upload"
-                >
-                  <Upload className="h-4 w-4" />
-                  Încarcă imagini
-                </Button>
-              </div>
-            </div>
-
-            {uploadingFiles.length > 0 && (
-              <div className="mb-6 border rounded-lg p-4">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="font-medium">Încărcare în progres</h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={clearCompletedUploads}
-                    data-testid="button-clear-completed"
-                  >
-                    Șterge completate
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  {uploadingFiles.map((uf, idx) => (
-                    <div key={idx} className="flex items-center gap-3 text-sm">
-                      {uf.status === 'uploading' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
-                      {uf.status === 'done' && <Check className="h-4 w-4 text-green-500" />}
-                      {uf.status === 'error' && <X className="h-4 w-4 text-red-500" />}
-                      {uf.status === 'pending' && <div className="h-4 w-4 rounded-full border-2 border-gray-300" />}
-                      <span className="flex-1 truncate">{uf.file.name}</span>
-                      <span className="text-muted-foreground">{uf.progress}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+      <div className="min-h-screen bg-gray-100 flex">
+        <div className="w-72 bg-white shadow-lg flex-shrink-0 overflow-y-auto">
+          <div className="p-4 border-b">
+            <h1 className="text-lg font-bold">Administrare Galerie</h1>
           </div>
-
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4">Imagini existente</h2>
-            
-            {imagesLoading ? (
-              <div className="flex justify-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          
+          <nav className="p-2">
+            {categories.map((cat) => (
+              <div key={cat.id} className="mb-1">
+                <button
+                  onClick={() => toggleCategory(cat.id)}
+                  className="w-full flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 text-left font-medium"
+                  data-testid={`category-${cat.id}`}
+                >
+                  {expandedCategories[cat.id] ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                  <span>{cat.label}</span>
+                </button>
+                
+                {expandedCategories[cat.id] && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {eventsLoading ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        Se încarcă...
+                      </div>
+                    ) : (
+                      <>
+                        {getEventsForCategory(cat.id).map((event) => (
+                          <div
+                            key={event.id}
+                            className={`group flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer text-sm ${
+                              selectedEvent?.id === event.id
+                                ? 'bg-primary/10 text-primary'
+                                : 'hover:bg-gray-100'
+                            }`}
+                            onClick={() => setSelectedEvent(event)}
+                          >
+                            <Folder className="h-4 w-4 flex-shrink-0" />
+                            <span className="truncate flex-1">{event.name}</span>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (confirm('Ștergi acest folder?')) {
+                                  deleteEventMutation.mutate(event.id);
+                                }
+                              }}
+                              className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {showNewEventInput === cat.id ? (
+                          <div className="flex items-center gap-1 px-2">
+                            <Input
+                              value={newEventName}
+                              onChange={(e) => setNewEventName(e.target.value)}
+                              placeholder="Nume folder..."
+                              className="h-8 text-sm"
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') handleCreateEvent(cat.id);
+                                if (e.key === 'Escape') {
+                                  setShowNewEventInput(null);
+                                  setNewEventName("");
+                                }
+                              }}
+                              autoFocus
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                              onClick={() => handleCreateEvent(cat.id)}
+                              disabled={createEventMutation.isPending}
+                            >
+                              <Check className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                              onClick={() => {
+                                setShowNewEventInput(null);
+                                setNewEventName("");
+                              }}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setShowNewEventInput(cat.id);
+                              setNewEventName("");
+                            }}
+                            className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-100 text-sm text-muted-foreground w-full"
+                          >
+                            <FolderPlus className="h-4 w-4" />
+                            <span>Folder nou</span>
+                          </button>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
-            ) : images && images.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {images.map((image) => (
-                  <div key={image.id} className="relative group">
-                    <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                      <img
-                        src={image.url}
-                        alt={image.alt || image.filename}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(image.id)}
-                        disabled={deleteMutation.isPending}
-                        data-testid={`button-delete-${image.id}`}
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex-1 p-6 overflow-y-auto">
+          {selectedEvent ? (
+            <div className="max-w-5xl">
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">{selectedEvent.category}</div>
+                    <h2 className="text-xl font-bold">{selectedEvent.name}</h2>
+                  </div>
+                  <div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      data-testid="input-file-upload"
+                    />
+                    <Button 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="gap-2"
+                      data-testid="button-upload"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Încarcă imagini
+                    </Button>
+                  </div>
+                </div>
+
+                {uploadingFiles.length > 0 && (
+                  <div className="mb-6 border rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="font-medium">Încărcare în progres</h3>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={clearCompletedUploads}
+                        data-testid="button-clear-completed"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        Șterge completate
                       </Button>
                     </div>
-                    <div className="mt-2">
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                        {image.category}
-                      </span>
+                    <div className="space-y-2">
+                      {uploadingFiles.map((uf, idx) => (
+                        <div key={idx} className="flex items-center gap-3 text-sm">
+                          {uf.status === 'uploading' && <Loader2 className="h-4 w-4 animate-spin text-blue-500" />}
+                          {uf.status === 'done' && <Check className="h-4 w-4 text-green-500" />}
+                          {uf.status === 'error' && <X className="h-4 w-4 text-red-500" />}
+                          {uf.status === 'pending' && <div className="h-4 w-4 rounded-full border-2 border-gray-300" />}
+                          <span className="flex-1 truncate">{uf.file.name}</span>
+                          <span className="text-muted-foreground">{uf.progress}%</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
-            ) : (
-              <div className="text-center py-12 text-muted-foreground">
-                <Image className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>Nu există imagini în galerie</p>
+
+              <div className="bg-white rounded-lg shadow-lg p-6">
+                <h3 className="text-lg font-bold mb-4">Imagini</h3>
+                
+                {imagesLoading ? (
+                  <div className="flex justify-center py-12">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  </div>
+                ) : eventImages && eventImages.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {eventImages.map((image) => (
+                      <div key={image.id} className="relative group">
+                        <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                          <img
+                            src={image.url}
+                            alt={image.alt || image.filename}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteImageMutation.mutate(image.id)}
+                            disabled={deleteImageMutation.isPending}
+                            data-testid={`button-delete-${image.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12 text-muted-foreground">
+                    <Image className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>Nu există imagini în acest folder</p>
+                    <p className="text-sm mt-2">Folosește butonul "Încarcă imagini" pentru a adăuga</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center text-muted-foreground">
+                <Folder className="h-16 w-16 mx-auto mb-4 opacity-30" />
+                <p className="text-lg">Selectează un folder din stânga</p>
+                <p className="text-sm mt-2">sau creează unul nou pentru a începe</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>
