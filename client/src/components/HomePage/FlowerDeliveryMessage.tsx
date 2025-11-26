@@ -12,11 +12,12 @@ export default function FlowerDeliveryMessage() {
           </div>
         </div>
         
-        <h2 className="font-dancing text-3xl text-primary mb-4">Povești cu livrare la domiciliu</h2>
+        <p className="text-textMedium max-w-2xl mx-auto mb-4 leading-relaxed">
+          De mai bine de 4 ani de zile mi-am transformat visul în realitate. Am iubit din totdeauna florile însă în ultimii ani am învățat să le prețuiesc, îngrijesc și ofer sub o altă formă.
+        </p>
         
-        <p className="text-textMedium max-w-2xl mx-auto mb-6">
-          Ziua mamei, aniversarea celei mai bune prietene sau celebrarea legământului vostru, toate aceste momente merită să fie 
-          sărbătorite cu emoții și flori parfumate. Suntem aici pentru a-ți acorda o mână de ajutor!
+        <p className="text-primary font-medium max-w-2xl mx-auto mb-6">
+          Bună, sunt Oana de la Atelierul cu Flori și încerc să livrez mai mult decât un serviciu!
         </p>
         
         {/* Button commented out per user request
