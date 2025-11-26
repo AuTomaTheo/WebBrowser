@@ -126,6 +126,8 @@ export default function Header() {
             </Link>
           </div>
 
+          {/* Empty placeholder to balance the layout (user actions commented out) */}
+          <div className="flex items-center" style={{ minWidth: '100px' }}></div>
           {/* User Actions - commented out per user request
           <div className="flex items-center space-x-2">
             {user ? (
