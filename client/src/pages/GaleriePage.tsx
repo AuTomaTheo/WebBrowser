@@ -1,90 +1,36 @@
 import { Helmet } from "react-helmet";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { X, Loader2, ChevronRight, ChevronDown, Folder } from "lucide-react";
 import type { GalleryImage, GalleryEvent } from "@shared/schema";
 
 type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
 
-interface LocalGalleryImage {
+interface DisplayImage {
+  id: string;
   src: string;
   alt: string;
   category: GalleryCategory;
 }
 
-const sampleImages: LocalGalleryImage[] = [
-  {
-    src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decor floral nuntă elegantă",
-    category: "Nunți"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament floral pentru nuntă",
-    category: "Nunți"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decor masă nuntă",
-    category: "Nunți"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Buchet mireasă",
-    category: "Nunți"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1544078751-58fee2d8a03b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament botez roz",
-    category: "Botezuri"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decor botez elegant",
-    category: "Botezuri"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Flori delicate botez",
-    category: "Botezuri"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Workshop aranjamente florale",
-    category: "Workshops"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Atelier floral",
-    category: "Workshops"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Workshop buchete",
-    category: "Workshops"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament Halloween",
-    category: "Tematice"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decorațiuni Paște",
-    category: "Tematice"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1512909006721-3d6018887383?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament Crăciun",
-    category: "Tematice"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament corporate tematic",
-    category: "Tematice"
-  }
+const sampleImages: DisplayImage[] = [
+  { id: "s1", src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor floral nuntă elegantă", category: "Nunți" },
+  { id: "s2", src: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament floral pentru nuntă", category: "Nunți" },
+  { id: "s3", src: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor masă nuntă", category: "Nunți" },
+  { id: "s4", src: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Buchet mireasă", category: "Nunți" },
+  { id: "s5", src: "https://images.unsplash.com/photo-1544078751-58fee2d8a03b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament botez roz", category: "Botezuri" },
+  { id: "s6", src: "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decor botez elegant", category: "Botezuri" },
+  { id: "s7", src: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Flori delicate botez", category: "Botezuri" },
+  { id: "s8", src: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Workshop aranjamente florale", category: "Workshops" },
+  { id: "s9", src: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Atelier floral", category: "Workshops" },
+  { id: "s10", src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Workshop buchete", category: "Workshops" },
+  { id: "s11", src: "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament Halloween", category: "Tematice" },
+  { id: "s12", src: "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Decorațiuni Paște", category: "Tematice" },
+  { id: "s13", src: "https://images.unsplash.com/photo-1512909006721-3d6018887383?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament Crăciun", category: "Tematice" },
+  { id: "s14", src: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=70", alt: "Aranjament corporate tematic", category: "Tematice" }
 ];
 
 const categories = [
@@ -95,18 +41,23 @@ const categories = [
   { id: "tematice", label: "Tematice", dbId: "Tematice" }
 ];
 
+const IMAGES_PER_PAGE = 12;
+
 export default function GaleriePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("toate");
   const [selectedEvent, setSelectedEvent] = useState<GalleryEvent | null>(null);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [visibleCount, setVisibleCount] = useState(IMAGES_PER_PAGE);
 
   const { data: events } = useQuery<GalleryEvent[]>({
-    queryKey: ['/api/gallery/events']
+    queryKey: ['/api/gallery/events'],
+    staleTime: 5 * 60 * 1000
   });
 
   const { data: dbImages, isLoading } = useQuery<GalleryImage[]>({
-    queryKey: ['/api/gallery']
+    queryKey: ['/api/gallery'],
+    staleTime: 5 * 60 * 1000
   });
 
   const { data: eventImages } = useQuery<GalleryImage[]>({
@@ -116,36 +67,40 @@ export default function GaleriePage() {
       const res = await fetch(`/api/gallery/events/${selectedEvent.id}/images`);
       return res.json();
     },
-    enabled: !!selectedEvent
+    enabled: !!selectedEvent,
+    staleTime: 5 * 60 * 1000
   });
 
   const hasDbImages = dbImages && dbImages.length > 0;
   const hasEvents = events && events.length > 0;
 
-  const getEventsForCategory = (categoryDbId: string) => {
+  const getEventsForCategory = useCallback((categoryDbId: string) => {
     return events?.filter(e => e.category === categoryDbId) || [];
-  };
+  }, [events]);
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = useCallback((categoryId: string) => {
     setExpandedCategories(prev => ({
       ...prev,
       [categoryId]: !prev[categoryId]
     }));
-  };
+  }, []);
 
-  const handleCategoryClick = (category: typeof categories[0]) => {
+  const handleCategoryClick = useCallback((category: typeof categories[0]) => {
     setActiveCategory(category.id);
     setSelectedEvent(null);
-  };
+    setVisibleCount(IMAGES_PER_PAGE);
+  }, []);
 
-  const handleEventClick = (event: GalleryEvent, categoryId: string) => {
+  const handleEventClick = useCallback((event: GalleryEvent, categoryId: string) => {
     setSelectedEvent(event);
     setActiveCategory(categoryId);
-  };
+    setVisibleCount(IMAGES_PER_PAGE);
+  }, []);
 
-  const getDisplayImages = () => {
+  const displayImages = useMemo((): DisplayImage[] => {
     if (selectedEvent && eventImages) {
       return eventImages.map(img => ({ 
+        id: `db-${img.id}`,
         src: img.url, 
         alt: img.alt || img.filename, 
         category: img.category as GalleryCategory 
@@ -155,6 +110,7 @@ export default function GaleriePage() {
     if (activeCategory === "toate") {
       if (hasDbImages) {
         return dbImages.map(img => ({ 
+          id: `db-${img.id}`,
           src: img.url, 
           alt: img.alt || img.filename, 
           category: img.category as GalleryCategory 
@@ -168,6 +124,7 @@ export default function GaleriePage() {
       return dbImages
         .filter(img => img.category === categoryDbId)
         .map(img => ({ 
+          id: `db-${img.id}`,
           src: img.url, 
           alt: img.alt || img.filename, 
           category: img.category as GalleryCategory 
@@ -178,9 +135,17 @@ export default function GaleriePage() {
       const cat = categories.find(c => c.id === activeCategory);
       return cat?.dbId === img.category;
     });
-  };
+  }, [activeCategory, selectedEvent, dbImages, eventImages, hasDbImages]);
 
-  const displayImages = getDisplayImages();
+  const visibleImages = useMemo(() => {
+    return displayImages.slice(0, visibleCount);
+  }, [displayImages, visibleCount]);
+
+  const hasMore = visibleCount < displayImages.length;
+
+  const loadMore = useCallback(() => {
+    setVisibleCount(prev => prev + IMAGES_PER_PAGE);
+  }, []);
 
   return (
     <>
@@ -271,30 +236,42 @@ export default function GaleriePage() {
                 <div className="flex justify-center py-12">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-              ) : displayImages.length > 0 ? (
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                  {displayImages.map((image, index) => (
-                    <div 
-                      key={`${activeCategory}-${selectedEvent?.id || 'all'}-${index}`}
-                      className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
-                      onClick={() => setSelectedImage(image.src)}
-                      data-testid={`gallery-image-${index}`}
-                    >
-                      <img 
-                        src={image.src} 
-                        alt={image.alt}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
-                        <div className="p-4 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                          <span className="text-white text-sm font-medium bg-primary/80 px-3 py-1 rounded">
-                            {image.category}
-                          </span>
-                        </div>
+              ) : visibleImages.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    {visibleImages.map((image, index) => (
+                      <div 
+                        key={image.id}
+                        className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
+                        onClick={() => setSelectedImage(image.src.replace('w=400', 'w=1200').replace('q=70', 'q=85'))}
+                        data-testid={`gallery-image-${index}`}
+                      >
+                        <img 
+                          src={image.src} 
+                          alt={image.alt}
+                          loading="lazy"
+                          decoding="async"
+                          width={400}
+                          height={400}
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
                       </div>
+                    ))}
+                  </div>
+                  
+                  {hasMore && (
+                    <div className="text-center mt-8">
+                      <Button 
+                        variant="outline" 
+                        onClick={loadMore}
+                        data-testid="button-load-more"
+                      >
+                        Încarcă mai multe
+                      </Button>
                     </div>
-                  ))}
-                </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">
