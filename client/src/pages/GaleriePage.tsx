@@ -232,11 +232,7 @@ export default function GaleriePage() {
                 </div>
               )}
               
-              {isLoading ? (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                </div>
-              ) : visibleImages.length > 0 ? (
+              {visibleImages.length > 0 ? (
                 <>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     {visibleImages.map((image, index) => (
@@ -272,21 +268,13 @@ export default function GaleriePage() {
                     </div>
                   )}
                 </>
-              ) : (
+              ) : !isLoading ? (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">
                     Nu există imagini în această categorie momentan.
                   </p>
                 </div>
-              )}
-              
-              {!hasDbImages && !selectedEvent && (
-                <div className="text-center mt-12">
-                  <p className="text-muted-foreground italic">
-                    Această galerie va fi actualizată cu mai multe imagini în curând.
-                  </p>
-                </div>
-              )}
+              ) : null}
             </main>
           </div>
         </div>
