@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X, Loader2 } from "lucide-react";
-import type { GalleryImage } from "@shared/schema";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { X, Loader2, ChevronRight, ChevronDown, Folder } from "lucide-react";
+import type { GalleryImage, GalleryEvent } from "@shared/schema";
 
 type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
 
@@ -88,39 +88,99 @@ const sampleImages: LocalGalleryImage[] = [
 ];
 
 const categories = [
-  { id: "toate", label: "Toate" },
-  { id: "nunti", label: "Nunți" },
-  { id: "botezuri", label: "Botezuri" },
-  { id: "workshops", label: "Workshops" },
-  { id: "tematice", label: "Tematice" }
+  { id: "toate", label: "Toate", dbId: null },
+  { id: "nunti", label: "Nunți", dbId: "Nunți" },
+  { id: "botezuri", label: "Botezuri", dbId: "Botezuri" },
+  { id: "workshops", label: "Workshops", dbId: "Workshops" },
+  { id: "tematice", label: "Tematice", dbId: "Tematice" }
 ];
-
-const categoryMap: Record<string, GalleryCategory> = {
-  "nunti": "Nunți",
-  "botezuri": "Botezuri",
-  "workshops": "Workshops",
-  "tematice": "Tematice"
-};
 
 export default function GaleriePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("toate");
+  const [selectedEvent, setSelectedEvent] = useState<GalleryEvent | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+
+  const { data: events } = useQuery<GalleryEvent[]>({
+    queryKey: ['/api/gallery/events']
+  });
 
   const { data: dbImages, isLoading } = useQuery<GalleryImage[]>({
     queryKey: ['/api/gallery']
   });
 
-  const hasDbImages = dbImages && dbImages.length > 0;
+  const { data: eventImages } = useQuery<GalleryImage[]>({
+    queryKey: ['/api/gallery/events', selectedEvent?.id, 'images'],
+    queryFn: async () => {
+      if (!selectedEvent) return [];
+      const res = await fetch(`/api/gallery/events/${selectedEvent.id}/images`);
+      return res.json();
+    },
+    enabled: !!selectedEvent
+  });
 
-  const filteredImages = activeCategory === "toate"
-    ? hasDbImages 
-      ? dbImages.map(img => ({ src: img.url, alt: img.alt || img.filename, category: img.category as GalleryCategory }))
-      : sampleImages
-    : hasDbImages
-      ? dbImages
-          .filter(img => img.category === categoryMap[activeCategory])
-          .map(img => ({ src: img.url, alt: img.alt || img.filename, category: img.category as GalleryCategory }))
-      : sampleImages.filter(img => img.category === categoryMap[activeCategory]);
+  const hasDbImages = dbImages && dbImages.length > 0;
+  const hasEvents = events && events.length > 0;
+
+  const getEventsForCategory = (categoryDbId: string) => {
+    return events?.filter(e => e.category === categoryDbId) || [];
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => ({
+      ...prev,
+      [categoryId]: !prev[categoryId]
+    }));
+  };
+
+  const handleCategoryClick = (category: typeof categories[0]) => {
+    setActiveCategory(category.id);
+    setSelectedEvent(null);
+  };
+
+  const handleEventClick = (event: GalleryEvent, categoryId: string) => {
+    setSelectedEvent(event);
+    setActiveCategory(categoryId);
+  };
+
+  const getDisplayImages = () => {
+    if (selectedEvent && eventImages) {
+      return eventImages.map(img => ({ 
+        src: img.url, 
+        alt: img.alt || img.filename, 
+        category: img.category as GalleryCategory 
+      }));
+    }
+
+    if (activeCategory === "toate") {
+      if (hasDbImages) {
+        return dbImages.map(img => ({ 
+          src: img.url, 
+          alt: img.alt || img.filename, 
+          category: img.category as GalleryCategory 
+        }));
+      }
+      return sampleImages;
+    }
+
+    const categoryDbId = categories.find(c => c.id === activeCategory)?.dbId;
+    if (hasDbImages && categoryDbId) {
+      return dbImages
+        .filter(img => img.category === categoryDbId)
+        .map(img => ({ 
+          src: img.url, 
+          alt: img.alt || img.filename, 
+          category: img.category as GalleryCategory 
+        }));
+    }
+
+    return sampleImages.filter(img => {
+      const cat = categories.find(c => c.id === activeCategory);
+      return cat?.dbId === img.category;
+    });
+  };
+
+  const displayImages = getDisplayImages();
 
   return (
     <>
@@ -129,81 +189,137 @@ export default function GaleriePage() {
         <meta name="description" content="Explorează galeria noastră cu cele mai frumoase aranjamente florale pentru nunți, botezuri, workshops și aranjamente tematice." />
       </Helmet>
       
-      <div className="py-16 bg-white min-h-[70vh]">
+      <div className="py-12 bg-white min-h-[70vh]">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="font-playfair text-3xl text-primary mb-6">GALERIE</h1>
-            <div className="w-20 h-1 bg-secondary mx-auto mb-8"></div>
+          <div className="text-center mb-10">
+            <h1 className="font-playfair text-3xl text-primary mb-4">GALERIE</h1>
+            <div className="w-20 h-1 bg-secondary mx-auto mb-6"></div>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Descoperă creațiile noastre florale și lasă-te inspirat pentru evenimentul tău special.
             </p>
           </div>
           
-          <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full mb-10">
-            <TabsList className="w-full max-w-2xl mx-auto flex justify-center bg-gray-100/50 p-1 rounded-lg">
-              {categories.map((cat) => (
-                <TabsTrigger 
-                  key={cat.id} 
-                  value={cat.id}
-                  className="flex-1 px-4 py-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all"
-                  data-testid={`gallery-tab-${cat.id}`}
-                >
-                  {cat.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-          
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-              {filteredImages.map((image, index) => (
-                <div 
-                  key={`${activeCategory}-${index}`}
-                  className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
-                  onClick={() => setSelectedImage(image.src)}
-                  data-testid={`gallery-image-${index}`}
-                >
-                  <img 
-                    src={image.src} 
-                    alt={image.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
-                    <div className="p-4 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                      <span className="text-white text-sm font-medium bg-primary/80 px-3 py-1 rounded">
-                        {image.category}
-                      </span>
+          <div className="flex gap-8">
+            <aside className="w-56 flex-shrink-0">
+              <nav className="sticky top-24 space-y-1">
+                {categories.map((cat) => {
+                  const categoryEvents = cat.dbId ? getEventsForCategory(cat.dbId) : [];
+                  const hasSubfolders = hasEvents && categoryEvents.length > 0;
+                  const isExpanded = expandedCategories[cat.id];
+                  const isActive = activeCategory === cat.id && !selectedEvent;
+                  
+                  return (
+                    <div key={cat.id}>
+                      <button
+                        onClick={() => {
+                          if (hasSubfolders) {
+                            toggleCategory(cat.id);
+                          }
+                          handleCategoryClick(cat);
+                        }}
+                        className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg text-left transition-colors ${
+                          isActive
+                            ? 'bg-primary/10 text-primary font-medium'
+                            : 'hover:bg-gray-100 text-gray-700'
+                        }`}
+                        data-testid={`gallery-nav-${cat.id}`}
+                      >
+                        {hasSubfolders && (
+                          isExpanded ? (
+                            <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                          )
+                        )}
+                        <span className={hasSubfolders ? '' : 'ml-6'}>{cat.label}</span>
+                      </button>
+                      
+                      {hasSubfolders && isExpanded && (
+                        <div className="ml-6 mt-1 space-y-1">
+                          {categoryEvents.map((event) => (
+                            <button
+                              key={event.id}
+                              onClick={() => handleEventClick(event, cat.id)}
+                              className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-left text-sm transition-colors ${
+                                selectedEvent?.id === event.id
+                                  ? 'bg-primary/10 text-primary font-medium'
+                                  : 'hover:bg-gray-100 text-gray-600'
+                              }`}
+                              data-testid={`gallery-event-${event.id}`}
+                            >
+                              <Folder className="h-4 w-4 flex-shrink-0" />
+                              <span className="truncate">{event.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  );
+                })}
+              </nav>
+            </aside>
+
+            <main className="flex-1">
+              {selectedEvent && (
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold text-gray-800">{selectedEvent.name}</h2>
+                  <p className="text-sm text-muted-foreground">{selectedEvent.category}</p>
                 </div>
-              ))}
-            </div>
-          )}
-          
-          {filteredImages.length === 0 && !isLoading && (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">
-                Nu există imagini în această categorie momentan.
-              </p>
-            </div>
-          )}
-          
-          {!hasDbImages && (
-            <div className="text-center mt-12">
-              <p className="text-muted-foreground italic">
-                Această galerie va fi actualizată cu mai multe imagini în curând.
-              </p>
-            </div>
-          )}
+              )}
+              
+              {isLoading ? (
+                <div className="flex justify-center py-12">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                </div>
+              ) : displayImages.length > 0 ? (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                  {displayImages.map((image, index) => (
+                    <div 
+                      key={`${activeCategory}-${selectedEvent?.id || 'all'}-${index}`}
+                      className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
+                      onClick={() => setSelectedImage(image.src)}
+                      data-testid={`gallery-image-${index}`}
+                    >
+                      <img 
+                        src={image.src} 
+                        alt={image.alt}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
+                        <div className="p-4 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                          <span className="text-white text-sm font-medium bg-primary/80 px-3 py-1 rounded">
+                            {image.category}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">
+                    Nu există imagini în această categorie momentan.
+                  </p>
+                </div>
+              )}
+              
+              {!hasDbImages && !selectedEvent && (
+                <div className="text-center mt-12">
+                  <p className="text-muted-foreground italic">
+                    Această galerie va fi actualizată cu mai multe imagini în curând.
+                  </p>
+                </div>
+              )}
+            </main>
+          </div>
         </div>
       </div>
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent className="max-w-4xl p-0 bg-transparent border-0">
+          <VisuallyHidden>
+            <DialogTitle>Imagine galerie</DialogTitle>
+          </VisuallyHidden>
           <button 
             onClick={() => setSelectedImage(null)}
             className="absolute top-4 right-4 z-10 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
