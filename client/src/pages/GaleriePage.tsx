@@ -1,10 +1,10 @@
 import { Helmet } from "react-helmet";
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { X, ArrowLeft } from "lucide-react";
+import { X, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import type { GalleryImage, GalleryEvent } from "@shared/schema";
 
 type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
@@ -43,7 +43,7 @@ const categories = [
 const IMAGES_PER_PAGE = 12;
 
 export default function GaleriePage() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("nunti");
   const [selectedEvent, setSelectedEvent] = useState<GalleryEvent | null>(null);
   const [visibleCount, setVisibleCount] = useState(IMAGES_PER_PAGE);
@@ -140,6 +140,41 @@ export default function GaleriePage() {
     setVisibleCount(prev => prev + IMAGES_PER_PAGE);
   }, []);
 
+  const openImage = useCallback((index: number) => {
+    setSelectedImageIndex(index);
+  }, []);
+
+  const closeImage = useCallback(() => {
+    setSelectedImageIndex(null);
+  }, []);
+
+  const goToPrevious = useCallback(() => {
+    if (selectedImageIndex !== null && selectedImageIndex > 0) {
+      setSelectedImageIndex(selectedImageIndex - 1);
+    }
+  }, [selectedImageIndex]);
+
+  const goToNext = useCallback(() => {
+    if (selectedImageIndex !== null && selectedImageIndex < visibleImages.length - 1) {
+      setSelectedImageIndex(selectedImageIndex + 1);
+    }
+  }, [selectedImageIndex, visibleImages.length]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (selectedImageIndex === null) return;
+      if (e.key === 'ArrowLeft') goToPrevious();
+      if (e.key === 'ArrowRight') goToNext();
+      if (e.key === 'Escape') closeImage();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedImageIndex, goToPrevious, goToNext, closeImage]);
+
+  const selectedImage = selectedImageIndex !== null ? visibleImages[selectedImageIndex] : null;
+  const canGoPrevious = selectedImageIndex !== null && selectedImageIndex > 0;
+  const canGoNext = selectedImageIndex !== null && selectedImageIndex < visibleImages.length - 1;
+
   return (
     <>
       <Helmet>
@@ -235,7 +270,7 @@ export default function GaleriePage() {
                       <div 
                         key={image.id}
                         className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
-                        onClick={() => setSelectedImage(image.src.replace('w=400', 'w=1200').replace('q=70', 'q=85'))}
+                        onClick={() => openImage(index)}
                         data-testid={`gallery-image-${index}`}
                       >
                         <img 
@@ -278,24 +313,52 @@ export default function GaleriePage() {
         </div>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+      <Dialog open={!!selectedImage} onOpenChange={closeImage}>
         <DialogContent className="max-w-4xl p-0 bg-transparent border-0">
           <VisuallyHidden>
             <DialogTitle>Imagine galerie</DialogTitle>
           </VisuallyHidden>
+          
           <button 
-            onClick={() => setSelectedImage(null)}
+            onClick={closeImage}
             className="absolute top-4 right-4 z-10 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
             data-testid="close-gallery-modal"
           >
             <X className="h-6 w-6" />
           </button>
+          
+          {canGoPrevious && (
+            <button 
+              onClick={goToPrevious}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-10 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+              data-testid="gallery-prev"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </button>
+          )}
+          
+          {canGoNext && (
+            <button 
+              onClick={goToNext}
+              className="absolute right-16 top-1/2 -translate-y-1/2 z-10 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+              data-testid="gallery-next"
+            >
+              <ChevronRight className="h-6 w-6" />
+            </button>
+          )}
+          
           {selectedImage && (
             <img 
-              src={selectedImage} 
-              alt="Imagine mărită"
+              src={selectedImage.src.replace('w=400', 'w=1200').replace('q=70', 'q=85')} 
+              alt={selectedImage.alt}
               className="w-full h-auto rounded-lg"
             />
+          )}
+          
+          {selectedImageIndex !== null && visibleImages.length > 1 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white text-sm bg-black/50 px-3 py-1 rounded-full">
+              {selectedImageIndex + 1} / {visibleImages.length}
+            </div>
           )}
         </DialogContent>
       </Dialog>
