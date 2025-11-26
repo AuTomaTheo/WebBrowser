@@ -1,59 +1,119 @@
 import { Helmet } from "react-helmet";
 import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { X } from "lucide-react";
 
-const galleryImages = [
+type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
+
+interface GalleryImage {
+  src: string;
+  alt: string;
+  category: GalleryCategory;
+}
+
+const galleryImages: GalleryImage[] = [
+  {
+    src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Decor floral nuntă elegantă",
+    category: "Nunți"
+  },
   {
     src: "https://images.unsplash.com/photo-1487530811176-3780de880c2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     alt: "Aranjament floral pentru nuntă",
     category: "Nunți"
   },
   {
-    src: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Buchet de flori",
-    category: "Buchete"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament floral elegant",
-    category: "Aranjamente"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Workshop floral",
-    category: "Workshops"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decor eveniment",
-    category: "Evenimente"
-  },
-  {
-    src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Flori colorate",
-    category: "Buchete"
-  },
-  {
     src: "https://images.unsplash.com/photo-1469371670807-013ccf25f16a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Decor nuntă",
+    alt: "Decor masă nuntă",
     category: "Nunți"
   },
   {
+    src: "https://images.unsplash.com/photo-1478146896981-b80fe463b330?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Buchet mireasă",
+    category: "Nunți"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1544078751-58fee2d8a03b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Aranjament botez roz",
+    category: "Botezuri"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1522748906645-95d8adfd52c7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Decor botez elegant",
+    category: "Botezuri"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1563241527-3004b7be0ffd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Flori delicate botez",
+    category: "Botezuri"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1464699908537-0954e50791ee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Workshop aranjamente florale",
+    category: "Workshops"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1508610048659-a06b669e3321?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Atelier floral",
+    category: "Workshops"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Workshop buchete",
+    category: "Workshops"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1509557965875-b88c97052f0e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Aranjament Halloween",
+    category: "Tematice"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1457089328109-e5d9bd499191?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Decorațiuni Paște",
+    category: "Tematice"
+  },
+  {
+    src: "https://images.unsplash.com/photo-1512909006721-3d6018887383?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
+    alt: "Aranjament Crăciun",
+    category: "Tematice"
+  },
+  {
     src: "https://images.unsplash.com/photo-1561181286-d3fee7d55364?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-    alt: "Aranjament floral special",
-    category: "Aranjamente"
+    alt: "Aranjament corporate tematic",
+    category: "Tematice"
   }
+];
+
+const categories = [
+  { id: "toate", label: "Toate" },
+  { id: "nunti", label: "Nunți" },
+  { id: "botezuri", label: "Botezuri" },
+  { id: "workshops", label: "Workshops" },
+  { id: "tematice", label: "Tematice" }
 ];
 
 export default function GaleriePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState("toate");
+
+  const filteredImages = activeCategory === "toate" 
+    ? galleryImages 
+    : galleryImages.filter(img => {
+        const categoryMap: Record<string, GalleryCategory> = {
+          "nunti": "Nunți",
+          "botezuri": "Botezuri",
+          "workshops": "Workshops",
+          "tematice": "Tematice"
+        };
+        return img.category === categoryMap[activeCategory];
+      });
 
   return (
     <>
       <Helmet>
         <title>Galerie - Atelierul cu flori</title>
-        <meta name="description" content="Explorează galeria noastră cu cele mai frumoase aranjamente florale, decoruri de evenimente și creații unice de la Atelierul cu flori." />
+        <meta name="description" content="Explorează galeria noastră cu cele mai frumoase aranjamente florale pentru nunți, botezuri, workshops și aranjamente tematice." />
       </Helmet>
       
       <div className="py-16 bg-white min-h-[70vh]">
@@ -66,10 +126,25 @@ export default function GaleriePage() {
             </p>
           </div>
           
+          <Tabs value={activeCategory} onValueChange={setActiveCategory} className="w-full mb-10">
+            <TabsList className="w-full max-w-2xl mx-auto flex justify-center bg-gray-100/50 p-1 rounded-lg">
+              {categories.map((cat) => (
+                <TabsTrigger 
+                  key={cat.id} 
+                  value={cat.id}
+                  className="flex-1 px-4 py-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-sm rounded-md transition-all"
+                  data-testid={`gallery-tab-${cat.id}`}
+                >
+                  {cat.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-            {galleryImages.map((image, index) => (
+            {filteredImages.map((image, index) => (
               <div 
-                key={index}
+                key={`${activeCategory}-${index}`}
                 className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
                 onClick={() => setSelectedImage(image.src)}
                 data-testid={`gallery-image-${index}`}
@@ -89,6 +164,14 @@ export default function GaleriePage() {
               </div>
             ))}
           </div>
+          
+          {filteredImages.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">
+                Nu există imagini în această categorie momentan.
+              </p>
+            </div>
+          )}
           
           <div className="text-center mt-12">
             <p className="text-muted-foreground italic">
