@@ -83,13 +83,8 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Contul Meu</h4>
             <ul className="space-y-2">
               <li>
-                <ScrollToTopLink href="/autentificare" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/auth" className="text-gray-300 hover:text-white transition">
                   Autentificare
-                </ScrollToTopLink>
-              </li>
-              <li>
-                <ScrollToTopLink href="/inregistrare" className="text-gray-300 hover:text-white transition">
-                  Înregistrare
                 </ScrollToTopLink>
               </li>
               <li>
