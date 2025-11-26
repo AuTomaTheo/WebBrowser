@@ -15,6 +15,10 @@ import SearchResultsPage from "@/pages/SearchResultsPage";
 import AuthPage from "@/pages/auth-page";
 import ProfilePage from "@/pages/ProfilePage";
 import WishlistPage from "@/pages/WishlistPage";
+import TermsPage from "@/pages/TermsPage";
+import PrivacyPage from "@/pages/PrivacyPage";
+import DeliveryPage from "@/pages/DeliveryPage";
+import FAQPage from "@/pages/FAQPage";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import ScrollToTop from "@/components/ScrollToTop";
@@ -49,6 +53,10 @@ function Router() {
                 <Route path="/testimoniale" component={Testimonials} />
                 <Route path="/contact" component={Contact} />
                 <Route path="/search" component={SearchResultsPage} />
+                <Route path="/termeni-conditii" component={TermsPage} />
+                <Route path="/politica-confidentialitate" component={PrivacyPage} />
+                <Route path="/politica-livrare" component={DeliveryPage} />
+                <Route path="/intrebari-frecvente" component={FAQPage} />
                 <ProtectedRoute path="/profile" component={ProfilePage} />
                 <ProtectedRoute path="/wishlist" component={WishlistPage} />
                 <Route component={NotFound} />
