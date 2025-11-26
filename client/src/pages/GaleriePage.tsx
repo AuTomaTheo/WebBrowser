@@ -351,7 +351,7 @@ export default function GaleriePage() {
             <img 
               src={selectedImage.src.replace('w=400', 'w=1200').replace('q=70', 'q=85')} 
               alt={selectedImage.alt}
-              className="w-full h-auto rounded-lg"
+              className="max-w-full max-h-[85vh] w-auto h-auto mx-auto rounded-lg object-contain"
             />
           )}
           
