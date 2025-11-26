@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Facebook, Instagram, Twitter } from 'lucide-react';
-import { quickLinks, serviceLinks, accountLinks } from '@/lib/data';
+import { quickLinks, serviceLinks } from '@/lib/data';
+// import { accountLinks } from '@/lib/data'; // Commented out per user request
 
 export default function Footer() {
   return (
@@ -54,7 +55,7 @@ export default function Footer() {
             </ul>
           </div>
           
-          {/* My Account */}
+          {/* My Account - commented out per user request
           <div>
             <h3 className="font-playfair text-xl mb-4">Contul meu</h3>
             <ul className="space-y-2">
@@ -67,6 +68,7 @@ export default function Footer() {
               ))}
             </ul>
           </div>
+          */}
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
