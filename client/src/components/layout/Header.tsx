@@ -128,9 +128,11 @@ export default function Header() {
             </div>
 
             <div className="flex items-center">
+              {/* Account authentication - commented out per user request
               <ScrollToTopLink href="/autentificare" className="mr-4 text-sm font-medium hover:text-secondary transition">
                 Autentificare
               </ScrollToTopLink>
+              */}
               <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" className="hidden md:block">
                 <FaYoutube className="h-5 w-5 text-red-600" />
               </a>

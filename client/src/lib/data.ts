@@ -127,10 +127,10 @@ export const serviceLinks = [
   { id: 5, title: "Galerie", path: "/galerie" },
 ];
 
-// Footer account links
-export const accountLinks = [
-  { id: 1, title: "Autentificare", path: "/auth" },
-  { id: 3, title: "Favorite", path: "/wishlist" },
-  { id: 6, title: "Profil", path: "/profile" },
-  { id: 7, title: "Contact", path: "/contact" },
-];
+// Footer account links - commented out per user request
+// export const accountLinks = [
+//   { id: 1, title: "Autentificare", path: "/auth" },
+//   { id: 3, title: "Favorite", path: "/wishlist" },
+//   { id: 6, title: "Profil", path: "/profile" },
+//   { id: 7, title: "Contact", path: "/contact" },
+// ];

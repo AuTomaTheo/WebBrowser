@@ -57,28 +57,29 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Servicii</h4>
             <ul className="space-y-2">
               <li>
-                <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
                   Decoruri de Eveniment
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/rentals" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
                   Închirieri
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/workshops" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
                   Workshops
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/testimoniale" className="text-gray-300 hover:text-white transition">
-                  Testimoniale
+                <ScrollToTopLink href="/galerie" className="text-gray-300 hover:text-white transition">
+                  Galerie
                 </ScrollToTopLink>
               </li>
             </ul>
           </div>
           
+          {/* Account section - commented out per user request
           <div>
             <h4 className="font-serif text-xl mb-4">Contul Meu</h4>
             <ul className="space-y-2">
@@ -99,6 +100,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
+          */}
         </div>
         
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400">
