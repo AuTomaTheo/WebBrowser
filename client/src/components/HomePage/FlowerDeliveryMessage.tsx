@@ -19,11 +19,13 @@ export default function FlowerDeliveryMessage() {
           sărbătorite cu emoții și flori parfumate. Suntem aici pentru a-ți acorda o mână de ajutor!
         </p>
         
+        {/* Button commented out per user request
         <Link href="/shop">
           <Button className="bg-primary text-white px-6 py-3 font-medium rounded hover:bg-opacity-90 transition">
             FLORĂRIE ONLINE
           </Button>
         </Link>
+        */}
       </div>
     </section>
   );
