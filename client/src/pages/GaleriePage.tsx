@@ -1,18 +1,20 @@
 import { Helmet } from "react-helmet";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
+import type { GalleryImage } from "@shared/schema";
 
 type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
 
-interface GalleryImage {
+interface LocalGalleryImage {
   src: string;
   alt: string;
   category: GalleryCategory;
 }
 
-const galleryImages: GalleryImage[] = [
+const sampleImages: LocalGalleryImage[] = [
   {
     src: "https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
     alt: "Decor floral nuntă elegantă",
@@ -93,21 +95,32 @@ const categories = [
   { id: "tematice", label: "Tematice" }
 ];
 
+const categoryMap: Record<string, GalleryCategory> = {
+  "nunti": "Nunți",
+  "botezuri": "Botezuri",
+  "workshops": "Workshops",
+  "tematice": "Tematice"
+};
+
 export default function GaleriePage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState("toate");
 
-  const filteredImages = activeCategory === "toate" 
-    ? galleryImages 
-    : galleryImages.filter(img => {
-        const categoryMap: Record<string, GalleryCategory> = {
-          "nunti": "Nunți",
-          "botezuri": "Botezuri",
-          "workshops": "Workshops",
-          "tematice": "Tematice"
-        };
-        return img.category === categoryMap[activeCategory];
-      });
+  const { data: dbImages, isLoading } = useQuery<GalleryImage[]>({
+    queryKey: ['/api/gallery']
+  });
+
+  const hasDbImages = dbImages && dbImages.length > 0;
+
+  const filteredImages = activeCategory === "toate"
+    ? hasDbImages 
+      ? dbImages.map(img => ({ src: img.url, alt: img.alt || img.filename, category: img.category as GalleryCategory }))
+      : sampleImages
+    : hasDbImages
+      ? dbImages
+          .filter(img => img.category === categoryMap[activeCategory])
+          .map(img => ({ src: img.url, alt: img.alt || img.filename, category: img.category as GalleryCategory }))
+      : sampleImages.filter(img => img.category === categoryMap[activeCategory]);
 
   return (
     <>
@@ -141,31 +154,37 @@ export default function GaleriePage() {
             </TabsList>
           </Tabs>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
-            {filteredImages.map((image, index) => (
-              <div 
-                key={`${activeCategory}-${index}`}
-                className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
-                onClick={() => setSelectedImage(image.src)}
-                data-testid={`gallery-image-${index}`}
-              >
-                <img 
-                  src={image.src} 
-                  alt={image.alt}
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
-                  <div className="p-4 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                    <span className="text-white text-sm font-medium bg-primary/80 px-3 py-1 rounded">
-                      {image.category}
-                    </span>
+          {isLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-6xl mx-auto">
+              {filteredImages.map((image, index) => (
+                <div 
+                  key={`${activeCategory}-${index}`}
+                  className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
+                  onClick={() => setSelectedImage(image.src)}
+                  data-testid={`gallery-image-${index}`}
+                >
+                  <img 
+                    src={image.src} 
+                    alt={image.alt}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-300 flex items-end">
+                    <div className="p-4 w-full translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <span className="text-white text-sm font-medium bg-primary/80 px-3 py-1 rounded">
+                        {image.category}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
           
-          {filteredImages.length === 0 && (
+          {filteredImages.length === 0 && !isLoading && (
             <div className="text-center py-12">
               <p className="text-muted-foreground">
                 Nu există imagini în această categorie momentan.
@@ -173,11 +192,13 @@ export default function GaleriePage() {
             </div>
           )}
           
-          <div className="text-center mt-12">
-            <p className="text-muted-foreground italic">
-              Această galerie va fi actualizată cu mai multe imagini în curând.
-            </p>
-          </div>
+          {!hasDbImages && (
+            <div className="text-center mt-12">
+              <p className="text-muted-foreground italic">
+                Această galerie va fi actualizată cu mai multe imagini în curând.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

@@ -2,16 +2,14 @@ import express, { type Express, Request, Response, NextFunction } from "express"
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
-  insertSubscriberSchema, 
-  insertProductSchema, 
-  insertCartItemSchema, 
-  insertOrderSchema,
-  insertOrderItemSchema
+  insertSubscriberSchema,
+  insertGalleryImageSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import Stripe from "stripe";
+import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 if (!process.env.STRIPE_SECRET_KEY) {
   console.warn("Missing STRIPE_SECRET_KEY environment variable");
@@ -603,6 +601,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   app.use("/api", apiRouter);
+  
+  // Gallery image routes (public - fetches images)
+  app.get("/api/gallery", async (req: Request, res: Response) => {
+    try {
+      const category = req.query.category as string | undefined;
+      let images;
+      
+      if (category && category !== "toate") {
+        images = await storage.getGalleryImagesByCategory(category);
+      } else {
+        images = await storage.getGalleryImages();
+      }
+      
+      res.json(images);
+    } catch (error) {
+      console.error("Error fetching gallery images:", error);
+      res.status(500).json({ message: "Failed to fetch gallery images" });
+    }
+  });
+  
+  // Admin gallery routes (protected by secret key)
+  const ADMIN_SECRET = process.env.ADMIN_SECRET_KEY || "admin-secret-key-change-me";
+  
+  const isAdminAuthenticated = (req: Request, res: Response, next: NextFunction) => {
+    const secretKey = req.query.key || req.headers['x-admin-key'];
+    if (secretKey === ADMIN_SECRET) {
+      return next();
+    }
+    res.status(401).json({ message: "Unauthorized" });
+  };
+  
+  // Get upload URL for gallery image
+  app.post("/api/admin/gallery/upload-url", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { filename } = req.body;
+      if (!filename) {
+        return res.status(400).json({ message: "Filename is required" });
+      }
+      
+      const objectStorageService = new ObjectStorageService();
+      const { uploadURL, objectPath } = await objectStorageService.getGalleryUploadURL(filename);
+      
+      res.json({ uploadURL, objectPath });
+    } catch (error) {
+      console.error("Error getting upload URL:", error);
+      res.status(500).json({ message: "Failed to get upload URL" });
+    }
+  });
+  
+  // Save gallery image metadata after upload
+  app.post("/api/admin/gallery/save", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const imageData = insertGalleryImageSchema.parse(req.body);
+      const image = await storage.createGalleryImage(imageData);
+      res.status(201).json(image);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Error saving gallery image:", error);
+      res.status(500).json({ message: "Failed to save gallery image" });
+    }
+  });
+  
+  // Delete gallery image
+  app.delete("/api/admin/gallery/:id", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteGalleryImage(id);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Image not found" });
+      }
+      
+      res.status(204).end();
+    } catch (error) {
+      console.error("Error deleting gallery image:", error);
+      res.status(500).json({ message: "Failed to delete gallery image" });
+    }
+  });
+  
+  // Serve objects from storage
+  app.get("/objects/:objectPath(*)", async (req: Request, res: Response) => {
+    const objectStorageService = new ObjectStorageService();
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.sendStatus(404);
+      }
+      return res.sendStatus(500);
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

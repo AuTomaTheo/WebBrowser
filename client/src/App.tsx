@@ -21,18 +21,22 @@ import DeliveryPage from "@/pages/DeliveryPage";
 import FAQPage from "@/pages/FAQPage";
 import ServiciiPage from "@/pages/ServiciiPage";
 import GaleriePage from "@/pages/GaleriePage";
+import AdminGalleryUpload from "@/pages/AdminGalleryUpload";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import ScrollToTop from "@/components/ScrollToTop";
 
 // These pages will have their own layouts
-const PAGES_WITHOUT_LAYOUT = ["/auth"];
+const PAGES_WITHOUT_LAYOUT = ["/auth", "/admin"];
 
 function Router() {
   return (
     <Switch>
       {/* Auth page without Layout */}
       <Route path="/auth" component={AuthPage} />
+      
+      {/* Admin pages without Layout */}
+      <Route path="/admin/gallery" component={AdminGalleryUpload} />
       
       {/* Routes with Layout */}
       <Route path="*">

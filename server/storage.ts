@@ -4,7 +4,8 @@ import {
   testimonials, type Testimonial, type InsertTestimonial,
   verificationTokens, type VerificationToken, type InsertVerificationToken,
   wishlists, type Wishlist, type InsertWishlist,
-  wishlistItems, type WishlistItem, type InsertWishlistItem
+  wishlistItems, type WishlistItem, type InsertWishlistItem,
+  galleryImages, type GalleryImage, type InsertGalleryImage
 } from "@shared/schema";
 import session from "express-session";
 import { db } from "./db";
@@ -46,6 +47,12 @@ export interface IStorage {
   getWishlistItems(wishlistId: number): Promise<WishlistItem[]>;
   addToWishlist(wishlistItem: InsertWishlistItem): Promise<WishlistItem>;
   removeFromWishlist(wishlistItemId: number): Promise<boolean>;
+  
+  // Gallery image methods
+  getGalleryImages(): Promise<GalleryImage[]>;
+  getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
+  createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
+  deleteGalleryImage(id: number): Promise<boolean>;
 }
 
 export class MemStorage implements IStorage {
@@ -56,6 +63,7 @@ export class MemStorage implements IStorage {
   private verificationTokens: Map<number, VerificationToken>;
   private wishlists: Map<number, Wishlist>;
   private wishlistItems: Map<number, WishlistItem>;
+  private galleryImagesMap: Map<number, GalleryImage>;
   
   private currentUserId: number;
   private currentSubscriberId: number;
@@ -63,6 +71,7 @@ export class MemStorage implements IStorage {
   private currentVerificationTokenId: number;
   private currentWishlistId: number;
   private currentWishlistItemId: number;
+  private currentGalleryImageId: number;
   
   constructor() {
     // Initialize in-memory session store
@@ -78,6 +87,7 @@ export class MemStorage implements IStorage {
     this.verificationTokens = new Map();
     this.wishlists = new Map();
     this.wishlistItems = new Map();
+    this.galleryImagesMap = new Map();
     
     this.currentUserId = 1;
     this.currentSubscriberId = 1;
@@ -85,6 +95,7 @@ export class MemStorage implements IStorage {
     this.currentVerificationTokenId = 1;
     this.currentWishlistId = 1;
     this.currentWishlistItemId = 1;
+    this.currentGalleryImageId = 1;
     
     // Initialize with sample data
     this.initializeTestimonials();
@@ -321,6 +332,38 @@ export class MemStorage implements IStorage {
     this.wishlistItems = this.wishlistItems || new Map();
     return this.wishlistItems.delete(wishlistItemId);
   }
+  
+  // Gallery image methods
+  async getGalleryImages(): Promise<GalleryImage[]> {
+    return Array.from(this.galleryImagesMap.values()).sort(
+      (a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime()
+    );
+  }
+  
+  async getGalleryImagesByCategory(category: string): Promise<GalleryImage[]> {
+    return Array.from(this.galleryImagesMap.values())
+      .filter(img => img.category === category)
+      .sort((a, b) => b.uploadedAt.getTime() - a.uploadedAt.getTime());
+  }
+  
+  async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
+    const id = this.currentGalleryImageId++;
+    const now = new Date();
+    const image: GalleryImage = {
+      id,
+      filename: insertImage.filename,
+      url: insertImage.url,
+      category: insertImage.category,
+      alt: insertImage.alt || null,
+      uploadedAt: now
+    };
+    this.galleryImagesMap.set(id, image);
+    return image;
+  }
+  
+  async deleteGalleryImage(id: number): Promise<boolean> {
+    return this.galleryImagesMap.delete(id);
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -511,6 +554,38 @@ export class DatabaseStorage implements IStorage {
       .where(eq(wishlistItems.id, wishlistItemId))
       .returning({ id: wishlistItems.id });
     
+    return result.length > 0;
+  }
+  
+  // Gallery image methods
+  async getGalleryImages(): Promise<GalleryImage[]> {
+    return db.select().from(galleryImages).orderBy(desc(galleryImages.uploadedAt));
+  }
+  
+  async getGalleryImagesByCategory(category: string): Promise<GalleryImage[]> {
+    return db
+      .select()
+      .from(galleryImages)
+      .where(eq(galleryImages.category, category))
+      .orderBy(desc(galleryImages.uploadedAt));
+  }
+  
+  async createGalleryImage(insertImage: InsertGalleryImage): Promise<GalleryImage> {
+    const [image] = await db
+      .insert(galleryImages)
+      .values({
+        ...insertImage,
+        uploadedAt: new Date()
+      })
+      .returning();
+    return image;
+  }
+  
+  async deleteGalleryImage(id: number): Promise<boolean> {
+    const result = await db
+      .delete(galleryImages)
+      .where(eq(galleryImages.id, id))
+      .returning({ id: galleryImages.id });
     return result.length > 0;
   }
 }

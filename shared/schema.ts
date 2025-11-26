@@ -109,3 +109,21 @@ export type Wishlist = typeof wishlists.$inferSelect;
 export type InsertWishlist = z.infer<typeof insertWishlistSchema>;
 export type WishlistItem = typeof wishlistItems.$inferSelect;
 export type InsertWishlistItem = z.infer<typeof insertWishlistItemSchema>;
+
+// Gallery images schema for admin-uploaded images
+export const galleryImages = pgTable("gallery_images", {
+  id: serial("id").primaryKey(),
+  filename: text("filename").notNull(),
+  url: text("url").notNull(),
+  category: text("category").notNull(),
+  alt: text("alt"),
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
+});
+
+export const insertGalleryImageSchema = createInsertSchema(galleryImages).omit({
+  id: true,
+  uploadedAt: true
+});
+
+export type GalleryImage = typeof galleryImages.$inferSelect;
+export type InsertGalleryImage = z.infer<typeof insertGalleryImageSchema>;
