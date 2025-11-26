@@ -8,8 +8,11 @@ interface SubscribeResponse {
   discountCode?: string;
 }
 
+const DISCOUNT_CODE = 'atelierulcuflori10';
+
 export function useSubscription() {
   const [email, setEmail] = useState('');
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -18,13 +21,9 @@ export function useSubscription() {
       const response = await apiRequest('POST', '/api/subscribe', { email });
       return response.json() as Promise<SubscribeResponse>;
     },
-    onSuccess: (data) => {
-      toast({
-        title: 'Mulțumim pentru abonare!',
-        description: `Codul tău de reducere este: ${data.discountCode || 'MILK&HONEY10'}`,
-        variant: 'default',
-      });
+    onSuccess: () => {
       setEmail('');
+      setShowSuccessDialog(true);
     },
     onError: (error: Error) => {
       toast({
@@ -48,6 +47,10 @@ export function useSubscription() {
     mutation.mutate(email);
   };
 
+  const closeSuccessDialog = () => {
+    setShowSuccessDialog(false);
+  };
+
   return {
     email,
     setEmail,
@@ -55,6 +58,9 @@ export function useSubscription() {
     isLoading: mutation.isPending,
     isSuccess: mutation.isSuccess,
     isError: mutation.isError,
-    error: mutation.error
+    error: mutation.error,
+    showSuccessDialog,
+    closeSuccessDialog,
+    discountCode: DISCOUNT_CODE
   };
 }
