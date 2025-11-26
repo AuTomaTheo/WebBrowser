@@ -16,9 +16,11 @@ export default function DeliveryStory() {
         <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
           Ziua mamei, aniversarea celei mai bune prietene sau celebrarea legământului vostru, toate aceste momente merită să fie sărbătorite cu emoții și flori parfumate. Suntem aici pentru a-ți acorda o mână de ajutor!
         </p>
+        {/* Button commented out per user request
         <Button asChild className="bg-accent hover:bg-opacity-90 text-white font-medium py-3 px-8">
           <Link href="/shop">FLORĂRIE ONLINE</Link>
         </Button>
+        */}
       </div>
     </section>
   );

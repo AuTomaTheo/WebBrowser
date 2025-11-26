@@ -14,6 +14,7 @@ export const categories = [
     image: nuntiSibotezuriPath,
     link: "/event-planning",
   },
+  /* Commented out per user request
   {
     id: 2,
     title: "Buchete personalizate",
@@ -21,6 +22,7 @@ export const categories = [
     image: buchetePerzonalizatePath,
     link: "/rentals",
   },
+  */
   {
     id: 3,
     title: "Aranjamente florale",
