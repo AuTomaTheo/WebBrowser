@@ -632,6 +632,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "Unauthorized" });
   };
   
+  // Verify admin key
+  app.get("/api/admin/verify", (req: Request, res: Response) => {
+    const secretKey = req.query.key;
+    if (secretKey === ADMIN_SECRET) {
+      return res.json({ valid: true });
+    }
+    res.status(401).json({ message: "Invalid key" });
+  });
+  
   // Get upload URL for gallery image
   app.post("/api/admin/gallery/upload-url", isAdminAuthenticated, async (req: Request, res: Response) => {
     try {

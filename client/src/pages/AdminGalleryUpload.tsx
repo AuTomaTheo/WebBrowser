@@ -50,9 +50,26 @@ export default function AdminGalleryUpload() {
     }
   });
 
-  const handleLogin = () => {
-    if (adminKey.trim()) {
-      setIsAuthenticated(true);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState("");
+
+  const handleLogin = async () => {
+    if (!adminKey.trim()) return;
+    
+    setIsLoggingIn(true);
+    setLoginError("");
+    
+    try {
+      const response = await fetch(`/api/admin/verify?key=${encodeURIComponent(adminKey)}`);
+      if (response.ok) {
+        setIsAuthenticated(true);
+      } else {
+        setLoginError("Cheie de acces invalidă");
+      }
+    } catch (error) {
+      setLoginError("Eroare la verificare");
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -175,16 +192,28 @@ export default function AdminGalleryUpload() {
               value={adminKey}
               onChange={(e) => setAdminKey(e.target.value)}
               placeholder="Cheie de acces"
-              className="w-full border rounded-md px-4 py-2 mb-4"
+              className="w-full border rounded-md px-4 py-2 mb-2"
               onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
               data-testid="input-admin-key"
+              disabled={isLoggingIn}
             />
+            {loginError && (
+              <p className="text-red-500 text-sm mb-2">{loginError}</p>
+            )}
             <Button 
               onClick={handleLogin} 
-              className="w-full"
+              className="w-full mt-2"
               data-testid="button-admin-login"
+              disabled={isLoggingIn}
             >
-              Autentificare
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Verificare...
+                </>
+              ) : (
+                "Autentificare"
+              )}
             </Button>
           </div>
         </div>
