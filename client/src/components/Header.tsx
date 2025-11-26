@@ -73,7 +73,7 @@ export default function Header() {
         <div 
           className={cn(
             "flex justify-between items-center overflow-hidden transition-all duration-300",
-            scrolled ? "max-h-0 opacity-0 py-0" : "max-h-20 opacity-100 py-2.5"
+            scrolled ? "max-h-0 opacity-0 py-0" : "max-h-24 opacity-100 py-4"
           )}
         >
           {/* Search */}
@@ -81,7 +81,7 @@ export default function Header() {
             <form onSubmit={handleSearch} className="relative flex items-center">
               <div className={cn(
                 "flex items-center transition-all duration-300 overflow-hidden",
-                isSearchExpanded ? "w-48 opacity-100" : "w-0 opacity-0"
+                isSearchExpanded ? "w-56 opacity-100" : "w-0 opacity-0"
               )}>
                 <Input
                   ref={searchInputRef}
@@ -89,16 +89,16 @@ export default function Header() {
                   placeholder="Caută..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-6 text-xs pr-6 rounded-full"
+                  className="h-9 text-sm pr-8 rounded-full"
                 />
                 <Button 
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="absolute right-0 h-5 w-5 rounded-full"
+                  className="absolute right-0 h-7 w-7 rounded-full"
                   onClick={toggleSearch}
                 >
-                  <X className="h-2.5 w-2.5 text-gray-500" />
+                  <X className="h-4 w-4 text-gray-500" />
                 </Button>
               </div>
               
@@ -107,10 +107,10 @@ export default function Header() {
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="h-6 w-6 rounded-full border border-gray-200 hover:bg-gray-50"
+                  className="h-9 w-9 rounded-full border border-gray-200 hover:bg-gray-50"
                   onClick={toggleSearch}
                 >
-                  <Search className="h-3 w-3 text-gray-500" />
+                  <Search className="h-5 w-5 text-gray-500" />
                 </Button>
               )}
             </form>
@@ -119,15 +119,15 @@ export default function Header() {
           {/* Logo (enlarged when at top) */}
           <div className="flex justify-center">
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-10 w-auto text-secondary transition-all duration-300" />
-              <span className="text-primary font-playfair text-2xl font-semibold ml-2 transition-all duration-300">
+              <LeafIcon className="h-12 w-auto text-secondary transition-all duration-300" />
+              <span className="text-primary font-playfair text-3xl font-semibold ml-3 transition-all duration-300">
                 Atelierul cu flori
               </span>
             </Link>
           </div>
 
           {/* Empty placeholder to balance the layout (user actions commented out) */}
-          <div className="flex items-center" style={{ minWidth: '100px' }}></div>
+          <div className="flex items-center" style={{ minWidth: '120px' }}></div>
           {/* User Actions - commented out per user request
           <div className="flex items-center space-x-2">
             {user ? (
@@ -175,7 +175,7 @@ export default function Header() {
         </div>
 
         {/* Navigation Menu with compact logo when scrolled */}
-        <div className="flex items-center justify-between py-1">
+        <div className="flex items-center justify-between py-2">
           {/* Compact logo that appears only when scrolled */}
           <div 
             className={cn(
@@ -184,8 +184,8 @@ export default function Header() {
             )}
           >
             <Link href="/" className="flex items-center">
-              <LeafIcon className="h-6 w-auto text-secondary" />
-              <span className="text-primary font-playfair text-sm font-medium ml-1">
+              <LeafIcon className="h-8 w-auto text-secondary" />
+              <span className="text-primary font-playfair text-base font-medium ml-1.5">
                 ACF
               </span>
             </Link>
@@ -193,16 +193,16 @@ export default function Header() {
           
           {/* Navigation links */}
           <nav className="flex justify-center flex-grow">
-            <ul className="flex space-x-4 text-[10px] tracking-wide uppercase font-medium overflow-x-auto no-scrollbar">
+            <ul className="flex space-x-6 text-xs tracking-wide uppercase font-medium overflow-x-auto no-scrollbar">
               {navLinks.map((link) => (
                 <li key={link.id}>
                   <Link 
                     href={link.path} 
                     className={cn(
-                      "relative px-0.5 py-1.5 inline-block transition-colors duration-200",
+                      "relative px-1 py-2 inline-block transition-colors duration-200",
                       location === link.path 
-                        ? "text-primary after:absolute after:bottom-[-1px] after:left-0 after:w-full after:h-[1px] after:bg-secondary" 
-                        : "text-gray-600 hover:text-primary hover:after:absolute hover:after:bottom-[-1px] hover:after:left-0 hover:after:w-full hover:after:h-[1px] hover:after:bg-secondary hover:after:transition-all hover:after:duration-300"
+                        ? "text-primary after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-secondary" 
+                        : "text-gray-600 hover:text-primary hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:w-full hover:after:h-[2px] hover:after:bg-secondary hover:after:transition-all hover:after:duration-300"
                     )}
                   >
                     {link.title}
@@ -215,28 +215,28 @@ export default function Header() {
           {/* Search button when scrolled */}
           <div className={cn(
             "flex-shrink-0 transition-all duration-300 flex items-center justify-end",
-            scrolled ? "w-[50px] opacity-100" : "w-0 opacity-0"
+            scrolled ? "w-[60px] opacity-100" : "w-0 opacity-0"
           )}>
             <form onSubmit={handleSearch} className="relative flex items-center">
               <div className={cn(
                 "flex items-center transition-all duration-300 overflow-hidden",
-                isSearchExpanded ? "w-40 opacity-100" : "w-0 opacity-0"
+                isSearchExpanded ? "w-48 opacity-100" : "w-0 opacity-0"
               )}>
                 <Input
                   type="text"
                   placeholder="Caută..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-6 text-xs pr-6 rounded-full"
+                  className="h-8 text-sm pr-8 rounded-full"
                 />
                 <Button 
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="absolute right-0 h-5 w-5 rounded-full"
+                  className="absolute right-0 h-6 w-6 rounded-full"
                   onClick={toggleSearch}
                 >
-                  <X className="h-2.5 w-2.5 text-gray-500" />
+                  <X className="h-4 w-4 text-gray-500" />
                 </Button>
               </div>
               
@@ -245,10 +245,10 @@ export default function Header() {
                   type="button" 
                   variant="ghost" 
                   size="icon" 
-                  className="h-6 w-6 rounded-full"
+                  className="h-8 w-8 rounded-full"
                   onClick={toggleSearch}
                 >
-                  <Search className="h-3 w-3 text-gray-500" />
+                  <Search className="h-4 w-4 text-gray-500" />
                 </Button>
               )}
             </form>
