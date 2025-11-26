@@ -199,9 +199,9 @@ export default function GaleriePage() {
             </p>
           </div>
           
-          <div className="flex gap-8">
-            <aside className="w-56 flex-shrink-0">
-              <nav className="sticky top-24 space-y-1">
+          <div className="flex gap-6">
+            <aside className="w-40 flex-shrink-0">
+              <nav className="sticky top-24 space-y-0.5">
                 {categories.map((cat) => {
                   const categoryEvents = cat.dbId ? getEventsForCategory(cat.dbId) : [];
                   const hasSubfolders = hasEvents && categoryEvents.length > 0;
@@ -217,7 +217,7 @@ export default function GaleriePage() {
                           }
                           handleCategoryClick(cat);
                         }}
-                        className={`w-full flex items-center gap-2 px-4 py-3 rounded-lg text-left transition-colors ${
+                        className={`w-full flex items-center gap-1.5 px-3 py-2 rounded text-sm text-left transition-colors ${
                           isActive
                             ? 'bg-primary/10 text-primary font-medium'
                             : 'hover:bg-gray-100 text-gray-700'
@@ -226,28 +226,28 @@ export default function GaleriePage() {
                       >
                         {hasSubfolders && (
                           isExpanded ? (
-                            <ChevronDown className="h-4 w-4 flex-shrink-0" />
+                            <ChevronDown className="h-3.5 w-3.5 flex-shrink-0" />
                           ) : (
-                            <ChevronRight className="h-4 w-4 flex-shrink-0" />
+                            <ChevronRight className="h-3.5 w-3.5 flex-shrink-0" />
                           )
                         )}
-                        <span className={hasSubfolders ? '' : 'ml-6'}>{cat.label}</span>
+                        <span className={hasSubfolders ? '' : 'ml-5'}>{cat.label}</span>
                       </button>
                       
                       {hasSubfolders && isExpanded && (
-                        <div className="ml-6 mt-1 space-y-1">
+                        <div className="ml-4 mt-0.5 space-y-0.5">
                           {categoryEvents.map((event) => (
                             <button
                               key={event.id}
                               onClick={() => handleEventClick(event, cat.id)}
-                              className={`w-full flex items-center gap-2 px-4 py-2 rounded-lg text-left text-sm transition-colors ${
+                              className={`w-full flex items-center gap-1.5 px-3 py-1.5 rounded text-left text-xs transition-colors ${
                                 selectedEvent?.id === event.id
                                   ? 'bg-primary/10 text-primary font-medium'
                                   : 'hover:bg-gray-100 text-gray-600'
                               }`}
                               data-testid={`gallery-event-${event.id}`}
                             >
-                              <Folder className="h-4 w-4 flex-shrink-0" />
+                              <Folder className="h-3 w-3 flex-shrink-0" />
                               <span className="truncate">{event.name}</span>
                             </button>
                           ))}
