@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { X, ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { OptimizedImage } from "@/components/OptimizedImage";
 import type { GalleryImage, GalleryEvent } from "@shared/schema";
 
 type GalleryCategory = "Nunți" | "Botezuri" | "Workshops" | "Tematice";
@@ -241,12 +242,10 @@ export default function GaleriePage() {
                         data-testid={`folder-${event.id}`}
                       >
                         {previewImage ? (
-                          <img 
-                            src={previewImage} 
+                          <OptimizedImage
+                            src={previewImage}
                             alt={event.name}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            className="w-full h-full transition-transform duration-300 group-hover:scale-105"
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-gray-200">
@@ -269,20 +268,16 @@ export default function GaleriePage() {
                     {visibleImages.map((image, index) => (
                       <div 
                         key={image.id}
-                        className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group bg-gray-100"
-                        onClick={() => openImage(index)}
-                        data-testid={`gallery-image-${index}`}
+                        className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group"
                       >
-                        <img 
-                          src={image.src} 
+                        <OptimizedImage
+                          src={image.src}
                           alt={image.alt}
-                          loading="lazy"
-                          decoding="async"
-                          width={400}
-                          height={400}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="w-full h-full transition-transform duration-300 group-hover:scale-105"
+                          onClick={() => openImage(index)}
+                          data-testid={`gallery-image-${index}`}
                         />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-200 pointer-events-none" />
                       </div>
                     ))}
                   </div>

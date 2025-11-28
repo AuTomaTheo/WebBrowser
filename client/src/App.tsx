@@ -1,4 +1,5 @@
 import { Switch, Route } from "wouter";
+import { lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -21,30 +22,53 @@ import PrivacyPage from "@/pages/PrivacyPage";
 import DeliveryPage from "@/pages/DeliveryPage";
 import FAQPage from "@/pages/FAQPage";
 import ServiciiPage from "@/pages/ServiciiPage";
-import GaleriePage from "@/pages/GaleriePage";
-import AdminGalleryUpload from "@/pages/AdminGalleryUpload";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
 import ScrollToTop from "@/components/ScrollToTop";
 
-// These pages will have their own layouts
+const LazyGaleriePage = lazy(() => import("@/pages/GaleriePage"));
+const LazyAdminGalleryUpload = lazy(() => import("@/pages/AdminGalleryUpload"));
+
+function PageLoader() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="animate-pulse flex flex-col items-center gap-4">
+        <div className="w-12 h-12 rounded-full bg-primary/20" />
+        <div className="h-2 w-24 bg-gray-200 rounded" />
+      </div>
+    </div>
+  );
+}
+
+function GaleriePage() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <LazyGaleriePage />
+    </Suspense>
+  );
+}
+
+function AdminGalleryUpload() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <LazyAdminGalleryUpload />
+    </Suspense>
+  );
+}
+
 const PAGES_WITHOUT_LAYOUT = ["/auth", "/admin"];
 
 function Router() {
   return (
     <Switch>
-      {/* Auth page without Layout */}
       <Route path="/auth" component={AuthPage} />
       
-      {/* Admin pages without Layout */}
       <Route path="/admin/gallery" component={AdminGalleryUpload} />
       
-      {/* Routes with Layout */}
       <Route path="*">
         {(params) => {
           const currentPath = params["*"];
           
-          // Don't wrap pages that have their own layout
           if (PAGES_WITHOUT_LAYOUT.some(path => currentPath.startsWith(path.substring(1)))) {
             return <NotFound />;
           }
