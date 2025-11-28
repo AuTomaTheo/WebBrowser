@@ -614,6 +614,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         images = await storage.getGalleryImages();
       }
       
+      // Cache gallery data for 5 minutes
+      res.set('Cache-Control', 'public, max-age=300');
       res.json(images);
     } catch (error) {
       console.error("Error fetching gallery images:", error);
@@ -704,6 +706,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         events = await storage.getGalleryEvents();
       }
       
+      // Cache events data for 5 minutes
+      res.set('Cache-Control', 'public, max-age=300');
       res.json(events);
     } catch (error) {
       console.error("Error fetching gallery events:", error);
@@ -754,11 +758,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Serve objects from storage
+  // Serve objects from storage with aggressive caching
   app.get("/objects/:objectPath(*)", async (req: Request, res: Response) => {
     const objectStorageService = new ObjectStorageService();
     try {
       const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      
+      // Add aggressive caching headers for images (1 year, immutable)
+      res.set('Cache-Control', 'public, max-age=31536000, immutable');
+      res.set('Vary', 'Accept-Encoding');
+      
       objectStorageService.downloadObject(objectFile, res);
     } catch (error) {
       console.error("Error serving object:", error);
