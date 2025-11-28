@@ -31,14 +31,16 @@ export default function GaleriePage() {
   const [selectedEvent, setSelectedEvent] = useState<GalleryEvent | null>(null);
   const [visibleCount, setVisibleCount] = useState(IMAGES_PER_PAGE);
 
-  const { data: events } = useQuery<GalleryEvent[]>({
+  const { data: events, isLoading: eventsLoading } = useQuery<GalleryEvent[]>({
     queryKey: ['/api/gallery/events'],
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
-  const { data: dbImages } = useQuery<GalleryImage[]>({
+  const { data: dbImages, isLoading: imagesLoading } = useQuery<GalleryImage[]>({
     queryKey: ['/api/gallery'],
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const { data: eventImages } = useQuery<GalleryImage[]>({
@@ -49,8 +51,11 @@ export default function GaleriePage() {
       return res.json();
     },
     enabled: !!selectedEvent,
-    staleTime: 5 * 60 * 1000
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
+
+  const isLoading = eventsLoading || imagesLoading;
 
   const hasDbImages = dbImages && dbImages.length > 0;
 
@@ -200,7 +205,15 @@ export default function GaleriePage() {
             </aside>
 
             <main className="flex-1">
-              {selectedEvent && (
+              {isLoading && (
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="aspect-square rounded-lg bg-gray-200 animate-pulse" />
+                  ))}
+                </div>
+              )}
+
+              {!isLoading && selectedEvent && (
                 <div className="flex items-center gap-3 mb-6">
                   <button
                     onClick={handleBackToFolders}
@@ -215,7 +228,7 @@ export default function GaleriePage() {
                 </div>
               )}
 
-              {!selectedEvent && hasFolders && (
+              {!isLoading && !selectedEvent && hasFolders && (
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                   {categoryEvents.map((event) => {
                     const previewImage = getFirstImageForEvent(event.id);
@@ -250,7 +263,7 @@ export default function GaleriePage() {
                 </div>
               )}
 
-              {(selectedEvent || !hasFolders) && visibleImages.length > 0 && (
+              {!isLoading && (selectedEvent || !hasFolders) && visibleImages.length > 0 && (
                 <>
                   <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                     {visibleImages.map((image, index) => (
@@ -288,7 +301,7 @@ export default function GaleriePage() {
                 </>
               )}
 
-              {(selectedEvent || !hasFolders) && visibleImages.length === 0 && (
+              {!isLoading && (selectedEvent || !hasFolders) && visibleImages.length === 0 && (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground">
                     Nu există imagini momentan.
