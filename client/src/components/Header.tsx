@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'wouter';
 import { navLinks } from '@/lib/data';
-import { Search, Heart, User, LogOut, X } from 'lucide-react';
+import { Search, Heart, User, LogOut, X, Instagram } from 'lucide-react';
+import { FaFacebookF } from 'react-icons/fa';
 import { LeafIcon } from './icons/CustomIcons';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
@@ -126,8 +127,27 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Empty placeholder to balance the layout (user actions commented out) */}
-          <div className="flex items-center" style={{ minWidth: '120px' }}></div>
+          {/* Social Media Links */}
+          <div className="flex items-center space-x-3" style={{ minWidth: '120px' }}>
+            <a 
+              href="https://www.instagram.com/atelierulcuflori_events?igsh=cjRiMTYzYnR3eGVs" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-pink-50 hover:border-pink-300 transition-colors"
+              data-testid="link-instagram"
+            >
+              <Instagram className="h-5 w-5 text-pink-600" />
+            </a>
+            <a 
+              href="https://www.facebook.com/share/1Bs9atf4y9/?mibextid=wwXIfr" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="h-9 w-9 rounded-full border border-gray-200 flex items-center justify-center hover:bg-blue-50 hover:border-blue-300 transition-colors"
+              data-testid="link-facebook"
+            >
+              <FaFacebookF className="h-4 w-4 text-blue-600" />
+            </a>
+          </div>
           {/* User Actions - commented out per user request
           <div className="flex items-center space-x-2">
             {user ? (

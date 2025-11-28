@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import { Facebook, Instagram, Twitter } from 'lucide-react';
+import { Facebook, Instagram } from 'lucide-react';
 import { quickLinks, serviceLinks } from '@/lib/data';
 // import { accountLinks } from '@/lib/data'; // Commented out per user request
 
@@ -15,14 +15,23 @@ export default function Footer() {
               Creăm povești florale pentru momente speciale. Fiecare aranjament este realizat cu pasiune și atenție la detalii.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-300 hover:text-secondary transition-colors">
+              <a 
+                href="https://www.facebook.com/share/1Bs9atf4y9/?mibextid=wwXIfr" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-blue-400 transition-colors"
+                data-testid="footer-link-facebook"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-gray-300 hover:text-secondary transition-colors">
+              <a 
+                href="https://www.instagram.com/atelierulcuflori_events?igsh=cjRiMTYzYnR3eGVs" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-300 hover:text-pink-400 transition-colors"
+                data-testid="footer-link-instagram"
+              >
                 <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-gray-300 hover:text-secondary transition-colors">
-                <Twitter className="h-5 w-5" />
               </a>
             </div>
           </div>
