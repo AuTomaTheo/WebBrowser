@@ -9,9 +9,9 @@ export default function Home() {
   
   return (
     <>
-      <ServiceHighlights />
-      <FlowerDeliveryMessage />
       <HeroCategories />
+      <FlowerDeliveryMessage />
+      <ServiceHighlights />
       <TestimonialsPreview />
     </>
   );
