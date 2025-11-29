@@ -48,7 +48,7 @@ export default function Contact() {
           </a>
           
           <a 
-            href="https://instagram.com/atelierulcuflori"
+            href="https://www.instagram.com/atelierulcuflori_events?igsh=cjRiMTYzYnR3eGVs"
             target="_blank"
             rel="noopener noreferrer"
             className="group"
@@ -60,7 +60,7 @@ export default function Contact() {
                   <SiInstagram className="h-7 w-7 text-secondary" />
                 </div>
                 <h3 className="font-playfair text-lg text-primary mb-2">Instagram</h3>
-                <p className="text-muted-foreground group-hover:text-primary transition-colors">@atelierulcuflori</p>
+                <p className="text-muted-foreground group-hover:text-primary transition-colors">@atelierulcuflori_events</p>
               </CardContent>
             </Card>
           </a>
