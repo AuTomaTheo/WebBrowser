@@ -43,9 +43,10 @@ export default function AdminGalleryUpload() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  const { data: events, isLoading: eventsLoading } = useQuery<GalleryEvent[]>({
+  const { data: events, isLoading: eventsLoading, refetch: refetchEvents } = useQuery<GalleryEvent[]>({
     queryKey: ['/api/gallery/events'],
-    enabled: isAuthenticated
+    enabled: isAuthenticated,
+    staleTime: 0
   });
 
   const { data: eventImages, isLoading: imagesLoading } = useQuery<GalleryImage[]>({
@@ -68,8 +69,8 @@ export default function AdminGalleryUpload() {
       if (!res.ok) throw new Error('Failed to create event');
       return res.json();
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+    onSuccess: async () => {
+      await refetchEvents();
       setNewEventName("");
       setShowNewEventInput(null);
       toast({ title: "Folder creat cu succes" });
@@ -86,8 +87,8 @@ export default function AdminGalleryUpload() {
       });
       if (!res.ok) throw new Error('Failed to delete event');
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+    onSuccess: async () => {
+      await refetchEvents();
       setSelectedEvent(null);
       toast({ title: "Folder șters cu succes" });
     },
