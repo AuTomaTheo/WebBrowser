@@ -3,7 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
   insertSubscriberSchema,
-  insertGalleryImageSchema
+  insertGalleryImageSchema,
+  insertTestimonialSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -44,7 +45,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // API routes
   const apiRouter = express.Router();
   
-  // Get testimonials
+  // Get testimonials (only approved ones for public display)
   apiRouter.get("/testimonials", async (req: Request, res: Response) => {
     try {
       const testimonials = await storage.getTestimonials();
@@ -52,6 +53,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching testimonials:", error);
       res.status(500).json({ message: "Failed to fetch testimonials" });
+    }
+  });
+  
+  // Submit a new testimonial
+  apiRouter.post("/testimonials", async (req: Request, res: Response) => {
+    try {
+      const testimonialData = insertTestimonialSchema.parse(req.body);
+      const testimonial = await storage.createTestimonial(testimonialData);
+      res.status(201).json({ 
+        message: "Mulțumim pentru recenzia ta! Va fi publicată după aprobare.",
+        testimonial 
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        return res.status(400).json({ message: validationError.message });
+      }
+      console.error("Error creating testimonial:", error);
+      res.status(500).json({ message: "A apărut o eroare. Te rugăm să încerci din nou." });
     }
   });
   

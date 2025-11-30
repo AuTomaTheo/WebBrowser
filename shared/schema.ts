@@ -43,12 +43,20 @@ export const insertSubscriberSchema = createInsertSchema(subscribers).pick({
 export const testimonials = pgTable("testimonials", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  eventType: text("event_type"),
   content: text("content").notNull(),
   rating: integer("rating").notNull(),
   displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  approved: boolean("approved").default(false),
 });
 
-export const insertTestimonialSchema = createInsertSchema(testimonials);
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({
+  id: true,
+  displayOrder: true,
+  createdAt: true,
+  approved: true,
+});
 
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
