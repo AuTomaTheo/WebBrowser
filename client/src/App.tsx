@@ -28,6 +28,7 @@ import ScrollToTop from "@/components/ScrollToTop";
 
 const LazyGaleriePage = lazy(() => import("@/pages/GaleriePage"));
 const LazyAdminGalleryUpload = lazy(() => import("@/pages/AdminGalleryUpload"));
+const LazyAdminReviews = lazy(() => import("@/pages/AdminReviews"));
 
 function PageLoader() {
   return (
@@ -56,6 +57,14 @@ function AdminGalleryUpload() {
   );
 }
 
+function AdminReviews() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <LazyAdminReviews />
+    </Suspense>
+  );
+}
+
 const PAGES_WITHOUT_LAYOUT = ["/auth", "/admin"];
 
 function Router() {
@@ -64,6 +73,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       
       <Route path="/admin/gallery" component={AdminGalleryUpload} />
+      <Route path="/admin/reviews" component={AdminReviews} />
       
       <Route path="*">
         {(params) => {

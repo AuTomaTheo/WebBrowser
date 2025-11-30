@@ -498,6 +498,15 @@ export class DatabaseStorage implements IStorage {
     return testimonial;
   }
   
+  async getAllTestimonials(): Promise<Testimonial[]> {
+    return db.select().from(testimonials)
+      .orderBy(desc(testimonials.createdAt));
+  }
+  
+  async deleteTestimonial(id: number): Promise<void> {
+    await db.delete(testimonials).where(eq(testimonials.id, id));
+  }
+  
   // Verification token methods
   async createOrUpdateVerificationToken(tokenData: InsertVerificationToken): Promise<VerificationToken> {
     // First check if token exists for this user

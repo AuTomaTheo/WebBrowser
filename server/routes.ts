@@ -62,7 +62,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const testimonialData = insertTestimonialSchema.parse(req.body);
       const testimonial = await storage.createTestimonial(testimonialData);
       res.status(201).json({ 
-        message: "Mulțumim pentru recenzia ta! Va fi publicată după aprobare.",
+        message: "Mulțumim pentru recenzia ta!",
         testimonial 
       });
     } catch (error) {
@@ -72,6 +72,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error creating testimonial:", error);
       res.status(500).json({ message: "A apărut o eroare. Te rugăm să încerci din nou." });
+    }
+  });
+  
+  // Admin: Verify password
+  apiRouter.post("/admin/verify", async (req: Request, res: Response) => {
+    try {
+      const { password } = req.body;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      
+      if (!adminPassword) {
+        return res.status(500).json({ message: "Admin password not configured" });
+      }
+      
+      if (password === adminPassword) {
+        res.json({ success: true });
+      } else {
+        res.status(401).json({ message: "Parolă incorectă" });
+      }
+    } catch (error) {
+      console.error("Error verifying admin password:", error);
+      res.status(500).json({ message: "Eroare la verificare" });
+    }
+  });
+  
+  // Admin: Delete testimonial
+  apiRouter.delete("/admin/testimonials/:id", async (req: Request, res: Response) => {
+    try {
+      const { password } = req.body;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      
+      if (!adminPassword || password !== adminPassword) {
+        return res.status(401).json({ message: "Neautorizat" });
+      }
+      
+      const id = parseInt(req.params.id);
+      await storage.deleteTestimonial(id);
+      res.json({ success: true, message: "Recenzia a fost ștearsă" });
+    } catch (error) {
+      console.error("Error deleting testimonial:", error);
+      res.status(500).json({ message: "Eroare la ștergere" });
+    }
+  });
+  
+  // Admin: Get all testimonials (including unapproved)
+  apiRouter.post("/admin/testimonials", async (req: Request, res: Response) => {
+    try {
+      const { password } = req.body;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      
+      if (!adminPassword || password !== adminPassword) {
+        return res.status(401).json({ message: "Neautorizat" });
+      }
+      
+      const testimonials = await storage.getAllTestimonials();
+      res.json(testimonials);
+    } catch (error) {
+      console.error("Error fetching all testimonials:", error);
+      res.status(500).json({ message: "Eroare la încărcarea recenziilor" });
     }
   });
   
