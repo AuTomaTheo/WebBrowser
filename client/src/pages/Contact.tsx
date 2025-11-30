@@ -32,7 +32,7 @@ export default function Contact() {
           </a>
           
           <a 
-            href="mailto:contact@atelierulcuflori.ro"
+            href="mailto:atelierulcuflori1@gmail.com"
             className="group"
             data-testid="link-email"
           >
@@ -42,7 +42,7 @@ export default function Contact() {
                   <Mail className="h-7 w-7 text-secondary" />
                 </div>
                 <h3 className="font-playfair text-lg text-primary mb-2">Email</h3>
-                <p className="text-muted-foreground group-hover:text-primary transition-colors">contact@atelierulcuflori.ro</p>
+                <p className="text-muted-foreground group-hover:text-primary transition-colors">atelierulcuflori1@gmail.com</p>
               </CardContent>
             </Card>
           </a>
