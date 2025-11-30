@@ -75,9 +75,10 @@ export default function AdminGalleryUpload() {
       return res.json();
     },
     onSuccess: async () => {
-      await refetchEvents();
       setNewEventName("");
       setShowNewEventInput(null);
+      await queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/gallery/events'] });
       toast({ title: "Folder creat cu succes" });
     },
     onError: () => {
@@ -90,14 +91,17 @@ export default function AdminGalleryUpload() {
       const res = await fetch(`/api/admin/gallery/events/${id}?key=${adminKey}`, {
         method: 'DELETE'
       });
-      if (!res.ok) throw new Error('Failed to delete event');
+      if (!res.ok && res.status !== 204) throw new Error('Failed to delete event');
+      return id;
     },
-    onSuccess: async () => {
-      await refetchEvents();
+    onSuccess: async (deletedId) => {
       setSelectedEvent(null);
+      await queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+      await queryClient.refetchQueries({ queryKey: ['/api/gallery/events'] });
       toast({ title: "Folder șters cu succes" });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Delete error:', error);
       toast({ title: "Eroare la ștergere", variant: "destructive" });
     }
   });
