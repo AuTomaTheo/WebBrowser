@@ -16,7 +16,7 @@ export default function Contact() {
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
           <a 
-            href="tel:+40712345678"
+            href="tel:+40748307290"
             className="group"
             data-testid="link-phone"
           >
@@ -26,7 +26,7 @@ export default function Contact() {
                   <Phone className="h-7 w-7 text-secondary" />
                 </div>
                 <h3 className="font-playfair text-lg text-primary mb-2">Telefon</h3>
-                <p className="text-muted-foreground group-hover:text-primary transition-colors">+40 712 345 678</p>
+                <p className="text-muted-foreground group-hover:text-primary transition-colors">+40 748 307 290</p>
               </CardContent>
             </Card>
           </a>
