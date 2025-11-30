@@ -689,37 +689,5 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Initialize database with sample data
-async function initializeDatabase() {
-  try {
-    // Check if testimonials already exist
-    const existingTestimonials = await db.select().from(testimonials);
-    if (existingTestimonials.length === 0) {
-      console.log("Initializing database with sample testimonials...");
-      await db.insert(testimonials).values([
-        {
-          name: "Julia Roman",
-          content: "Andreea a transformat visul meu in realitate. Recomand serviciile pentru orice eveniment.",
-          rating: 5,
-          displayOrder: 1
-        },
-        {
-          name: "Daniela Bratu",
-          content: "Apreciez deschiderea cu care Andreea lucreaza. Foarte receptiva si profesionala.",
-          rating: 5,
-          displayOrder: 2
-        }
-      ]);
-    }
-
-    console.log("Database initialized successfully");
-  } catch (error) {
-    console.error("Error initializing database:", error);
-  }
-}
-
 // Use database storage for persistence
 export const storage = new DatabaseStorage();
-
-// Initialize the database with sample data
-initializeDatabase();
