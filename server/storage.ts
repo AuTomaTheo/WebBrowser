@@ -109,29 +109,6 @@ export class MemStorage implements IStorage {
     this.currentGalleryImageId = 1;
     this.currentGalleryEventId = 1;
     
-    // Initialize with sample data
-    this.initializeTestimonials();
-  }
-  
-  private initializeTestimonials() {
-    const testimonialData = [
-      {
-        name: "Julia Roman",
-        content: "Andreea a transformat visul meu in realitate. Recomand serviciile pentru orice eveniment.",
-        rating: 5,
-        displayOrder: 1
-      },
-      {
-        name: "Daniela Bratu",
-        content: "Apreciez deschiderea cu care Andreea lucreaza. Foarte receptiva si profesionala.",
-        rating: 5,
-        displayOrder: 2
-      }
-    ];
-    
-    testimonialData.forEach(testimonial => {
-      this.createTestimonial(testimonial);
-    });
   }
   
   // User methods
