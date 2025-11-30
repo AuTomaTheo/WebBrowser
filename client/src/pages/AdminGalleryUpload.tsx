@@ -81,9 +81,10 @@ export default function AdminGalleryUpload() {
 
   const deleteEventMutation = useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`/api/admin/gallery/events/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/gallery/events/${id}?key=${adminKey}`, {
         method: 'DELETE'
       });
+      if (!res.ok) throw new Error('Failed to delete event');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
@@ -97,9 +98,10 @@ export default function AdminGalleryUpload() {
 
   const deleteImageMutation = useMutation({
     mutationFn: async (id: number) => {
-      await fetch(`/api/admin/gallery/${id}?key=${adminKey}`, {
+      const res = await fetch(`/api/admin/gallery/${id}?key=${adminKey}`, {
         method: 'DELETE'
       });
+      if (!res.ok) throw new Error('Failed to delete image');
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/gallery/events', selectedEvent?.id, 'images'] });
