@@ -148,10 +148,10 @@ export default function Header() {
             )}
             
             {/* Navigation links */}
-            <nav>
-              <ul className="flex space-x-6 text-xs tracking-wide uppercase font-medium">
+            <nav className="overflow-x-auto scrollbar-hide max-w-full">
+              <ul className="flex space-x-4 md:space-x-6 text-xs tracking-wide uppercase font-medium whitespace-nowrap px-2 md:px-0">
                 {navLinks.map((link) => (
-                  <li key={link.id}>
+                  <li key={link.id} className="flex-shrink-0">
                     <Link 
                       href={link.path} 
                       className={cn(

@@ -2,7 +2,8 @@
 import {
   nuntiSibotezuriPath,
   buchetePerzonalizatePath,
-  
+  aranjamenteFloralePath,
+  workshopsPath,
 } from "../assets/images";
 
 // Categories data
@@ -27,14 +28,14 @@ export const categories = [
     id: 3,
     title: "Aranjamente florale",
     romanianTitle: "Aranjamente florale",
-    image: buchetePerzonalizatePath,
+    image: aranjamenteFloralePath,
     link: "/contact",
   },
   {
     id: 4,
     title: "Workshops",
     romanianTitle: "Workshops",
-    image: buchetePerzonalizatePath,
+    image: workshopsPath,
     link: "/workshops",
   },
 ];
