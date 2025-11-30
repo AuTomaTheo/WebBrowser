@@ -57,7 +57,7 @@ function ReviewForm() {
     onSuccess: () => {
       toast({
         title: "Mulțumim pentru recenzia ta!",
-        description: "Recenzia va fi publicată după aprobare.",
+        description: "Recenzia ta a fost publicată.",
       });
       setName('');
       setEventType('');
@@ -211,7 +211,6 @@ export default function Testimonials() {
           </div>
         ) : testimonials && testimonials.length > 0 ? (
           <div className="space-y-8">
-            <h2 className="font-playfair text-xl text-primary text-center mb-8">Recenzii aprobate</h2>
             {testimonials.map((testimonial) => (
               <Card key={testimonial.id} className="border-0 shadow-sm">
                 <CardContent className="p-6">

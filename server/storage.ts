@@ -482,8 +482,7 @@ export class DatabaseStorage implements IStorage {
   // Testimonial methods
   async getTestimonials(): Promise<Testimonial[]> {
     return db.select().from(testimonials)
-      .where(eq(testimonials.approved, true))
-      .orderBy(asc(testimonials.displayOrder));
+      .orderBy(desc(testimonials.createdAt));
   }
 
   async getTestimonial(id: number): Promise<Testimonial | undefined> {
