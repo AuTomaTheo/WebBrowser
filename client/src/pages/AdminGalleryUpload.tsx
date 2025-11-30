@@ -45,6 +45,11 @@ export default function AdminGalleryUpload() {
 
   const { data: events, isLoading: eventsLoading, refetch: refetchEvents } = useQuery<GalleryEvent[]>({
     queryKey: ['/api/gallery/events'],
+    queryFn: async () => {
+      const res = await fetch('/api/gallery/events');
+      if (!res.ok) throw new Error('Failed to fetch events');
+      return res.json();
+    },
     enabled: isAuthenticated,
     staleTime: 0
   });
