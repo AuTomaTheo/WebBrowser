@@ -701,21 +701,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Admin gallery routes (protected by secret key)
-  const ADMIN_SECRET = process.env.ADMIN_SECRET_KEY || "admin-secret-key-change-me";
+  // Admin gallery routes (protected by password)
+  const ADMIN_GALLERY_SECRET = process.env.ADMIN_GALLERY_PASSWORD;
   
   const isAdminAuthenticated = (req: Request, res: Response, next: NextFunction) => {
     const secretKey = req.query.key || req.headers['x-admin-key'];
-    if (secretKey === ADMIN_SECRET) {
+    if (ADMIN_GALLERY_SECRET && secretKey === ADMIN_GALLERY_SECRET) {
       return next();
     }
     res.status(401).json({ message: "Unauthorized" });
   };
   
-  // Verify admin key
+  // Verify admin key for gallery
   app.get("/api/admin/verify", (req: Request, res: Response) => {
     const secretKey = req.query.key;
-    if (secretKey === ADMIN_SECRET) {
+    if (ADMIN_GALLERY_SECRET && secretKey === ADMIN_GALLERY_SECRET) {
       return res.json({ valid: true });
     }
     res.status(401).json({ message: "Invalid key" });
