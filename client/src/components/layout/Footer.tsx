@@ -57,17 +57,17 @@ export default function Footer() {
             <h4 className="font-serif text-xl mb-4">Servicii</h4>
             <ul className="space-y-2">
               <li>
-                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
-                  Decoruri de Eveniment
+                <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
+                  Aranjamente florale
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
                   Închirieri
                 </ScrollToTopLink>
               </li>
               <li>
-                <ScrollToTopLink href="/servicii" className="text-gray-300 hover:text-white transition">
+                <ScrollToTopLink href="/event-planning" className="text-gray-300 hover:text-white transition">
                   Workshops
                 </ScrollToTopLink>
               </li>
