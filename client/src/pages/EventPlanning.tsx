@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Link } from 'wouter';
+import heroImage from '@assets/DSC_0285_1765383107050.jpg';
 
 export default function EventPlanning() {
   return (
@@ -16,7 +17,7 @@ export default function EventPlanning() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16 items-center">
           <div>
             <img 
-              src="https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80" 
+              src={heroImage} 
               alt="Event Planning" 
               className="rounded-lg shadow-md"
             />
