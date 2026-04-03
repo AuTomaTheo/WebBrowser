@@ -152,3 +152,9 @@ Preferred communication style: Simple, everyday language.
 - External images via Unsplash CDN
 - Font imports from Google Fonts and FontAwesome CDN
 - Dynamic asset resolution through Vite aliases
+- Gallery images stored on **Cloudinary** (cloud_name: dse0chmom)
+  - Server generates signed upload params (`server/cloudinary.ts`)
+  - Frontend uploads directly to Cloudinary API
+  - Cloudinary public URLs stored in database (`url` field)
+  - Cloudinary public_id stored in `filename` field for deletion
+  - Environment variables: `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`

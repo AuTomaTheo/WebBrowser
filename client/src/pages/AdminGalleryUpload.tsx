@@ -181,44 +181,54 @@ export default function AdminGalleryUpload() {
         f.file === file ? { ...f, status: 'uploading' as const, progress: 10 } : f
       ));
 
-      const uploadUrlResponse = await fetch(`/api/admin/gallery/upload-url?key=${adminKey}`, {
+      // Step 1: Get Cloudinary upload params from server
+      const paramsResponse = await fetch(`/api/admin/gallery/upload-url?key=${adminKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: file.name })
       });
 
-      if (!uploadUrlResponse.ok) {
-        throw new Error('Failed to get upload URL');
+      if (!paramsResponse.ok) {
+        throw new Error('Failed to get upload params');
       }
 
-      const { uploadURL, objectPath } = await uploadUrlResponse.json();
+      const { signature, timestamp, api_key, cloud_name, public_id } = await paramsResponse.json();
 
       setUploadingFiles(prev => prev.map(f => 
         f.file === file ? { ...f, progress: 30 } : f
       ));
 
-      const uploadResponse = await fetch(uploadURL, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type
-        }
-      });
+      // Step 2: Upload directly to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('api_key', api_key);
+      formData.append('timestamp', String(timestamp));
+      formData.append('signature', signature);
+      formData.append('public_id', public_id);
+
+      const uploadResponse = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`,
+        { method: 'POST', body: formData }
+      );
 
       if (!uploadResponse.ok) {
-        throw new Error('Failed to upload file');
+        throw new Error('Failed to upload to Cloudinary');
       }
+
+      const uploadResult = await uploadResponse.json();
+      const cloudinaryUrl = uploadResult.secure_url;
 
       setUploadingFiles(prev => prev.map(f => 
         f.file === file ? { ...f, progress: 70 } : f
       ));
 
+      // Step 3: Save metadata to DB (filename = public_id for deletion later)
       const saveResponse = await fetch(`/api/admin/gallery/save?key=${adminKey}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          filename: file.name,
-          url: objectPath,
+          filename: public_id,
+          url: cloudinaryUrl,
           category: selectedEvent.category,
           eventId: selectedEvent.id,
           alt: file.name.replace(/\.[^/.]+$/, "")

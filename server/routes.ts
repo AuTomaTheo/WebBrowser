@@ -10,6 +10,7 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import Stripe from "stripe";
+import { getCloudinaryUploadParams, deleteCloudinaryImage } from "./cloudinary";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -721,21 +722,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "Invalid key" });
   });
   
-  // Get upload URL for gallery image
+  // Get Cloudinary upload params for gallery image
   app.post("/api/admin/gallery/upload-url", isAdminAuthenticated, async (req: Request, res: Response) => {
     try {
       const { filename } = req.body;
       if (!filename) {
         return res.status(400).json({ message: "Filename is required" });
       }
-      
-      const objectStorageService = new ObjectStorageService();
-      const { uploadURL, objectPath } = await objectStorageService.getGalleryUploadURL(filename);
-      
-      res.json({ uploadURL, objectPath });
+      const params = getCloudinaryUploadParams(filename);
+      res.json(params);
     } catch (error) {
-      console.error("Error getting upload URL:", error);
-      res.status(500).json({ message: "Failed to get upload URL" });
+      console.error("Error getting upload params:", error);
+      res.status(500).json({ message: "Failed to get upload params" });
     }
   });
   
@@ -759,6 +757,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/gallery/:id", isAdminAuthenticated, async (req: Request, res: Response) => {
     try {
       const id = parseInt(req.params.id);
+      
+      // Get image info before deleting to retrieve Cloudinary public_id (stored in filename)
+      const images = await storage.getGalleryImages();
+      const image = images.find(img => img.id === id);
+      
+      if (image && image.filename && !image.url.startsWith('/objects/')) {
+        try {
+          await deleteCloudinaryImage(image.filename);
+        } catch (cloudErr) {
+          console.error("Error deleting from Cloudinary (continuing):", cloudErr);
+        }
+      }
+      
       const success = await storage.deleteGalleryImage(id);
       
       if (!success) {
