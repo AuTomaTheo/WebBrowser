@@ -56,3 +56,5 @@ integrations = ["javascript_object_storage:1.0.0"]
 
 [userenv.shared]
 ADMIN_SECRET_KEY = "flori-admin-2024-secret"
+CLOUDINARY_CLOUD_NAME = "dse0chmom"
+CLOUDINARY_API_KEY = "884478796435247"
