@@ -1,6 +1,7 @@
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
 import { Readable } from "stream";
+import sharp from "sharp";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -42,11 +43,24 @@ export async function deleteCloudinaryImage(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId);
 }
 
+const MAX_CLOUDINARY_BYTES = 9 * 1024 * 1024; // 9MB to stay safely under 10MB limit
+
+async function compressIfNeeded(buffer: Buffer): Promise<Buffer> {
+  if (buffer.length <= MAX_CLOUDINARY_BYTES) return buffer;
+  // Compress: resize to max 2400px wide and reduce quality
+  return sharp(buffer)
+    .resize({ width: 2400, height: 2400, fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: 80 })
+    .toBuffer();
+}
+
 export async function uploadBufferToCloudinary(
   buffer: Buffer,
   originalFilename: string
 ): Promise<{ secure_url: string; public_id: string }> {
   const public_id = `gallery/${randomUUID()}`;
+  const finalBuffer = await compressIfNeeded(buffer);
+
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { public_id, resource_type: "image" },
@@ -56,7 +70,7 @@ export async function uploadBufferToCloudinary(
       }
     );
     const readable = new Readable();
-    readable.push(buffer);
+    readable.push(finalBuffer);
     readable.push(null);
     readable.pipe(uploadStream);
   });
