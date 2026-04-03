@@ -40,6 +40,7 @@ export default function AdminGalleryUpload() {
   const [showNewEventInput, setShowNewEventInput] = useState<string | null>(null);
   
   const [uploadingFiles, setUploadingFiles] = useState<UploadingFile[]>([]);
+  const [isMigrating, setIsMigrating] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -274,6 +275,32 @@ export default function AdminGalleryUpload() {
     }
   };
 
+  const handleMigrateToCloudinary = async () => {
+    if (!confirm('Migrezi toate imaginile vechi pe Cloudinary? Poate dura câteva minute.')) return;
+    setIsMigrating(true);
+    try {
+      const res = await fetch(`/api/admin/gallery/migrate?key=${adminKey}`, { method: 'POST' });
+      const result = await res.json();
+      if (res.ok) {
+        toast({
+          title: result.migrated > 0
+            ? `${result.migrated} / ${result.total} imagini migrate cu succes!`
+            : "Nu există imagini vechi de migrat",
+        });
+        queryClient.invalidateQueries({ queryKey: ['/api/gallery/events'] });
+        if (selectedEvent) {
+          queryClient.invalidateQueries({ queryKey: ['/api/gallery/events', selectedEvent.id, 'images'] });
+        }
+      } else {
+        toast({ title: "Eroare la migrare", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Eroare la migrare", variant: "destructive" });
+    } finally {
+      setIsMigrating(false);
+    }
+  };
+
   if (!isAuthenticated) {
     return (
       <>
@@ -328,7 +355,20 @@ export default function AdminGalleryUpload() {
       <div className="min-h-screen bg-gray-100 flex">
         <div className="w-72 bg-white shadow-lg flex-shrink-0 overflow-y-auto">
           <div className="p-4 border-b">
-            <h1 className="text-lg font-bold">Administrare Galerie</h1>
+            <h1 className="text-lg font-bold mb-3">Administrare Galerie</h1>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs gap-1"
+              onClick={handleMigrateToCloudinary}
+              disabled={isMigrating}
+            >
+              {isMigrating ? (
+                <><Loader2 className="h-3 w-3 animate-spin" /> Migrare în curs...</>
+              ) : (
+                <><Upload className="h-3 w-3" /> Migrează imagini vechi pe Cloudinary</>
+              )}
+            </Button>
           </div>
           
           <nav className="p-2">

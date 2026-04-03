@@ -54,6 +54,7 @@ export interface IStorage {
   getGalleryImagesByCategory(category: string): Promise<GalleryImage[]>;
   getGalleryImagesByEvent(eventId: number): Promise<GalleryImage[]>;
   createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage>;
+  updateGalleryImage(id: number, data: Partial<{ url: string; filename: string }>): Promise<GalleryImage | null>;
   deleteGalleryImage(id: number): Promise<boolean>;
   
   // Gallery event methods
@@ -357,6 +358,14 @@ export class MemStorage implements IStorage {
     return image;
   }
   
+  async updateGalleryImage(id: number, data: Partial<{ url: string; filename: string }>): Promise<GalleryImage | null> {
+    const image = this.galleryImagesMap.get(id);
+    if (!image) return null;
+    const updated = { ...image, ...data };
+    this.galleryImagesMap.set(id, updated);
+    return updated;
+  }
+
   async deleteGalleryImage(id: number): Promise<boolean> {
     return this.galleryImagesMap.delete(id);
   }
@@ -625,6 +634,15 @@ export class DatabaseStorage implements IStorage {
     return image;
   }
   
+  async updateGalleryImage(id: number, data: Partial<{ url: string; filename: string }>): Promise<GalleryImage | null> {
+    const result = await db
+      .update(galleryImages)
+      .set(data)
+      .where(eq(galleryImages.id, id))
+      .returning();
+    return result[0] ?? null;
+  }
+
   async deleteGalleryImage(id: number): Promise<boolean> {
     const result = await db
       .delete(galleryImages)

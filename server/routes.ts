@@ -10,7 +10,7 @@ import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 import { setupAuth, hashPassword, comparePasswords } from "./auth";
 import Stripe from "stripe";
-import { getCloudinaryUploadParams, deleteCloudinaryImage } from "./cloudinary";
+import { getCloudinaryUploadParams, deleteCloudinaryImage, uploadBufferToCloudinary } from "./cloudinary";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -722,6 +722,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.status(401).json({ message: "Invalid key" });
   });
   
+  // Migrate old Object Storage images to Cloudinary
+  app.post("/api/admin/gallery/migrate", isAdminAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const allImages = await storage.getGalleryImages();
+      const oldImages = allImages.filter(img => img.url.startsWith('/objects/'));
+      
+      if (oldImages.length === 0) {
+        return res.json({ migrated: 0, message: "No old images to migrate" });
+      }
+
+      const objectStorageService = new ObjectStorageService();
+      let migrated = 0;
+      const errors: string[] = [];
+
+      for (const img of oldImages) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(img.url);
+          const [fileBuffer] = await objectFile.download();
+          const { secure_url, public_id } = await uploadBufferToCloudinary(fileBuffer, img.filename);
+          
+          // Update DB record with new Cloudinary URL and public_id
+          await storage.updateGalleryImage(img.id, { url: secure_url, filename: public_id });
+          migrated++;
+        } catch (err) {
+          console.error(`Failed to migrate image ${img.id}:`, err);
+          errors.push(`Image ${img.id}: ${(err as Error).message}`);
+        }
+      }
+
+      res.json({ migrated, total: oldImages.length, errors });
+    } catch (error) {
+      console.error("Migration error:", error);
+      res.status(500).json({ message: "Migration failed" });
+    }
+  });
+
   // Get Cloudinary upload params for gallery image
   app.post("/api/admin/gallery/upload-url", isAdminAuthenticated, async (req: Request, res: Response) => {
     try {

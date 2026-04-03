@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import { randomUUID } from "crypto";
+import { Readable } from "stream";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -39,4 +40,24 @@ export function getCloudinaryUploadParams(filename: string): CloudinaryUploadPar
 
 export async function deleteCloudinaryImage(publicId: string): Promise<void> {
   await cloudinary.uploader.destroy(publicId);
+}
+
+export async function uploadBufferToCloudinary(
+  buffer: Buffer,
+  originalFilename: string
+): Promise<{ secure_url: string; public_id: string }> {
+  const public_id = `gallery/${randomUUID()}`;
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { public_id, resource_type: "image" },
+      (error, result) => {
+        if (error || !result) return reject(error || new Error("Upload failed"));
+        resolve({ secure_url: result.secure_url, public_id: result.public_id });
+      }
+    );
+    const readable = new Readable();
+    readable.push(buffer);
+    readable.push(null);
+    readable.pipe(uploadStream);
+  });
 }
